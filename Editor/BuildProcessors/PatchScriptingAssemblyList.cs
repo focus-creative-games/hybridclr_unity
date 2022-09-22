@@ -24,14 +24,19 @@ namespace HybridCLR.Editor.BuildProcessors
     {
         public int callbackOrder => 0;
 
-
-
-
         public void OnPostGenerateGradleAndroidProject(string path)
         {
             // 如果直接打包apk，没有机会在PostprocessBuild中修改ScriptingAssemblies.json。
             // 因此需要在这个时机处理
-            PathScriptingAssembilesFile(path);
+            // Unity有bug，偶然情况下会传入apk的路径，导致替换失败
+            if (Directory.Exists(path))
+            {
+                PathScriptingAssembilesFile(path);
+            }
+            else
+            {
+                PathScriptingAssembilesFile($"{SettingsUtil.ProjectDir}/Library");
+            }
         }
 
         public void OnPostprocessBuild(BuildReport report)

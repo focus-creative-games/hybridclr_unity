@@ -34,7 +34,7 @@ namespace HybridCLR.Editor.MethodBridgeGenerator
             int typeSize = type.Size;
             if (typeSize <= 8)
             {
-                return TypeInfo.s_i8u8;
+                return TypeInfo.s_i8;
             }
             if (typeSize <= 16)
             {

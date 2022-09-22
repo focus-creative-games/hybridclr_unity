@@ -31,26 +31,26 @@ namespace HybridCLR.Editor
 			switch (typeSig.ElementType)
 			{
 				case ElementType.Void: return corTypes.Void;
-				case ElementType.Boolean: 
-				case ElementType.Char:
-				case ElementType.I1:
+				case ElementType.Boolean: return corTypes.Byte;
+				case ElementType.Char: return corTypes.UInt16;
+				case ElementType.I1: return corTypes.SByte;
 				case ElementType.U1:return corTypes.Byte;
-				case ElementType.I2:
+				case ElementType.I2: return corTypes.Int16;
 				case ElementType.U2: return corTypes.UInt16;
-				case ElementType.I4:
+				case ElementType.I4: return corTypes.Int32;
 				case ElementType.U4: return corTypes.UInt32;
-				case ElementType.I8:
+				case ElementType.I8: return corTypes.Int64;
 				case ElementType.U8: return corTypes.UInt64;
 				case ElementType.R4: return corTypes.Single;
 				case ElementType.R8: return corTypes.Double;
 				case ElementType.String: return corTypes.Object;
 				case ElementType.TypedByRef: return corTypes.TypedReference;
-				case ElementType.I: 
+				case ElementType.I: return corTypes.IntPtr;
 				case ElementType.U: return corTypes.UIntPtr;
 				case ElementType.Object: return corTypes.Object;
 				case ElementType.Sentinel: return typeSig;
-				case ElementType.Ptr: return corTypes.UIntPtr;
-				case ElementType.ByRef: return corTypes.UIntPtr;
+				case ElementType.Ptr: return corTypes.IntPtr;
+				case ElementType.ByRef: return corTypes.IntPtr;
 				case ElementType.SZArray: return corTypes.Object;
 				case ElementType.Array: return corTypes.Object;
 				case ElementType.ValueType: return typeSig;
@@ -64,7 +64,7 @@ namespace HybridCLR.Editor
                     }
 					return new GenericInstSig(gia.GenericType, gia.GenericArguments.Select(ga => ToShareTypeSig(ga)).ToList());
 				}
-				case ElementType.FnPtr: return corTypes.UIntPtr;
+				case ElementType.FnPtr: return corTypes.IntPtr;
 				case ElementType.ValueArray: return typeSig;
 				case ElementType.Module: return typeSig;
 				default:

@@ -21,7 +21,7 @@ namespace HybridCLR.Editor.MethodBridgeGenerator
 
         public virtual bool IsSupportHFA => false;
 
-        public TypeInfo GetNativeIntTypeInfo() => IsArch32 ? TypeInfo.s_i4u4 : TypeInfo.s_i8u8;
+        public TypeInfo GetNativeIntTypeInfo() => IsArch32 ? TypeInfo.s_i4 : TypeInfo.s_i8;
 
         public abstract void GenerateManaged2NativeMethod(MethodBridgeSig method, List<string> lines);
 
@@ -73,20 +73,20 @@ namespace HybridCLR.Editor.MethodBridgeGenerator
             switch(type.ElementType)
             {
                 case ElementType.Void: return TypeInfo.s_void;
-                case ElementType.Boolean:
-                case ElementType.I1:
-                case ElementType.U1: return TypeInfo.s_i1u1;
+                case ElementType.Boolean: return TypeInfo.s_u1;
+                case ElementType.I1: return TypeInfo.s_i1;
+                case ElementType.U1: return TypeInfo.s_u1;
+                case ElementType.I2: return TypeInfo.s_i2;
                 case ElementType.Char:
-                case ElementType.I2:
-                case ElementType.U2: return TypeInfo.s_i2u2;
-                case ElementType.I4:
-                case ElementType.U4: return TypeInfo.s_i4u4;
-                case ElementType.I8:
-                case ElementType.U8: return TypeInfo.s_i8u8;
+                case ElementType.U2: return TypeInfo.s_u2;
+                case ElementType.I4: return TypeInfo.s_i4;
+                case ElementType.U4: return TypeInfo.s_u4;
+                case ElementType.I8: return TypeInfo.s_i8;
+                case ElementType.U8: return TypeInfo.s_u8;
                 case ElementType.R4: return TypeInfo.s_r4;
                 case ElementType.R8: return TypeInfo.s_r8;
+                case ElementType.U: return IsArch32 ? TypeInfo.s_u4 : TypeInfo.s_u8;
                 case ElementType.I:
-                case ElementType.U:
                 case ElementType.String: 
                 case ElementType.Ptr:
                 case ElementType.ByRef:

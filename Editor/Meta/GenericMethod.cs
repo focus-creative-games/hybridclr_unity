@@ -69,7 +69,7 @@ namespace HybridCLR.Editor.Meta
             typeDef = decalringType.ResolveTypeDef();
             if (typeDef == null)
             {
-                throw new Exception($"{decalringType}");
+                return null;
             }
             GenericInstSig gis = decalringType.TryGetGenericInstSig();
             if (gis != null)

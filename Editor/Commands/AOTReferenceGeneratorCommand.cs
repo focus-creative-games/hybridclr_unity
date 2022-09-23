@@ -13,7 +13,7 @@ namespace HybridCLR.Editor.Commands
     public static class AOTReferenceGeneratorCommand
     {
 
-        [MenuItem("HybridCLR/Generate/AOTGenericReference", priority = 18)]
+        [MenuItem("HybridCLR/Generate/AOTGenericReference", priority = 102)]
         public static void GenerateAOTGenericReference()
         {
             GenerateAOTGenericReference(true);
@@ -39,7 +39,7 @@ namespace HybridCLR.Editor.Commands
             analyzer.Run();
 
             var writer = new GenericReferenceWriter();
-            writer.Write(analyzer.GenericTypes.ToList(), analyzer.GenericMethods.ToList(), $"{Application.dataPath}/{gs.outputAOTGenericReferenceFile}");
+            writer.Write(analyzer.AotGenericTypes.ToList(), analyzer.AotGenericMethods.ToList(), $"{Application.dataPath}/{gs.outputAOTGenericReferenceFile}");
             AssetDatabase.Refresh();
         }
     }

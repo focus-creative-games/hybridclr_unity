@@ -16,7 +16,7 @@ namespace HybridCLR.Editor.Commands
     public static class LinkGeneratorCommand
     {
 
-        [MenuItem("HybridCLR/Generate/LinkXml", priority = 10)]
+        [MenuItem("HybridCLR/Generate/LinkXml", priority = 100)]
         public static void GenerateLinkXml()
         {
             GenerateLinkXml(true);

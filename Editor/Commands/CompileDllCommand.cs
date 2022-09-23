@@ -32,31 +32,31 @@ namespace HybridCLR.Editor.Commands
             CompileDll(SettingsUtil.GetHotFixDllsOutputDirByTarget(target), target);
         }
 
-        [MenuItem("HybridCLR/CompileDll/ActiveBuildTarget")]
+        [MenuItem("HybridCLR/CompileDll/ActiveBuildTarget", priority = 100)]
         public static void CompileDllActiveBuildTarget()
         {
             CompileDll(EditorUserBuildSettings.activeBuildTarget);
         }
 
-        [MenuItem("HybridCLR/CompileDll/Win32")]
+        [MenuItem("HybridCLR/CompileDll/Win32", priority = 200)]
         public static void CompileDllWin32()
         {
             CompileDll(BuildTarget.StandaloneWindows);
         }
 
-        [MenuItem("HybridCLR/CompileDll/Win64")]
+        [MenuItem("HybridCLR/CompileDll/Win64", priority = 201)]
         public static void CompileDllWin64()
         {
             CompileDll(BuildTarget.StandaloneWindows64);
         }
 
-        [MenuItem("HybridCLR/CompileDll/Android")]
+        [MenuItem("HybridCLR/CompileDll/Android", priority = 202)]
         public static void CompileDllAndroid()
         {
             CompileDll(BuildTarget.Android);
         }
 
-        [MenuItem("HybridCLR/CompileDll/IOS")]
+        [MenuItem("HybridCLR/CompileDll/IOS", priority = 203)]
         public static void CompileDllIOS()
         {
             CompileDll(BuildTarget.iOS);

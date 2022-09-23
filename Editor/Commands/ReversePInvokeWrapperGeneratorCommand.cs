@@ -16,7 +16,7 @@ namespace HybridCLR.Editor.Commands
     public static class ReversePInvokeWrapperGeneratorCommand
     {
 
-        [MenuItem("HybridCLR/Generate/ReversePInvokeWrapper", priority = 20)]
+        [MenuItem("HybridCLR/Generate/ReversePInvokeWrapper", priority = 103)]
         public static void GenerateReversePInvokeWrapper()
         {
             string ReversePInvokeWrapperStubFile = $"{SettingsUtil.LocalIl2CppDir}/libil2cpp/hybridclr/metadata/ReversePInvokeMethodStub.cpp";

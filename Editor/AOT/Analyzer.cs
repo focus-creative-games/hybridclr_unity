@@ -37,6 +37,10 @@ namespace HybridCLR.Editor.AOT
 
         private readonly HashSet<string> _hotUpdateAssemblyFiles;
 
+        public List<GenericClass> AotGenericTypes { get; } = new List<GenericClass>();
+
+        public List<GenericMethod> AotGenericMethods { get; } = new List<GenericMethod>();
+
         public Analyzer(Options options)
         {
             _assemblyCollector = options.Collector;
@@ -61,6 +65,16 @@ namespace HybridCLR.Editor.AOT
         private bool NeedWalk(TypeDef type)
         {
             return _hotUpdateAssemblyFiles.Contains(type.Module.Name);
+        }
+
+        private bool IsAotType(TypeDef type)
+        {
+            return !_hotUpdateAssemblyFiles.Contains(type.Module.Name);
+        }
+
+        private bool IsAotGenericMethod(MethodDef method)
+        {
+            return IsAotType(method.DeclaringType) && method.HasGenericParameters;
         }
 
         private void OnNewMethod(GenericMethod method)
@@ -179,10 +193,18 @@ namespace HybridCLR.Editor.AOT
             }
         }
 
+        private void FilterAOTGenericTypeAndMethods()
+        {
+            var cc = new ConstraintContext();
+            AotGenericTypes.AddRange(_genericTypes.Where(type => IsAotType(type.Type)).Select(gc => cc.ApplyConstraints(gc)));
+            AotGenericMethods.AddRange(_genericMethods.Where(method => IsAotGenericMethod(method.Method)).Select(gm => cc.ApplyConstraints(gm)));
+        }
+
         public void Run()
         {
             Prepare();
             RecursiveCollect();
+            FilterAOTGenericTypeAndMethods();
         }
     }
 }

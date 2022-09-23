@@ -1,6 +1,6 @@
 ﻿using HybridCLR.Editor;
 using HybridCLR.Editor.Meta;
-using HybridCLR.Editor.MethodBridgeGenerator;
+using HybridCLR.Editor.MethodBridge;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -58,7 +58,7 @@ namespace HybridCLR.Editor.Commands
             CleanIl2CppBuildCache();
         }
 
-        [MenuItem("HybridCLR/GenerateMethodBridge", priority = 15)]
+        [MenuItem("HybridCLR/Generate/MethodBridge", priority = 15)]
         public static void GenerateMethodBridge()
         {
             GenerateMethodBridge(true);

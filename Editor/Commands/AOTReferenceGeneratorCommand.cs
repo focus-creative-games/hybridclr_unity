@@ -13,7 +13,7 @@ namespace HybridCLR.Editor.Commands
     public static class AOTReferenceGeneratorCommand
     {
 
-        [MenuItem("HybridCLR/GenerateAOTGenericReference", priority = 18)]
+        [MenuItem("HybridCLR/Generate/AOTGenericReference", priority = 18)]
         public static void GenerateAOTGenericReference()
         {
             GenerateAOTGenericReference(true);

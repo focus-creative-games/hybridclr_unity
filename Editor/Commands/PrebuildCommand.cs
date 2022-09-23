@@ -12,7 +12,7 @@ namespace HybridCLR.Editor.Commands
         /// <summary>
         /// 按照必要的顺序，执行所有生成操作，适合打包前操作
         /// </summary>
-        [MenuItem("HybridCLR/GenerateAll", priority = 30)]
+        [MenuItem("HybridCLR/Generate/All", priority = 30)]
         public static void GenerateAll()
         {
             // 顺序随意

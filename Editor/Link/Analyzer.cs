@@ -8,9 +8,9 @@ using dnlib.DotNet;
 using HybridCLR.Editor.Meta;
 using IAssemblyResolver = HybridCLR.Editor.Meta.IAssemblyResolver;
 
-namespace HybridCLR.Editor.LinkGenerator
+namespace HybridCLR.Editor.Link
 {
-    class Analyzer
+    public class Analyzer
     {
         private readonly IAssemblyResolver _resolver;
 

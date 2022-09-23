@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HybridCLR.Editor.MethodBridgeGenerator
+namespace HybridCLR.Editor.MethodBridge
 {
     public enum ParamOrReturnType
     {

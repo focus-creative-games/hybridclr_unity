@@ -11,10 +11,8 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
-namespace HybridCLR.Editor.MethodBridgeGenerator
+namespace HybridCLR.Editor.MethodBridge
 {
-
-
     public class Generator
     {
         public class Options

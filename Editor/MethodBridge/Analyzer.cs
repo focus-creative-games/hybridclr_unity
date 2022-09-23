@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace HybridCLR.Editor.MethodBridgeGenerator
+namespace HybridCLR.Editor.MethodBridge
 {
 
     public class Analyzer

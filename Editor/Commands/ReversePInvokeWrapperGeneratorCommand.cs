@@ -1,4 +1,4 @@
-﻿using HybridCLR.Editor.LinkGenerator;
+﻿using HybridCLR.Editor.Link;
 using HybridCLR.Editor.ReversePInvokeWrap;
 using System;
 using System.Collections.Generic;
@@ -16,13 +16,13 @@ namespace HybridCLR.Editor.Commands
     public static class ReversePInvokeWrapperGeneratorCommand
     {
 
-        [MenuItem("HybridCLR/GenerateReversePInvokeWrapper", priority = 20)]
+        [MenuItem("HybridCLR/Generate/ReversePInvokeWrapper", priority = 20)]
         public static void GenerateReversePInvokeWrapper()
         {
             string ReversePInvokeWrapperStubFile = $"{SettingsUtil.LocalIl2CppDir}/libil2cpp/hybridclr/metadata/ReversePInvokeMethodStub.cpp";
             string wrapperTemplateStr = AssetDatabase.LoadAssetAtPath<TextAsset>($"{SettingsUtil.TemplatePathInPackage}/ReversePInvokeMethodStub.cpp.txt").text;
             int wrapperCount = SettingsUtil.GlobalSettings.ReversePInvokeWrapperCount;
-            var generator = new ReversePInvokeWrapperGenerator();
+            var generator = new Generator();
             generator.Generate(wrapperTemplateStr, wrapperCount,ReversePInvokeWrapperStubFile);
             Debug.Log($"GenerateReversePInvokeWrapper. wraperCount:{wrapperCount} output:{ReversePInvokeWrapperStubFile}");
             MethodBridgeGeneratorCommand.CleanIl2CppBuildCache();

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HybridCLR.Editor.ReversePInvokeWrap
 {
-    internal class ReversePInvokeWrapperGenerator
+    public class Generator
     {
         public void Generate(string template, int wrapperCount, string outputFile)
         {

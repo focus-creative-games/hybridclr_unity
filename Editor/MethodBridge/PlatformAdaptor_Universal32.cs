@@ -7,49 +7,32 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace HybridCLR.Editor.MethodBridgeGenerator
+namespace HybridCLR.Editor.MethodBridge
 {
-
-    public class HFATypeInfo
+    internal class PlatformAdaptor_Universal32 : PlatformAdaptorBase
     {
-        public TypeSig Type { get; set; }
+        public PlatformABI CallConventionType { get; } = PlatformABI.Universal32;
 
-        public int Count { get; set; }
-    }
+        public override bool IsArch32 => true;
 
-    public class PlatformAdaptor_Arm64 : PlatformAdaptorBase
-    {
-        public PlatformABI CallConventionType { get; } = PlatformABI.Universal64;
-
-        public override bool IsArch32 => false;
-
-        public override bool IsSupportHFA => true;
+        //protected override TypeInfo CreateValueType(TypeSig type, bool returnValue)
+        //{
+        //    (int typeSize, int typeAligment) = ComputeSizeAndAligmentOfArch32(type);
+        //    int actualAliment = typeAligment <= 4 ? 1 : 8;
+        //    return CreateGeneralValueType(type, typeSize, actualAliment);
+        //}
 
         protected override TypeInfo OptimizeSigType(TypeInfo type, bool returnType)
         {
-            if (!type.IsGeneralValueType)
+            if (type.PorType > ParamOrReturnType.STRUCTURE_ALIGN1 && type.PorType <= ParamOrReturnType.STRUCTURE_ALIGN4)
             {
-                return type;
+                return new TypeInfo(ParamOrReturnType.STRUCTURE_ALIGN1, type.Size);
             }
-            int typeSize = type.Size;
-            if (typeSize <= 8)
-            {
-                return TypeInfo.s_i8;
-            }
-            if (typeSize <= 16)
-            {
-                return TypeInfo.s_i16;
-            }
-            if (returnType)
-            {
-                return type.PorType != ParamOrReturnType.STRUCTURE_ALIGN1 ? new TypeInfo(ParamOrReturnType.STRUCTURE_ALIGN1, typeSize) : type;
-            }
-            return TypeInfo.s_ref;
+            return type;
         }
 
         public override void GenerateManaged2NativeMethod(MethodBridgeSig method, List<string> lines)
         {
-            int totalQuadWordNum = method.ParamInfos.Count + method.ReturnInfo.GetParamSlotNum(this.CallConventionType);
             string paramListStr = string.Join(", ", method.ParamInfos.Select(p => $"{p.Type.GetTypeName()} __arg{p.Index}").Concat(new string[] { "const MethodInfo* method" }));
             string paramNameListStr = string.Join(", ", method.ParamInfos.Select(p => p.Managed2NativeParamValue(this.CallConventionType)).Concat(new string[] { "method" }));
 
@@ -62,7 +45,6 @@ static void __M2N_{method.CreateCallSigName()}(const MethodInfo* method, uint16_
 }}
 ");
         }
-
         public override void GenerateNative2ManagedMethod(MethodBridgeSig method, List<string> lines)
         {
             int totalQuadWordNum = method.ParamInfos.Count + method.ReturnInfo.GetParamSlotNum(this.CallConventionType);
@@ -79,7 +61,6 @@ static {method.ReturnInfo.Type.GetTypeName()} __N2M_{method.CreateCallSigName()}
 }}
 ");
         }
-
         public override void GenerateAdjustThunkMethod(MethodBridgeSig method, List<string> lines)
         {
             int totalQuadWordNum = method.ParamInfos.Count + method.ReturnInfo.GetParamSlotNum(this.CallConventionType);
@@ -96,6 +77,8 @@ static {method.ReturnInfo.Type.GetTypeName()} __N2M_AdjustorThunk_{method.Create
     {(!method.ReturnInfo.IsVoid ? $"return *({method.ReturnInfo.Type.GetTypeName()}*)ret;" : "")}
 }}
 ");
+
         }
     }
+
 }

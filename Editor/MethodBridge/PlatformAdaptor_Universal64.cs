@@ -7,24 +7,19 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace HybridCLR.Editor.MethodBridgeGenerator
+namespace HybridCLR.Editor.MethodBridge
 {
-    internal class PlatformAdaptor_Universal32 : PlatformAdaptorBase
+    public class PlatformAdaptor_Universal64 : PlatformAdaptorBase
     {
-        public PlatformABI CallConventionType { get; } = PlatformABI.Universal32;
+        public PlatformABI CallConventionType { get; } = PlatformABI.Universal64;
 
-        public override bool IsArch32 => true;
+        public override bool IsArch32 => false;
 
-        //protected override TypeInfo CreateValueType(TypeSig type, bool returnValue)
-        //{
-        //    (int typeSize, int typeAligment) = ComputeSizeAndAligmentOfArch32(type);
-        //    int actualAliment = typeAligment <= 4 ? 1 : 8;
-        //    return CreateGeneralValueType(type, typeSize, actualAliment);
-        //}
+        public override bool IsSupportHFA => true;
 
         protected override TypeInfo OptimizeSigType(TypeInfo type, bool returnType)
         {
-            if (type.PorType > ParamOrReturnType.STRUCTURE_ALIGN1 && type.PorType <= ParamOrReturnType.STRUCTURE_ALIGN4)
+            if (type.PorType > ParamOrReturnType.STRUCTURE_ALIGN1 && type.PorType <= ParamOrReturnType.STRUCTURE_ALIGN8)
             {
                 return new TypeInfo(ParamOrReturnType.STRUCTURE_ALIGN1, type.Size);
             }
@@ -33,7 +28,10 @@ namespace HybridCLR.Editor.MethodBridgeGenerator
 
         public override void GenerateManaged2NativeMethod(MethodBridgeSig method, List<string> lines)
         {
+            int totalQuadWordNum = method.ParamInfos.Count + method.ReturnInfo.GetParamSlotNum(this.CallConventionType);
+
             string paramListStr = string.Join(", ", method.ParamInfos.Select(p => $"{p.Type.GetTypeName()} __arg{p.Index}").Concat(new string[] { "const MethodInfo* method" }));
+            string paramTypeListStr = string.Join(", ", method.ParamInfos.Select(p => $"{p.Type.GetTypeName()}").Concat(new string[] { "const MethodInfo*" })); ;
             string paramNameListStr = string.Join(", ", method.ParamInfos.Select(p => p.Managed2NativeParamValue(this.CallConventionType)).Concat(new string[] { "method" }));
 
             lines.Add($@"
@@ -49,7 +47,6 @@ static void __M2N_{method.CreateCallSigName()}(const MethodInfo* method, uint16_
         {
             int totalQuadWordNum = method.ParamInfos.Count + method.ReturnInfo.GetParamSlotNum(this.CallConventionType);
             string paramListStr = string.Join(", ", method.ParamInfos.Select(p => $"{p.Type.GetTypeName()} __arg{p.Index}").Concat(new string[] { "const MethodInfo* method" }));
-            
             lines.Add($@"
 // {method.MethodDef}
 static {method.ReturnInfo.Type.GetTypeName()} __N2M_{method.CreateCallSigName()}({paramListStr})
@@ -61,12 +58,11 @@ static {method.ReturnInfo.Type.GetTypeName()} __N2M_{method.CreateCallSigName()}
 }}
 ");
         }
+
         public override void GenerateAdjustThunkMethod(MethodBridgeSig method, List<string> lines)
         {
             int totalQuadWordNum = method.ParamInfos.Count + method.ReturnInfo.GetParamSlotNum(this.CallConventionType);
-
             string paramListStr = string.Join(", ", method.ParamInfos.Select(p => $"{p.Type.GetTypeName()} __arg{p.Index}").Concat(new string[] { "const MethodInfo* method" }));
-
             lines.Add($@"
 // {method.MethodDef}
 static {method.ReturnInfo.Type.GetTypeName()} __N2M_AdjustorThunk_{method.CreateCallSigName()}({paramListStr})
@@ -77,8 +73,6 @@ static {method.ReturnInfo.Type.GetTypeName()} __N2M_AdjustorThunk_{method.Create
     {(!method.ReturnInfo.IsVoid ? $"return *({method.ReturnInfo.Type.GetTypeName()}*)ret;" : "")}
 }}
 ");
-
         }
     }
-
 }

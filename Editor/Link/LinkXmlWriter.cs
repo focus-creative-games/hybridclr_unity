@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HybridCLR.Editor.LinkGenerator
+namespace HybridCLR.Editor.Link
 {
     internal class LinkXmlWriter
     {

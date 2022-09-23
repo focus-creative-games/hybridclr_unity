@@ -28,6 +28,7 @@ namespace HybridCLR.Editor.AOT
             codes.Add("");
             codes.Add("\t// {{ AOT generic type");
 
+            types.Sort((a, b) => a.Type.FullName.CompareTo(b.Type.FullName));
             foreach(var type in types)
             {
                 codes.Add($"\t//{type.ToTypeSig()}");
@@ -38,7 +39,16 @@ namespace HybridCLR.Editor.AOT
             codes.Add("");
             codes.Add("\tpublic void RefMethods()");
             codes.Add("\t{");
-
+            methods.Sort((a, b) =>
+            {
+                int c = a.Method.DeclaringType.FullName.CompareTo(b.Method.DeclaringType.FullName);
+                if (c != 0)
+                {
+                    return c;
+                }
+                c = a.Method.Name.CompareTo(b.Method.Name);
+                return c;
+            });
             foreach(var method in methods)
             {
                 codes.Add($"\t\t// {method.ToMethodSpec()}");

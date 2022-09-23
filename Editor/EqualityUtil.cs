@@ -9,6 +9,19 @@ namespace HybridCLR.Editor
 {
     public static class EqualityUtil
     {
+        public static bool EqualsTypeSig(TypeSig a, TypeSig b)
+        {
+            if (a == b)
+            {
+                return true;
+            }
+            if (a != null && b != null)
+            {
+                return TypeEqualityComparer.Instance.Equals(a, b);
+            }
+            return false;
+        }
+
         public static bool EqualsTypeSigArray(List<TypeSig> a, List<TypeSig> b)
         {
             if (a == b)

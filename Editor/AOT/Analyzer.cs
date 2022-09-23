@@ -37,6 +37,8 @@ namespace HybridCLR.Editor.AOT
 
         private readonly HashSet<string> _hotUpdateAssemblyFiles;
 
+        public ConstraintContext ConstraintContext { get; } = new ConstraintContext();
+
         public List<GenericClass> AotGenericTypes { get; } = new List<GenericClass>();
 
         public List<GenericMethod> AotGenericMethods { get; } = new List<GenericMethod>();
@@ -195,7 +197,7 @@ namespace HybridCLR.Editor.AOT
 
         private void FilterAOTGenericTypeAndMethods()
         {
-            var cc = new ConstraintContext();
+            ConstraintContext cc = this.ConstraintContext;
             AotGenericTypes.AddRange(_genericTypes.Where(type => IsAotType(type.Type)).Select(gc => cc.ApplyConstraints(gc)));
             AotGenericMethods.AddRange(_genericMethods.Where(method => IsAotGenericMethod(method.Method)).Select(gm => cc.ApplyConstraints(gm)));
         }

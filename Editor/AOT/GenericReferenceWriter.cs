@@ -20,18 +20,28 @@ namespace HybridCLR.Editor.AOT
             codes.Add("public class AOTGenericReferences : UnityEngine.MonoBehaviour");
             codes.Add("{");
 
+            codes.Add("");
+            codes.Add("\t// {{ constraint implement type");
+
+            codes.Add("\t// }} ");
+
+            codes.Add("");
+            codes.Add("\t// {{ AOT generic type");
 
             foreach(var type in types)
             {
-                codes.Add($"\t//{type.Type}");
+                codes.Add($"\t//{type.ToTypeSig()}");
             }
 
+            codes.Add("\t// }}");
+
+            codes.Add("");
             codes.Add("\tpublic void RefMethods()");
             codes.Add("\t{");
 
             foreach(var method in methods)
             {
-                codes.Add($"\t\t// {method.Method}");
+                codes.Add($"\t\t// {method.ToMethodSpec()}");
             }
             codes.Add("\t}");
 

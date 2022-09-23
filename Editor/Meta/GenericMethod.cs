@@ -55,6 +55,14 @@ namespace HybridCLR.Editor.Meta
             return hash;
         }
 
+        public MethodSpec ToMethodSpec()
+        {
+            IMethodDefOrRef mt = KlassInst != null ? 
+                (IMethodDefOrRef)new MemberRefUser(this.Method.Module, Method.Name, Method.MethodSig, new TypeSpecUser(new GenericInstSig(this.Method.DeclaringType.ToTypeSig().ToClassOrValueTypeSig(), this.KlassInst)))
+                : this.Method;
+            return new MethodSpecUser(mt, new GenericInstMethodSig(MethodInst));
+        }
+
         public static GenericMethod ResolveMethod(IMethod method, GenericArgumentContext ctx)
         {
             //Debug.Log($"== resolve method:{method}");

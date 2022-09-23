@@ -48,6 +48,11 @@ namespace HybridCLR.Editor.Meta
             return hash;
         }
 
+        public TypeSig ToTypeSig()
+        {
+            return new GenericInstSig(this.Type.ToTypeSig().ToClassOrValueTypeSig(), this.KlassInst);
+        }
+
         public static GenericClass ResolveClass(TypeSpec type, GenericArgumentContext ctx)
         {
             var sig = type.TypeSig.ToGenericInstSig();

@@ -21,29 +21,32 @@ namespace HybridCLR.Editor.Link
 
         public HashSet<TypeRef> CollectRefs(List<Assembly> rootAssemblies)
         {
-            var assCollector = new AssemblyCache(_resolver);
-            var rootAssemblyName = new HashSet<string>();
-            foreach(var ass in rootAssemblies)
+            using (var assCollector = new AssemblyCache(_resolver))
             {
-                if (!rootAssemblyName.Add(ass.GetName().Name))
+                var rootAssemblyName = new HashSet<string>();
+                foreach (var ass in rootAssemblies)
                 {
-                    throw new Exception($"assembly:{ass.GetName().Name} 重复");
-                }
-            }
-
-            var typeRefs = new HashSet<TypeRef>(TypeEqualityComparer.Instance);
-            foreach (var rootAss in rootAssemblies)
-            {
-                var dnAss = assCollector.LoadModule(rootAss.GetName().Name);
-                foreach(var type in dnAss.GetTypeRefs())
-                {
-                    if (!rootAssemblyName.Contains(type.DefinitionAssembly.Name))
+                    if (!rootAssemblyName.Add(ass.GetName().Name))
                     {
-                        typeRefs.Add(type);
+                        throw new Exception($"assembly:{ass.GetName().Name} 重复");
                     }
                 }
+
+                var typeRefs = new HashSet<TypeRef>(TypeEqualityComparer.Instance);
+                foreach (var rootAss in rootAssemblies)
+                {
+                    var dnAss = assCollector.LoadModule(rootAss.GetName().Name);
+                    foreach (var type in dnAss.GetTypeRefs())
+                    {
+                        if (!rootAssemblyName.Contains(type.DefinitionAssembly.Name))
+                        {
+                            typeRefs.Add(type);
+                        }
+                    }
+                }
+                assCollector.Dispose();
+                return typeRefs;
             }
-            return typeRefs;
         }
     }
 }

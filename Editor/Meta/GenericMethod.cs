@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace HybridCLR.Editor.Meta
 {
@@ -87,6 +88,7 @@ namespace HybridCLR.Editor.Meta
             methodDef = method.ResolveMethodDef();
             if (methodDef == null)
             {
+                Debug.LogError($"method:{method} ResolveMethodDef() == null");
                 return null;
             }
             if (method is MethodSpec methodSpec)

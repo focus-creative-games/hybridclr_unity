@@ -38,7 +38,7 @@ namespace HybridCLR.Editor.Commands
                 case PlatformABI.Arm64: tplFile = "Arm64"; break;
                 default: throw new NotSupportedException();
             };
-            return AssetDatabase.LoadAssetAtPath<TextAsset>($"{SettingsUtil.TemplatePathInPackage}/MethodBridge_{tplFile}.cpp.txt").text;
+            return File.ReadAllText($"{SettingsUtil.TemplatePathInPackage}/MethodBridge_{tplFile}.cpp.txt");
         }
 
         private static void GenerateMethodBridgeCppFile(Analyzer analyzer, PlatformABI platform, string templateCode, string outputFile)

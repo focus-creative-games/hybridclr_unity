@@ -30,17 +30,20 @@ namespace HybridCLR.Editor.Commands
 
             var gs = SettingsUtil.GlobalSettings;
 
-            var analyzer = new Analyzer(new Analyzer.Options
+            using (AssemblyReferenceDeepCollector collector = new AssemblyReferenceDeepCollector(MetaUtil.CreateBuildTargetAssemblyResolver(EditorUserBuildSettings.activeBuildTarget), SettingsUtil.HotUpdateAssemblyNames))
             {
-                MaxIterationCount = Math.Min(20, gs.maxGenericReferenceIteration),
-                Collector = new AssemblyReferenceDeepCollector(MetaUtil.CreateBuildTargetAssemblyResolver(EditorUserBuildSettings.activeBuildTarget), SettingsUtil.HotUpdateAssemblyNames),
-            });
+                var analyzer = new Analyzer(new Analyzer.Options
+                {
+                    MaxIterationCount = Math.Min(20, gs.maxGenericReferenceIteration),
+                    Collector = collector,
+                });
 
-            analyzer.Run();
+                analyzer.Run();
 
-            var writer = new GenericReferenceWriter();
-            writer.Write(analyzer.AotGenericTypes.ToList(), analyzer.AotGenericMethods.ToList(), $"{Application.dataPath}/{gs.outputAOTGenericReferenceFile}");
-            AssetDatabase.Refresh();
+                var writer = new GenericReferenceWriter();
+                writer.Write(analyzer.AotGenericTypes.ToList(), analyzer.AotGenericMethods.ToList(), $"{Application.dataPath}/{gs.outputAOTGenericReferenceFile}");
+                AssetDatabase.Refresh();
+            }
         }
     }
 }

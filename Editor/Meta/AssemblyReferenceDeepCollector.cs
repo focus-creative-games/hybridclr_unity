@@ -9,13 +9,14 @@ using UnityEngine;
 
 namespace HybridCLR.Editor.Meta
 {
-    public class AssemblyReferenceDeepCollector
+    public class AssemblyReferenceDeepCollector : IDisposable
     {
         private readonly IAssemblyResolver _assemblyPathResolver;
         private readonly List<string> _rootAssemblies;
 
         private readonly ModuleContext _modCtx;
         private readonly AssemblyResolver _asmResolver;
+        private bool disposedValue;
 
         public Dictionary<string, ModuleDefMD> LoadedModules { get; } = new Dictionary<string, ModuleDefMD>();
 
@@ -78,5 +79,26 @@ namespace HybridCLR.Editor.Meta
             return mod;
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    foreach(var mod in LoadedModules.Values)
+                    {
+                        mod.Dispose();
+                    }
+                }
+                LoadedModules.Clear();
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 }

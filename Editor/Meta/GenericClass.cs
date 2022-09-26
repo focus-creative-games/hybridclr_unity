@@ -1,6 +1,7 @@
 ﻿using dnlib.DotNet;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace HybridCLR.Editor.Meta
 {
@@ -61,6 +62,11 @@ namespace HybridCLR.Editor.Meta
                 return null;
             }
             TypeDef def = type.ResolveTypeDef();
+            if (def == null)
+            {
+                Debug.LogError($"type:{type} ResolveTypeDef() == null");
+                return null;
+            }
             var klassInst = ctx != null ? sig.GenericArguments.Select(ga => MetaUtil.Inflate(ga, ctx)).ToList() : sig.GenericArguments.ToList();
             return new GenericClass(def, klassInst);
         }

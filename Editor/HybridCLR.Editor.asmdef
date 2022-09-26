@@ -1,9 +1,7 @@
 {
     "name": "HybridCLR.Editor",
     "rootNamespace": "",
-    "references": [
-        "UnityFS"
-    ],
+    "references": [],
     "includePlatforms": [
         "Editor"
     ],

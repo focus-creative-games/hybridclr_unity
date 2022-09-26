@@ -16,7 +16,7 @@ namespace HybridCLR.Editor
 
         public static string PackageName { get; } = "com.focus-creative-games.hybridclr_unity";
 
-        public static string HybridCLRDataPathInPackage => $"Packages/{PackageName}/Data";
+        public static string HybridCLRDataPathInPackage => $"Packages/{PackageName}/Data~";
 
         public static string TemplatePathInPackage => $"{HybridCLRDataPathInPackage}/Templates";
 

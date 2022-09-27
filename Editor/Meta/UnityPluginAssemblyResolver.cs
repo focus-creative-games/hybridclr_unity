@@ -15,7 +15,7 @@ namespace HybridCLR.Editor.Meta
         {
             foreach(var dll in Directory.GetFiles(UnityEngine.Application.dataPath, "*.dll", SearchOption.AllDirectories))
             {
-                if (Path.GetFileNameWithoutExtension(dll) == assemblyName)
+                if (Path.GetFileNameWithoutExtension(dll) == assemblyName && dll.Contains("Plugins"))
                 {
                     Debug.Log($"plugin:{dll}");
                     return dll;

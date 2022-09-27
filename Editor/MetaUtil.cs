@@ -2,6 +2,7 @@
 using HybridCLR.Editor.Meta;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -83,8 +84,11 @@ namespace HybridCLR.Editor
 
 		public static IAssemblyResolver CreateBuildTargetAssemblyResolver(UnityEditor.BuildTarget target)
         {
+			List<string> searchPaths = new List<string> { SettingsUtil.GetHotFixDllsOutputDirByTarget(target) };
 			return new CombinedAssemblyResolver(new PathAssemblyResolver(
-				SettingsUtil.GetHotFixDllsOutputDirByTarget(target)), new UnityEditorAssemblyResolver());
+				SettingsUtil.GetHotFixDllsOutputDirByTarget(target)),
+				new UnityPluginAssemblyResolver(),
+				new UnityEditorAssemblyResolver());
 		}
     }
 }

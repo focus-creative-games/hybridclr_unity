@@ -25,6 +25,7 @@ namespace HybridCLR.Editor.Commands
             {
                 //Debug.LogFormat("compile assemblies:{1}/{0}", ass, buildDir);
             }
+            Debug.Log("compile finish!!!");
         }
 
         public static void CompileDll(BuildTarget target)

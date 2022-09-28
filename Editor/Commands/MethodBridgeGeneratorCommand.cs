@@ -38,7 +38,7 @@ namespace HybridCLR.Editor.Commands
                 case PlatformABI.Arm64: tplFile = "Arm64"; break;
                 default: throw new NotSupportedException();
             };
-            return AssetDatabase.LoadAssetAtPath<TextAsset>($"{SettingsUtil.TemplatePathInPackage}/MethodBridge_{tplFile}.cpp.txt").text;
+            return File.ReadAllText($"{SettingsUtil.TemplatePathInPackage}/MethodBridge_{tplFile}.cpp.txt");
         }
 
         private static void GenerateMethodBridgeCppFile(Analyzer analyzer, PlatformABI platform, string templateCode, string outputFile)
@@ -72,32 +72,37 @@ namespace HybridCLR.Editor.Commands
             {
                 CompileDllCommand.CompileDllActiveBuildTarget();
             }
-            var analyzer = new Analyzer(new Analyzer.Options
-            {
-                MaxIterationCount = Math.Min(20, SettingsUtil.GlobalSettings.maxMethodBridgeGenericIteration),
-                Collector = new AssemblyReferenceDeepCollector(MetaUtil.CreateBuildTargetAssemblyResolver(EditorUserBuildSettings.activeBuildTarget), SettingsUtil.HotUpdateAssemblyNames),
-            });
 
-            analyzer.Run();
-
-            var generateJobs = new List<(PlatformABI, string)>()
+            using (AssemblyReferenceDeepCollector collector = new AssemblyReferenceDeepCollector(MetaUtil.CreateBuildTargetAssemblyResolver(EditorUserBuildSettings.activeBuildTarget), SettingsUtil.HotUpdateAssemblyNames))
             {
-                (PlatformABI.Arm64, "MethodBridge_Arm64"),
-                (PlatformABI.Universal64, "MethodBridge_Universal64"),
-                (PlatformABI.Universal32, "MethodBridge_Universal32"),
-            };
-
-            var tasks = new List<Task>();
-            foreach (var (platform, stubFile) in generateJobs)
-            {
-                string templateCode = GetTemplateCode(platform);
-                string outputFile = $"{SettingsUtil.MethodBridgeCppDir}/{stubFile}.cpp";
-                tasks.Add(Task.Run(() =>
+                var analyzer = new Analyzer(new Analyzer.Options
                 {
-                    GenerateMethodBridgeCppFile(analyzer, platform, templateCode, outputFile);
-                }));
+                    MaxIterationCount = Math.Min(20, SettingsUtil.GlobalSettings.maxMethodBridgeGenericIteration),
+                    Collector = collector,
+                });
+
+                analyzer.Run();
+
+                var generateJobs = new List<(PlatformABI, string)>()
+                {
+                    (PlatformABI.Arm64, "MethodBridge_Arm64"),
+                    (PlatformABI.Universal64, "MethodBridge_Universal64"),
+                    (PlatformABI.Universal32, "MethodBridge_Universal32"),
+                };
+
+                var tasks = new List<Task>();
+                foreach (var (platform, stubFile) in generateJobs)
+                {
+                    string templateCode = GetTemplateCode(platform);
+                    string outputFile = $"{SettingsUtil.MethodBridgeCppDir}/{stubFile}.cpp";
+                    tasks.Add(Task.Run(() =>
+                    {
+                        GenerateMethodBridgeCppFile(analyzer, platform, templateCode, outputFile);
+                    }));
+                }
+                Task.WaitAll(tasks.ToArray());
             }
-            Task.WaitAll(tasks.ToArray());
+
         }
     }
 }

@@ -18,6 +18,7 @@ namespace HybridCLR.Editor.Installer
     public enum InstallErrorCode
     {
         Ok,
+        InvalidUnityInstallPath,
         Il2CppInstallPathNotMatchIl2CppBranch,
         Il2CppInstallPathNotExists,
         NotIl2CppPath,
@@ -233,7 +234,9 @@ namespace HybridCLR.Editor.Installer
 
             if (!IsComaptibleWithIl2CppPlusBranch(il2cppBranch, installDir))
             {
-                return InstallErrorCode.Il2CppInstallPathNotMatchIl2CppBranch;
+                return TryParseMinorVersion(installDir, out _) ?
+                    InstallErrorCode.Il2CppInstallPathNotMatchIl2CppBranch
+                    : InstallErrorCode.InvalidUnityInstallPath;
             }
 
             if (!installDir.EndsWith("/il2cpp"))

@@ -79,24 +79,29 @@ namespace HybridCLR.Editor.Installer
             switch (err)
             {
                 case InstallErrorCode.Ok:
-                    {
-                        break;
-                    }
+                {
+                    break;
+                }
                 case InstallErrorCode.Il2CppInstallPathNotExists:
-                    {
-                        EditorGUILayout.HelpBox("li2cpp 路径不存在", MessageType.Error);
-                        break;
-                    }
+                {
+                    EditorGUILayout.HelpBox("li2cpp 路径不存在", MessageType.Error);
+                    break;
+                }
+                case InstallErrorCode.InvalidUnityInstallPath:
+                {
+                    EditorGUILayout.HelpBox($"Unity安装目录必须包含版本号，否则无法识别版本", MessageType.Error);
+                    break;
+                }
                 case InstallErrorCode.Il2CppInstallPathNotMatchIl2CppBranch:
-                    {
-                        EditorGUILayout.HelpBox($"il2cpp 版本不兼容，最小版本为 {m_Controller.GetMinCompatibleVersion(m_Controller.Il2CppBranch)}", MessageType.Error);
-                        break;
-                    }
+                {
+                    EditorGUILayout.HelpBox($"il2cpp 版本不兼容，最小版本为 {m_Controller.GetMinCompatibleVersion(m_Controller.Il2CppBranch)}", MessageType.Error);
+                    break;
+                }
                 case InstallErrorCode.NotIl2CppPath:
-                    {
-                        EditorGUILayout.HelpBox($"当前选择的路径不是il2cpp目录（必须类似 xxx/il2cpp）", MessageType.Error);
-                        break;
-                    }
+                {
+                    EditorGUILayout.HelpBox($"当前选择的路径不是il2cpp目录（必须类似 xxx/il2cpp）", MessageType.Error);
+                    break;
+                }
                 default: throw new Exception($"not support {err}");
             }
         }

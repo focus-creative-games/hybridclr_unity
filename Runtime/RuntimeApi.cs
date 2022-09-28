@@ -18,6 +18,18 @@ namespace HybridCLR
     private const string dllName = "il2cpp";
 #endif
 
+        public static unsafe LoadImageErrorCode LoadMetadataForAOTAssembly(byte[] dllBytes)
+        {
+#if UNITY_EDITOR
+            throw new NotSupportedException("LoadMetadataForAOTAssembly can only be invoked in il2cpp");
+#else
+            fixed(byte* data = dllBytes)
+            {
+                return (LoadImageErrorCode)LoadMetadataForAOTAssembly((IntPtr)data, dllBytes.Length);
+            }
+#endif
+        }
+
         [DllImport(dllName, EntryPoint = "RuntimeApi_LoadMetadataForAOTAssembly")]
         public static extern int LoadMetadataForAOTAssembly(IntPtr dllBytes, int dllSize);
 

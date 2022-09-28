@@ -110,10 +110,6 @@ namespace HybridCLR.Editor.MethodBridge
         private void WalkType(TypeDef typeDef)
         {
             _typeDefs.Add(typeDef);
-            if (typeDef.HasGenericParameters)
-            {
-                return;
-            }
             ITypeDefOrRef baseType = typeDef.BaseType;
             if (baseType != null && baseType.TryGetGenericInstSig() != null)
             {
@@ -122,10 +118,7 @@ namespace HybridCLR.Editor.MethodBridge
             }
             foreach (var method in typeDef.Methods)
             {
-                if (method.HasGenericParameters)
-                {
-                    continue;
-                }
+                // 对于带泛型的参数，统率泛型共享为object
                 _notGenericMethods.Add(method);
             }
         }

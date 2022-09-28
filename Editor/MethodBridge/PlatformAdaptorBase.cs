@@ -95,7 +95,10 @@ namespace HybridCLR.Editor.MethodBridge
                 case ElementType.SZArray:
                 case ElementType.FnPtr:
                 case ElementType.Object:
-                case ElementType.Module: return GetNativeIntTypeInfo();
+                case ElementType.Module:
+                case ElementType.Var:
+                case ElementType.MVar:
+                    return GetNativeIntTypeInfo();
                 case ElementType.TypedByRef: return CreateValueType(type);
                 case ElementType.ValueType:
                 {

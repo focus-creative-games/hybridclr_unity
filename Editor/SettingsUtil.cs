@@ -28,11 +28,11 @@ namespace HybridCLR.Editor
 
         public static string Dataunity3dBinFile { get; } = "data.unity3d";
 
-        public static string HotFixDllsOutputDir => $"{HybridCLRDataDir}/{GlobalSettings.hotUpdateDllOutputDir}";
+        public static string HotUpdateDllsRootOutputDir => $"{HybridCLRDataDir}/HotUpdateDlls";
 
-        public static string HybridCLRDataDir => $"{ProjectDir}/{GlobalSettings.hybridCLRDataDir}";
+        public static string HybridCLRDataDir => $"{ProjectDir}/HybridCLRData";
 
-        public static string AssembliesPostIl2CppStripDir => $"{HybridCLRDataDir}/{GlobalSettings.strippedAssemblyDir}";
+        public static string AssembliesPostIl2CppStripDir => $"{HybridCLRDataDir}/AssembliesPostIl2CppStrip";
 
         public static string LocalUnityDataDir => $"{HybridCLRDataDir}/LocalIl2CppData-{Application.platform}";
 
@@ -42,9 +42,9 @@ namespace HybridCLR.Editor
 
         public static string Il2CppBuildCacheDir { get; } = $"{ProjectDir}/Library/Il2cppBuildCache";
 
-        public static string GetHotFixDllsOutputDirByTarget(BuildTarget target)
+        public static string GetHotUpdateDllsOutputDirByTarget(BuildTarget target)
         {
-            return $"{HotFixDllsOutputDir}/{target}";
+            return $"{HotUpdateDllsRootOutputDir}/{target}";
         }
 
         public static string GetAssembliesPostIl2CppStripDir(BuildTarget target)

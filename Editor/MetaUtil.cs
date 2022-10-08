@@ -85,7 +85,7 @@ namespace HybridCLR.Editor
 		public static IAssemblyResolver CreateBuildTargetAssemblyResolver(UnityEditor.BuildTarget target)
         {
 			return new CombinedAssemblyResolver(new PathAssemblyResolver(
-				SettingsUtil.GetHotFixDllsOutputDirByTarget(target)),
+				SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target)),
 				new UnityPluginAssemblyResolver(),
 				new UnityEditorAssemblyResolver());
 		}

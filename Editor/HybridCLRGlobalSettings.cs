@@ -33,13 +33,4 @@ public class HybridCLRGlobalSettings : ScriptableObject
 
     [Header("MethodBridge泛型搜索迭代次数")]
     public int maxMethodBridgeGenericIteration = 4;
-
-    [Header("热更新dll输出目录（相对HybridCLRData目录）")]
-    public string hotUpdateDllOutputDir = "HotUpdateDlls";
-
-    [Header("HybridCLRData目录（相对工程目录）")]
-    public string hybridCLRDataDir = "HybridCLRData";
-
-    [Header("裁剪后的AOT assembly输出目录")]
-    public string strippedAssemblyDir = "AssembliesPostIl2CppStrip";
 }

@@ -30,7 +30,7 @@ namespace HybridCLR.Editor.Commands
 
         public static void CompileDll(BuildTarget target)
         {
-            CompileDll(SettingsUtil.GetHotFixDllsOutputDirByTarget(target), target);
+            CompileDll(SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target), target);
         }
 
         [MenuItem("HybridCLR/CompileDll/ActiveBuildTarget", priority = 100)]

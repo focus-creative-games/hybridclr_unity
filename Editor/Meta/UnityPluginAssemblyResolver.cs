@@ -11,11 +11,24 @@ namespace HybridCLR.Editor.Meta
 {
     public class UnityPluginAssemblyResolver : IAssemblyResolver
     {
+        private static readonly HashSet<string> s_ignoreDirs = new HashSet<string>
+        {
+            "Editor",
+            "StreamingAssets",
+            "Resources",
+        };
+
+        private bool IsPluginDll(string dllPath)
+        {
+            var fileOrDirs = new HashSet<string>(dllPath.Split('\\', '/'));
+            return !fileOrDirs.Intersect(s_ignoreDirs).Any();
+        }
+
         public string ResolveAssembly(string assemblyName, bool throwExIfNotFind)
         {
             foreach(var dll in Directory.GetFiles(UnityEngine.Application.dataPath, "*.dll", SearchOption.AllDirectories))
             {
-                if (Path.GetFileNameWithoutExtension(dll) == assemblyName && dll.Contains("Plugins"))
+                if (Path.GetFileNameWithoutExtension(dll) == assemblyName && IsPluginDll(dll))
                 {
                     Debug.Log($"plugin:{dll}");
                     return dll;

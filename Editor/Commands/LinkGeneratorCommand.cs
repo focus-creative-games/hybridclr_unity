@@ -1,12 +1,7 @@
 ﻿using HybridCLR.Editor.Link;
-using HybridCLR.Editor.Meta;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
@@ -56,6 +51,7 @@ namespace HybridCLR.Editor.Commands
             Debug.Log($"[LinkGeneratorCommand] hotfix assembly count:{hotfixAssembles.Count}, ref type count:{refTypes.Count} output:{Application.dataPath}/{ls.outputLinkFile}");
             var linkXmlWriter = new LinkXmlWriter();
             linkXmlWriter.Write($"{Application.dataPath}/{ls.outputLinkFile}", refTypes);
+            AssetDatabase.Refresh();
         }
     }
 }

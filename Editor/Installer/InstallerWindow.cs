@@ -1,12 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEditor ;
+using System.Reflection;
+using UnityEditor;
 using UnityEngine;
- 
+
 
 namespace HybridCLR.Editor.Installer
 {
@@ -21,6 +17,19 @@ namespace HybridCLR.Editor.Installer
 
         private void OnGUI()
         {
+            var rect = new Rect
+            {
+                x = EditorGUIUtility.currentViewWidth - 24,
+                y = 5,
+                width = 24,
+                height = 24
+            };
+            var content = EditorGUIUtility.IconContent("Settings");
+            content.tooltip = "点击打开HybridCLR Settings";
+            if (GUI.Button(rect, content, GUI.skin.GetStyle("IconButton")))
+            {
+                SettingsService.OpenProjectSettings("Project/HybridCLR Settings");
+            }
             string minCompatibleVersion = m_Controller.GetMinCompatibleVersion(m_Controller.Il2CppBranch);
             GUI.enabled = true;
             GUILayout.Space(10f);
@@ -32,6 +41,7 @@ namespace HybridCLR.Editor.Installer
                 + $"由于安装HybridCLR时需要从il2cpp_plus兼容版本{m_Controller.Il2CppBranch}（而不是你项目版本）拷贝il2cpp目录，\n"
                 + $"你必须同时安装兼容版本 {m_Controller.Il2CppBranch} 才能完成安装", EditorStyles.wordWrappedLabel);
             EditorGUILayout.LabelField("==============================================");
+
             GUILayout.Space(10f);
 
             EditorGUILayout.BeginVertical("box");
@@ -56,7 +66,7 @@ namespace HybridCLR.Editor.Installer
             }
             GUI.enabled = true;
             EditorGUILayout.EndHorizontal();
-            
+
         }
 
 
@@ -79,29 +89,29 @@ namespace HybridCLR.Editor.Installer
             switch (err)
             {
                 case InstallErrorCode.Ok:
-                {
-                    break;
-                }
+                    {
+                        break;
+                    }
                 case InstallErrorCode.Il2CppInstallPathNotExists:
-                {
-                    EditorGUILayout.HelpBox("li2cpp 路径不存在", MessageType.Error);
-                    break;
-                }
+                    {
+                        EditorGUILayout.HelpBox("li2cpp 路径不存在", MessageType.Error);
+                        break;
+                    }
                 case InstallErrorCode.InvalidUnityInstallPath:
-                {
-                    EditorGUILayout.HelpBox($"Unity安装目录必须包含版本号，否则无法识别版本", MessageType.Error);
-                    break;
-                }
+                    {
+                        EditorGUILayout.HelpBox($"Unity安装目录必须包含版本号，否则无法识别版本", MessageType.Error);
+                        break;
+                    }
                 case InstallErrorCode.Il2CppInstallPathNotMatchIl2CppBranch:
-                {
-                    EditorGUILayout.HelpBox($"il2cpp 版本不兼容，最小版本为 {m_Controller.GetMinCompatibleVersion(m_Controller.Il2CppBranch)}", MessageType.Error);
-                    break;
-                }
+                    {
+                        EditorGUILayout.HelpBox($"il2cpp 版本不兼容，最小版本为 {m_Controller.GetMinCompatibleVersion(m_Controller.Il2CppBranch)}", MessageType.Error);
+                        break;
+                    }
                 case InstallErrorCode.NotIl2CppPath:
-                {
-                    EditorGUILayout.HelpBox($"当前选择的路径不是il2cpp目录（必须类似 xxx/il2cpp）", MessageType.Error);
-                    break;
-                }
+                    {
+                        EditorGUILayout.HelpBox($"当前选择的路径不是il2cpp目录（必须类似 xxx/il2cpp）", MessageType.Error);
+                        break;
+                    }
                 default: throw new Exception($"not support {err}");
             }
         }

@@ -15,8 +15,9 @@ namespace HybridCLR.Editor.BuildProcessors
 
         public void OnPreprocessBuild(BuildReport report)
         {
+            HybridCLRGlobalSettings globalSettings = SettingsUtil.GlobalSettings;
 #if !UNITY_2020_1_OR_NEWER || !UNITY_IOS
-            if (!SettingsUtil.Enable)
+            if (!globalSettings.enable || globalSettings.useGlobalIl2Cpp)
             {
                 string oldIl2cppPath = Environment.GetEnvironmentVariable("UNITY_IL2CPP_PATH");
                 if (!string.IsNullOrEmpty(oldIl2cppPath))
@@ -35,7 +36,7 @@ namespace HybridCLR.Editor.BuildProcessors
                 }
             }
 #endif
-            if (!SettingsUtil.Enable)
+            if (!globalSettings.enable)
             {
                 return;
             }

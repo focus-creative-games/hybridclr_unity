@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
+
 
 namespace HybridCLR.Editor
 {
     public static class SettingsUtil
     {
-        public static bool Enable => GlobalSettings.enable;
+        public static bool Enable => HybridCLRGlobalSettings.Instance.enable;
 
         public static string PackageName { get; } = "com.focus-creative-games.hybridclr_unity";
 
@@ -64,7 +63,7 @@ namespace HybridCLR.Editor
         {
             get
             {
-                var gs = GlobalSettings;
+                var gs = HybridCLRGlobalSettings.Instance;
                 var hotfixAssNames = (gs.hotUpdateAssemblyDefinitions ?? Array.Empty<AssemblyDefinitionAsset>()).Select(ad => JsonUtility.FromJson<AssemblyDefinitionData>(ad.text));
 
                 var hotfixAssembles = new List<string>();
@@ -76,35 +75,8 @@ namespace HybridCLR.Editor
                 return hotfixAssembles.ToList();
             }
         }
-
         public static List<string> HotUpdateAssemblyFiles => HotUpdateAssemblyNames.Select(dll => dll + ".dll").ToList();
 
-        public static T GetSingletonAssets<T>() where T : ScriptableObject, new()
-        {
-            string assetType = typeof(T).Name;
-            string[] globalAssetPaths = AssetDatabase.FindAssets($"t:{assetType}");
-            if (globalAssetPaths == null || globalAssetPaths.Length == 0)
-            {
-                string defaultNewAssetPath = $"Assets/{typeof(T).Name}.asset";
-                Debug.LogWarning($"没找到 {assetType} asset，自动创建创建一个:{defaultNewAssetPath}.");
-
-                var newAsset = ScriptableObject.CreateInstance<T>();
-                AssetDatabase.CreateAsset(newAsset, defaultNewAssetPath);
-                return newAsset;
-            }
-            if (globalAssetPaths.Length > 1)
-            {
-                foreach (var assetPath in globalAssetPaths)
-                {
-                    Debug.LogError($"不能有多个 {assetType}. 路径: {AssetDatabase.GUIDToAssetPath(assetPath)}");
-                }
-                throw new Exception($"不能有多个 {assetType}");
-            }
-            string assPath = AssetDatabase.GUIDToAssetPath(globalAssetPaths[0]);
-            //Debug.Log($"find asset:{assPath}");
-            return AssetDatabase.LoadAssetAtPath<T>(assPath);
-        }
-
-        public static HybridCLRGlobalSettings GlobalSettings => GetSingletonAssets<HybridCLRGlobalSettings>();
+        public static HybridCLRGlobalSettings GlobalSettings => HybridCLRGlobalSettings.Instance;
     }
 }

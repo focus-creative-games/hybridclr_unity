@@ -26,7 +26,9 @@ namespace HybridCLR.Editor
                 Undo.RecordObject(m_Target, "Cancel Preset");
                 m_InitialValue.ApplyTo(m_Target);
             }
+#if UNITY_2020_1_OR_NEWER
             SettingsService.RepaintAllSettingsWindow();
+#endif
         }
         public override void OnSelectionClosed(Preset selection)
         {

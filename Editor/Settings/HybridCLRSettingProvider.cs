@@ -26,7 +26,7 @@ namespace HybridCLR.Editor
             HybridCLRSettings.Instance.Save();
             var setting = HybridCLRSettings.Instance;
             setting.hideFlags &= ~HideFlags.NotEditable;
-            m_SerializedObject ??= new SerializedObject(setting);
+            m_SerializedObject = m_SerializedObject ?? new SerializedObject(setting);
             m_Enable = m_SerializedObject.FindProperty("enable");
             m_UseGlobalIl2cpp = m_SerializedObject.FindProperty("useGlobalIl2cpp");
             m_CloneFromGitee = m_SerializedObject.FindProperty("cloneFromGitee");
@@ -42,7 +42,7 @@ namespace HybridCLR.Editor
         {
             base.OnTitleBarGUI();
             var rect = GUILayoutUtility.GetLastRect();
-            buttonStyle ??= GUI.skin.GetStyle("IconButton");
+            buttonStyle = buttonStyle ?? GUI.skin.GetStyle("IconButton");
 
             #region  绘制官方网站跳转按钮
             var w = rect.x + rect.width;
@@ -135,7 +135,7 @@ namespace HybridCLR.Editor
             {
                 var provider = new HybridCLRSettingsProvider
                 {
-                    keywords = GetSearchKeywordsFromSerializedObject(m_SerializedObject ??= new SerializedObject(HybridCLRSettings.Instance))
+                    keywords = GetSearchKeywordsFromSerializedObject(m_SerializedObject = m_SerializedObject ?? new SerializedObject(HybridCLRSettings.Instance))
                 };
                 return provider;
             }

@@ -10,6 +10,7 @@ namespace HybridCLR.Editor
     {
         private static SerializedObject m_SerializedObject;
         private SerializedProperty m_Enable;
+        private SerializedProperty m_UseGlobalIl2cpp;
         private SerializedProperty m_CloneFromGitee;
         private SerializedProperty m_HotUpdateAssemblyDefinitions;
         private SerializedProperty m_HotUpdateAssemblies;
@@ -22,11 +23,12 @@ namespace HybridCLR.Editor
         public HybridCLRSettingsProvider() : base("Project/HybridCLR Settings", SettingsScope.Project) { }
         public override void OnActivate(string searchContext, VisualElement rootElement)
         {
-            HybridCLRGlobalSettings.Instance.Save();
-            var setting = HybridCLRGlobalSettings.Instance;
+            HybridCLRSettings.Instance.Save();
+            var setting = HybridCLRSettings.Instance;
             setting.hideFlags &= ~HideFlags.NotEditable;
             m_SerializedObject ??= new SerializedObject(setting);
             m_Enable = m_SerializedObject.FindProperty("enable");
+            m_UseGlobalIl2cpp = m_SerializedObject.FindProperty("useGlobalIl2cpp");
             m_CloneFromGitee = m_SerializedObject.FindProperty("cloneFromGitee");
             m_HotUpdateAssemblyDefinitions = m_SerializedObject.FindProperty("hotUpdateAssemblyDefinitions");
             m_HotUpdateAssemblies = m_SerializedObject.FindProperty("hotUpdateAssemblies");
@@ -61,7 +63,7 @@ namespace HybridCLR.Editor
             content.tooltip = "点击存储或加载 Preset .";
             if (GUI.Button(rect, content, buttonStyle))
             {
-                var target = HybridCLRGlobalSettings.Instance;
+                var target = HybridCLRSettings.Instance;
                 var receiver = ScriptableObject.CreateInstance<SettingsPresetReceiver>();
                 receiver.Init(target);
                 PresetSelector.ShowSelector(target, null, true, receiver);
@@ -76,11 +78,11 @@ namespace HybridCLR.Editor
                 GenericMenu menu = new GenericMenu(); 
                 menu.AddItem(new GUIContent("Reset"), false, () => 
                 {
-                    Undo.RecordObject(HybridCLRGlobalSettings.Instance, "Capture Value for Reset");
-                    var dv = ScriptableObject.CreateInstance<HybridCLRGlobalSettings>();
+                    Undo.RecordObject(HybridCLRSettings.Instance, "Capture Value for Reset");
+                    var dv = ScriptableObject.CreateInstance<HybridCLRSettings>();
                     var json = EditorJsonUtility.ToJson(dv);
-                    EditorJsonUtility.FromJsonOverwrite(json,HybridCLRGlobalSettings.Instance);
-                    HybridCLRGlobalSettings.Instance.Save();
+                    EditorJsonUtility.FromJsonOverwrite(json,HybridCLRSettings.Instance);
+                    HybridCLRSettings.Instance.Save();
                 });
                 menu.ShowAsContext(); 
             }
@@ -93,12 +95,13 @@ namespace HybridCLR.Editor
                 if (m_SerializedObject == null || !m_SerializedObject.targetObject)
                 {
                     m_SerializedObject = null;
-                    m_SerializedObject = new SerializedObject(HybridCLRGlobalSettings.Instance);
+                    m_SerializedObject = new SerializedObject(HybridCLRSettings.Instance);
                 }
                 m_SerializedObject.Update();
                 EditorGUI.BeginChangeCheck();
                 EditorGUILayout.PropertyField(m_Enable);
                 EditorGUILayout.PropertyField(m_CloneFromGitee);
+                EditorGUILayout.PropertyField(m_UseGlobalIl2cpp);
                 EditorGUILayout.PropertyField(m_HotUpdateAssemblyDefinitions);
                 EditorGUILayout.PropertyField(m_HotUpdateAssemblies);
                 EditorGUILayout.PropertyField(m_OutputLinkFile);
@@ -109,7 +112,7 @@ namespace HybridCLR.Editor
                 if (EditorGUI.EndChangeCheck())
                 {
                     m_SerializedObject.ApplyModifiedProperties();
-                    HybridCLRGlobalSettings.Instance.Save();
+                    HybridCLRSettings.Instance.Save();
                 }
             }
         }
@@ -122,17 +125,17 @@ namespace HybridCLR.Editor
         public override void OnDeactivate()
         {
             base.OnDeactivate();
-            HybridCLRGlobalSettings.Instance.Save();
+            HybridCLRSettings.Instance.Save();
             m_SerializedObject = null;
         }
         [SettingsProvider]
         public static SettingsProvider CreateMyCustomSettingsProvider()
         {
-            if (HybridCLRGlobalSettings.Instance)
+            if (HybridCLRSettings.Instance)
             {
                 var provider = new HybridCLRSettingsProvider
                 {
-                    keywords = GetSearchKeywordsFromSerializedObject(m_SerializedObject ??= new SerializedObject(HybridCLRGlobalSettings.Instance))
+                    keywords = GetSearchKeywordsFromSerializedObject(m_SerializedObject ??= new SerializedObject(HybridCLRSettings.Instance))
                 };
                 return provider;
             }

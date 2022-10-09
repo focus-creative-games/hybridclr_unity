@@ -2,16 +2,19 @@ using UnityEditorInternal;
 using UnityEngine;
 namespace HybridCLR.Editor
 {
-    [FilePath("ProjectSettings/HybridCLRGlobalSettings.asset")]
-    public class HybridCLRGlobalSettings : ScriptableSingleton<HybridCLRGlobalSettings>
+    [FilePath("ProjectSettings/HybridCLRSettings.asset")]
+    public class HybridCLRSettings : ScriptableSingleton<HybridCLRSettings>
     {
         [Header("开启HybridCLR插件")]
         public bool enable = true;
 
+        [Header("使用全局安装的il2cpp")]
+        public bool useGlobalIl2cpp;
+
         [Header("从gitee clone插件代码")]
         public bool cloneFromGitee = true; // false 则从github上拉取
 
-        [Header("热更新Assembly Definition Modules")]
+        [Header("热更新Assembly Definitions")]
         public AssemblyDefinitionAsset[] hotUpdateAssemblyDefinitions;
 
         [Header("热更新dlls")]

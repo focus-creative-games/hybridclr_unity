@@ -57,7 +57,6 @@ namespace HybridCLR.Editor.Installer
 #elif UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
             return RunCommand(".", "which", new string[] {prog}) == 0;
 #endif
-            return false;
         }
 
 

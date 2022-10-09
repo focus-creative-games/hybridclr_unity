@@ -273,7 +273,7 @@ namespace HybridCLR.Editor.Installer
 
         private static string GetRepoUrl(string repoName)
         {
-            string repoProvider = SettingsUtil.GlobalSettings.cloneFromGitee ? "gitee" : "github";
+            string repoProvider = SettingsUtil.HybridCLRSettings.cloneFromGitee ? "gitee" : "github";
             return $"https://{repoProvider}.com/focus-creative-games/{repoName}";
         }
 

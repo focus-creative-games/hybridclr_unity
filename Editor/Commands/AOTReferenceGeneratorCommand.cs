@@ -28,7 +28,7 @@ namespace HybridCLR.Editor.Commands
                 CompileDllCommand.CompileDllActiveBuildTarget();
             }
 
-            var gs = SettingsUtil.GlobalSettings;
+            var gs = SettingsUtil.HybridCLRSettings;
 
             using (AssemblyReferenceDeepCollector collector = new AssemblyReferenceDeepCollector(MetaUtil.CreateBuildTargetAssemblyResolver(EditorUserBuildSettings.activeBuildTarget), SettingsUtil.HotUpdateAssemblyNames))
             {

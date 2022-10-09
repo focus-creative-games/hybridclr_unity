@@ -11,7 +11,7 @@ namespace HybridCLR.Editor
 {
     public static class SettingsUtil
     {
-        public static bool Enable => HybridCLRGlobalSettings.Instance.enable;
+        public static bool Enable => HybridCLRSettings.Instance.enable;
 
         public static string PackageName { get; } = "com.focus-creative-games.hybridclr_unity";
 
@@ -63,7 +63,7 @@ namespace HybridCLR.Editor
         {
             get
             {
-                var gs = HybridCLRGlobalSettings.Instance;
+                var gs = HybridCLRSettings.Instance;
                 var hotfixAssNames = (gs.hotUpdateAssemblyDefinitions ?? Array.Empty<AssemblyDefinitionAsset>()).Select(ad => JsonUtility.FromJson<AssemblyDefinitionData>(ad.text));
 
                 var hotfixAssembles = new List<string>();
@@ -77,6 +77,6 @@ namespace HybridCLR.Editor
         }
         public static List<string> HotUpdateAssemblyFiles => HotUpdateAssemblyNames.Select(dll => dll + ".dll").ToList();
 
-        public static HybridCLRGlobalSettings GlobalSettings => HybridCLRGlobalSettings.Instance;
+        public static HybridCLRSettings HybridCLRSettings => HybridCLRSettings.Instance;
     }
 }

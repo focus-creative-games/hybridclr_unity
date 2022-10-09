@@ -24,7 +24,7 @@ namespace HybridCLR.Editor.Commands
                 CompileDllCommand.CompileDllActiveBuildTarget();
             }
 
-            var ls = SettingsUtil.GlobalSettings;
+            var ls = SettingsUtil.HybridCLRSettings;
 
             var allAssByNames = new Dictionary<string, Assembly>();
             foreach (var ass in AppDomain.CurrentDomain.GetAssemblies())

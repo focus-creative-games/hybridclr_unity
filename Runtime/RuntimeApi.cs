@@ -18,18 +18,58 @@ namespace HybridCLR
     private const string dllName = "il2cpp";
 #endif
 
+        /// <summary>
+        /// 加载补充元数据assembly
+        /// </summary>
+        /// <param name="dllBytes"></param>
+        /// <returns></returns>
+        /// <exception cref="NotSupportedException"></exception>
+        public static unsafe LoadImageErrorCode LoadMetadataForAOTAssembly(byte[] dllBytes)
+        {
+#if UNITY_EDITOR
+            return LoadImageErrorCode.OK;
+#else
+            fixed(byte* data = dllBytes)
+            {
+                return (LoadImageErrorCode)LoadMetadataForAOTAssembly((IntPtr)data, dllBytes.Length);
+            }
+#endif
+        }
+
+        /// <summary>
+        /// 加载补充元数据assembly
+        /// </summary>
+        /// <param name="dllBytes"></param>
+        /// <param name="dllSize"></param>
+        /// <returns></returns>
         [DllImport(dllName, EntryPoint = "RuntimeApi_LoadMetadataForAOTAssembly")]
         public static extern int LoadMetadataForAOTAssembly(IntPtr dllBytes, int dllSize);
 
+        /// <summary>
+        /// 获取解释器线程栈的最大StackObject个数(size*8 为最终占用的内存大小)
+        /// </summary>
+        /// <returns></returns>
         [DllImport(dllName, EntryPoint = "RuntimeApi_GetInterpreterThreadObjectStackSize")]
         public static extern int GetInterpreterThreadObjectStackSize();
 
+        /// <summary>
+        /// 设置解释器线程栈的最大StackObject个数(size*8 为最终占用的内存大小)
+        /// </summary>
+        /// <param name="size"></param>
         [DllImport(dllName, EntryPoint = "RuntimeApi_SetInterpreterThreadObjectStackSize")]
         public static extern void SetInterpreterThreadObjectStackSize(int size);
 
+        /// <summary>
+        /// 获取解释器线程函数帧数量(sizeof(InterpreterFrame)*size 为最终占用的内存大小)
+        /// </summary>
+        /// <returns></returns>
         [DllImport(dllName, EntryPoint = "RuntimeApi_GetInterpreterThreadFrameStackSize")]
         public static extern int GetInterpreterThreadFrameStackSize();
 
+        /// <summary>
+        /// 设置解释器线程函数帧数量(sizeof(InterpreterFrame)*size 为最终占用的内存大小)
+        /// </summary>
+        /// <param name="size"></param>
         [DllImport(dllName, EntryPoint = "RuntimeApi_SetInterpreterThreadFrameStackSize")]
         public static extern void SetInterpreterThreadFrameStackSize(int size);
     }

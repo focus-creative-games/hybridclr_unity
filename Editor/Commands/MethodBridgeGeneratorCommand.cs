@@ -77,7 +77,7 @@ namespace HybridCLR.Editor.Commands
             {
                 var analyzer = new Analyzer(new Analyzer.Options
                 {
-                    MaxIterationCount = Math.Min(20, SettingsUtil.GlobalSettings.maxMethodBridgeGenericIteration),
+                    MaxIterationCount = Math.Min(20, SettingsUtil.HybridCLRSettings.maxMethodBridgeGenericIteration),
                     Collector = collector,
                 });
 

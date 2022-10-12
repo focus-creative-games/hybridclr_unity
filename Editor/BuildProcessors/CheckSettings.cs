@@ -15,8 +15,9 @@ namespace HybridCLR.Editor.BuildProcessors
 
         public void OnPreprocessBuild(BuildReport report)
         {
+            HybridCLRSettings globalSettings = SettingsUtil.HybridCLRSettings;
 #if !UNITY_2020_1_OR_NEWER || !UNITY_IOS
-            if (!SettingsUtil.Enable)
+            if (!globalSettings.enable || globalSettings.useGlobalIl2cpp)
             {
                 string oldIl2cppPath = Environment.GetEnvironmentVariable("UNITY_IL2CPP_PATH");
                 if (!string.IsNullOrEmpty(oldIl2cppPath))
@@ -35,7 +36,7 @@ namespace HybridCLR.Editor.BuildProcessors
                 }
             }
 #endif
-            if (!SettingsUtil.Enable)
+            if (!globalSettings.enable)
             {
                 return;
             }
@@ -51,10 +52,10 @@ namespace HybridCLR.Editor.BuildProcessors
                 throw new Exception($"你没有初始化HybridCLR，请通过菜单'HybridCLR/Installer'安装");
             }
 
-            HybridCLRGlobalSettings gs = SettingsUtil.GlobalSettings;
+            HybridCLRSettings gs = SettingsUtil.HybridCLRSettings;
             if (((gs.hotUpdateAssemblies?.Length + gs.hotUpdateAssemblyDefinitions?.Length) ?? 0) == 0)
             {
-                throw new Exception($"GlobalSettings中未配置热更新dll");
+                throw new Exception($"HybridCLRSettings中未配置任何热更新模块");
             }
 
         }

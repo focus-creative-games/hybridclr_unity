@@ -52,7 +52,11 @@ namespace HybridCLR.Editor.Installer
 
         public static bool ExistProgram(string prog)
         {
+#if UNITY_EDITOR_WIN
             return RunCommand(".", "where", new string[] {prog}) == 0;
+#elif UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
+            return RunCommand(".", "which", new string[] {prog}) == 0;
+#endif
         }
 
 

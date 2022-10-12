@@ -36,10 +36,10 @@ function SearchCppFile()
     fi
 }
 
-rm -rf ${GEN_SOURCE_DIR}/lump_cpp
-rm -rf ${GEN_SOURCE_DIR}/lump_mm
-mkdir ${GEN_SOURCE_DIR}/lump_cpp
-mkdir ${GEN_SOURCE_DIR}/lump_mm
+rm -rf "${GEN_SOURCE_DIR}"/lump_cpp
+rm -rf "${GEN_SOURCE_DIR}"/lump_mm
+mkdir "${GEN_SOURCE_DIR}"/lump_cpp
+mkdir "${GEN_SOURCE_DIR}"/lump_mm
 
 OBJECTIVE_FILE_NAME=${GEN_SOURCE_DIR}/lump_mm/lump_libil2cpp_ojective.mm
 echo "#include \"${BASE_DIR}/il2cpp-config.h\"" > ${OBJECTIVE_FILE_NAME}

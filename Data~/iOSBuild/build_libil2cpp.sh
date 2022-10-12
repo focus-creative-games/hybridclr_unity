@@ -7,7 +7,7 @@ rm -rf build
 
 mkdir build
 cd build
-cmake ..
+cmake -DCMAKE_SYSTEM_PROCESSOR=arm64 -DCMAKE_OSX_ARCHITECTURES=arm64 .. 
 make -j24
 
 if [ -f "libil2cpp.a" ]

@@ -25,11 +25,12 @@ namespace HybridCLR.Editor.Commands
             {
                 //Debug.LogFormat("compile assemblies:{1}/{0}", ass, buildDir);
             }
+            Debug.Log("compile finish!!!");
         }
 
         public static void CompileDll(BuildTarget target)
         {
-            CompileDll(SettingsUtil.GetHotFixDllsOutputDirByTarget(target), target);
+            CompileDll(SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target), target);
         }
 
         [MenuItem("HybridCLR/CompileDll/ActiveBuildTarget", priority = 100)]

@@ -26,6 +26,11 @@ namespace HybridCLR.Editor.Installer
 
     public partial class InstallerController
     {
+        private const string hybridclr_repo_path = "hybridclr_repo";
+        private const string hybridclr_url = "hybridclr";
+        private const string il2cpp_plus_repo_path = "il2cpp_plus_repo";
+        private const string il2cpp_plus_url = "il2cpp_plus";
+        
         private string m_Il2CppInstallDirectory;
 
         public string Il2CppInstallDirectory
@@ -246,7 +251,7 @@ namespace HybridCLR.Editor.Installer
 
             return InstallErrorCode.Ok;
         }
-
+        
         public bool IsUnity2019(string branch)
         {
             return branch.Contains("2019.");
@@ -295,14 +300,14 @@ namespace HybridCLR.Editor.Installer
             BashUtil.CopyDir($"{SettingsUtil.HybridCLRDataPathInPackage}/iOSBuild", buildiOSDir, true);
 
             // clone hybridclr
-            string hybridclrRepoDir = $"{workDir}/hybridclr_repo";
+            string hybridclrRepoDir = $"{workDir}/{hybridclr_repo_path}";
             {
                 BashUtil.RemoveDir(hybridclrRepoDir);
                 var ret = BashUtil.RunCommand(workDir, "git", new string[]
                 {
                 "clone",
                 "--depth=1",
-                GetRepoUrl("hybridclr"),
+                GetRepoUrl(hybridclr_url),
                 hybridclrRepoDir,
                 });
                 //if (ret != 0)
@@ -312,7 +317,7 @@ namespace HybridCLR.Editor.Installer
             }
 
             // clone il2cpp_plus
-            string il2cppPlusRepoDir = $"{workDir}/il2cpp_plus_repo";
+            string il2cppPlusRepoDir = $"{workDir}/{il2cpp_plus_repo_path}";
             {
                 BashUtil.RemoveDir(il2cppPlusRepoDir);
                 var ret = BashUtil.RunCommand(workDir, "git", new string[]
@@ -321,7 +326,7 @@ namespace HybridCLR.Editor.Installer
                 "--depth=1",
                 "-b",
                 il2cppBranch,
-                GetRepoUrl("il2cpp_plus"),
+                GetRepoUrl(il2cpp_plus_url),
                 il2cppPlusRepoDir,
                 });
                 //if (ret != 0)

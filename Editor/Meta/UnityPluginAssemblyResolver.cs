@@ -30,7 +30,7 @@ namespace HybridCLR.Editor.Meta
             {
                 if (Path.GetFileNameWithoutExtension(dll) == assemblyName && IsPluginDll(dll))
                 {
-                    Debug.Log($"plugin:{dll}");
+                    Debug.Log($"UnityPluginAssemblyResolver.ResolveAssembly:{dll}");
                     return dll;
                 }
             }

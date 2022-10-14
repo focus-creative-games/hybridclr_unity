@@ -42,6 +42,11 @@ namespace HybridCLR.Editor.Meta
             return _hashCode;
         }
 
+        public override string ToString()
+        {
+            return $"{Method}|{string.Join(",", (IEnumerable<TypeSig>)KlassInst ?? Array.Empty<TypeSig>())}|{string.Join(",", (IEnumerable<TypeSig>)MethodInst ?? Array.Empty<TypeSig>())}";
+        }
+
         private int ComputHashCode()
         {
             int hash = MethodEqualityComparer.CompareDeclaringTypes.GetHashCode(Method);

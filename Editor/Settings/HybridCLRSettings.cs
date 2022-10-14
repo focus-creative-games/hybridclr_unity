@@ -20,7 +20,10 @@ namespace HybridCLR.Editor
         [Header("热更新dlls")]
         public string[] hotUpdateAssemblies;
 
-        [Header("自动扫描生成的link.xml路径")]
+        [Header("生成link.xml时扫描asset中引用的类型")]
+        public bool collectAssetReferenceTypes;
+
+        [Header("生成的link.xml路径")]
         public string outputLinkFile = "HybridCLRData/Generated/link.xml";
 
         [Header("自动扫描生成的AOTGenericReferences.cs路径")]

@@ -14,10 +14,12 @@ namespace HybridCLR.Editor.Link
     public class Analyzer
     {
         private readonly IAssemblyResolver _resolver;
+        private readonly bool _analyzeAssetType;
 
-        public Analyzer(IAssemblyResolver resolver)
+        public Analyzer(IAssemblyResolver resolver, bool analyzeAssetType)
         {
             _resolver = resolver;
+            _analyzeAssetType = analyzeAssetType;
         }
 
         public HashSet<TypeRef> CollectRefs(List<Assembly> rootAssemblies)
@@ -46,11 +48,13 @@ namespace HybridCLR.Editor.Link
                     }
                 }
 
-                var modsExludeRoots = assCollector.LoadedModules
-                    .Where(e => !rootAssemblyName.Contains(e.Key))
-                    .ToDictionary(e => e.Key, e => e.Value);
-                CollectObjectTypeInAssets(modsExludeRoots, typeRefs);
-
+                if (_analyzeAssetType)
+                {
+                    var modsExludeRoots = assCollector.LoadedModules
+                        .Where(e => !rootAssemblyName.Contains(e.Key))
+                        .ToDictionary(e => e.Key, e => e.Value);
+                    CollectObjectTypeInAssets(modsExludeRoots, typeRefs);
+                }
 
                 assCollector.Dispose();
                 return typeRefs;
@@ -74,7 +78,10 @@ namespace HybridCLR.Editor.Link
                     UnityEngine.Object[] objs = AssetDatabase.LoadAllAssetsAtPath(assetPath);
                     foreach (UnityEngine.Object obj in objs)
                     {
-                        objTypes.Add(obj.GetType());
+                        if (obj != null)
+                        {
+                            objTypes.Add(obj.GetType());
+                        }
                     }
                 }
             }

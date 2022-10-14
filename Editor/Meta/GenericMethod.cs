@@ -93,7 +93,7 @@ namespace HybridCLR.Editor.Meta
             methodDef = method.ResolveMethodDef();
             if (methodDef == null)
             {
-                Debug.LogError($"method:{method} ResolveMethodDef() == null");
+                Debug.LogWarning($"method:{method} ResolveMethodDef() == null");
                 return null;
             }
             if (method is MethodSpec methodSpec)

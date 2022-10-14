@@ -64,7 +64,7 @@ namespace HybridCLR.Editor.Meta
             TypeDef def = type.ResolveTypeDef();
             if (def == null)
             {
-                Debug.LogError($"type:{type} ResolveTypeDef() == null");
+                Debug.LogWarning($"type:{type} ResolveTypeDef() == null");
                 return null;
             }
             var klassInst = ctx != null ? sig.GenericArguments.Select(ga => MetaUtil.Inflate(ga, ctx)).ToList() : sig.GenericArguments.ToList();

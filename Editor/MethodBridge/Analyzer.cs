@@ -118,7 +118,7 @@ namespace HybridCLR.Editor.MethodBridge
             }
             foreach (var method in typeDef.Methods)
             {
-                // 对于带泛型的参数，统率泛型共享为object
+                // 对于带泛型的参数，统一泛型共享为object
                 _notGenericMethods.Add(method);
             }
         }
@@ -182,10 +182,10 @@ namespace HybridCLR.Editor.MethodBridge
                 _newMethods = temp;
                 _newMethods.Clear();
 
-                Task.WhenAll(_processingMethods.Select(method => Task.Run(() =>
+                Task.WaitAll(_processingMethods.Select(method => Task.Run(() =>
                 {
                     _methodReferenceAnalyzer.WalkMethod(method.Method, method.KlassInst, method.MethodInst);
-                })));
+                })).ToArray());
                 Debug.Log($"iteration:[{i}] allMethods:{_notGenericMethods.Count} genericClass:{_genericTypes.Count} genericMethods:{_genericMethods.Count} newMethods:{_newMethods.Count}");
             }
         }

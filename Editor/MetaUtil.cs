@@ -29,7 +29,7 @@ namespace HybridCLR.Editor
 				return typeSig;
             }
 			var a = typeSig.RemovePinnedAndModifiers();
-			switch (typeSig.ElementType)
+			switch (a.ElementType)
 			{
 				case ElementType.Void: return corTypes.Void;
 				case ElementType.Boolean: return corTypes.Byte;
@@ -87,6 +87,7 @@ namespace HybridCLR.Editor
 			return new CombinedAssemblyResolver(new PathAssemblyResolver(
 				SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target)),
 				new UnityPluginAssemblyResolver(),
+				new UnityAOTAssemblyResolver(),
 				new UnityEditorAssemblyResolver());
 		}
     }

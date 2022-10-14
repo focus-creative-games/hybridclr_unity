@@ -1,4 +1,4 @@
-﻿#include "MethodBridge.h"
+#include "MethodBridge.h"
 
 #include <codegen/il2cpp-codegen-metadata.h>
 #include "vm/ClassInlines.h"
@@ -13,7 +13,6 @@
 #include "InstrinctDef.h"
 
 using namespace hybridclr::interpreter;
-using hybridclr::GetInterpreterDirectlyCallMethodPointer;
 
 #if HYBRIDCLR_ABI_UNIVERSAL_64
 //!!!{{INVOKE_STUB

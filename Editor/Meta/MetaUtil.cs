@@ -6,12 +6,49 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using IAssemblyResolver = HybridCLR.Editor.Meta.IAssemblyResolver;
 
-namespace HybridCLR.Editor
+namespace HybridCLR.Editor.Meta
 {
     public static class MetaUtil
     {
+
+		public static bool EqualsTypeSig(TypeSig a, TypeSig b)
+		{
+			if (a == b)
+			{
+				return true;
+			}
+			if (a != null && b != null)
+			{
+				return TypeEqualityComparer.Instance.Equals(a, b);
+			}
+			return false;
+		}
+
+		public static bool EqualsTypeSigArray(List<TypeSig> a, List<TypeSig> b)
+		{
+			if (a == b)
+			{
+				return true;
+			}
+			if (a != null && b != null)
+			{
+				if (a.Count != b.Count)
+				{
+					return false;
+				}
+				for (int i = 0; i < a.Count; i++)
+				{
+					if (!TypeEqualityComparer.Instance.Equals(a[i], b[i]))
+					{
+						return false;
+					}
+				}
+				return true;
+			}
+			return false;
+		}
+
 		public static TypeSig Inflate(TypeSig sig, GenericArgumentContext ctx)
 		{
 			if (!sig.ContainsGenericParameter)

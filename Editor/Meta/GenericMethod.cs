@@ -33,8 +33,8 @@ namespace HybridCLR.Editor.Meta
         {
             GenericMethod o = (GenericMethod)obj;
             return Method == o.Method
-                && EqualityUtil.EqualsTypeSigArray(KlassInst, o.KlassInst)
-                && EqualityUtil.EqualsTypeSigArray(MethodInst, o.MethodInst);
+                && MetaUtil.EqualsTypeSigArray(KlassInst, o.KlassInst)
+                && MetaUtil.EqualsTypeSigArray(MethodInst, o.MethodInst);
         }
 
         public override int GetHashCode()

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-namespace HybridCLR.Editor.MethodBridge
+namespace HybridCLR.Editor.ABI
 {
     public class TypeInfo : IEquatable<TypeInfo>
     {

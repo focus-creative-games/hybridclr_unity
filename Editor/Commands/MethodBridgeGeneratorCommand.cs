@@ -1,4 +1,5 @@
 ﻿using HybridCLR.Editor;
+using HybridCLR.Editor.ABI;
 using HybridCLR.Editor.Meta;
 using HybridCLR.Editor.MethodBridge;
 using System;
@@ -45,7 +46,7 @@ namespace HybridCLR.Editor.Commands
         {
             var g = new Generator(new Generator.Options()
             {
-                CallConvention = platform,
+                PlatformABI = platform,
                 TemplateCode = templateCode,
                 OutputFile = outputFile,
                 GenericMethods = analyzer.GenericMethods,

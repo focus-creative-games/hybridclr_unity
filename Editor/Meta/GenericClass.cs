@@ -29,7 +29,7 @@ namespace HybridCLR.Editor.Meta
         {
             if (obj is GenericClass gc)
             {
-                return Type == gc.Type && EqualityUtil.EqualsTypeSigArray(KlassInst, gc.KlassInst);
+                return Type == gc.Type && MetaUtil.EqualsTypeSigArray(KlassInst, gc.KlassInst);
             }
             return false;
         }

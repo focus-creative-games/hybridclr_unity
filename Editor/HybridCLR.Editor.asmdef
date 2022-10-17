@@ -1,7 +1,9 @@
 {
     "name": "HybridCLR.Editor",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "HybridCLR.Runtime"
+    ],
     "includePlatforms": [
         "Editor"
     ],

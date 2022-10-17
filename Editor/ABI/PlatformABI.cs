@@ -1,4 +1,4 @@
-﻿namespace HybridCLR.Editor.MethodBridge
+﻿namespace HybridCLR.Editor.ABI
 {
     public enum PlatformABI
     {

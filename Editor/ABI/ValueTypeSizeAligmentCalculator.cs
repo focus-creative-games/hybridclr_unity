@@ -9,10 +9,14 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace HybridCLR.Editor.MethodBridge
+namespace HybridCLR.Editor.ABI
 {
 	public class ValueTypeSizeAligmentCalculator
 	{
+		public static ValueTypeSizeAligmentCalculator Caculator64 { get; } = new ValueTypeSizeAligmentCalculator(false);
+
+		public static ValueTypeSizeAligmentCalculator Caculator32 { get; } = new ValueTypeSizeAligmentCalculator(true);
+
 		public ValueTypeSizeAligmentCalculator(bool arch32)
         {
 			_referenceSize = arch32 ? 4 : 8;

@@ -3,64 +3,33 @@ using HybridCLR.Editor.Meta;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
-using UnityEngine;
 
-namespace HybridCLR.Editor.MethodBridge
+namespace HybridCLR.Editor.ABI
 {
-    public abstract class PlatformAdaptorBase
+    public abstract class TypeCreatorBase
     {
-        private static readonly ValueTypeSizeAligmentCalculator s_calculator64 = new ValueTypeSizeAligmentCalculator(false);
-
-        private static readonly ValueTypeSizeAligmentCalculator s_calculator32 = new ValueTypeSizeAligmentCalculator(true);
-
         public abstract bool IsArch32 { get; }
 
         public virtual bool IsSupportHFA => false;
 
         public TypeInfo GetNativeIntTypeInfo() => IsArch32 ? TypeInfo.s_i4 : TypeInfo.s_i8;
 
-        public abstract void GenerateManaged2NativeMethod(MethodBridgeSig method, List<string> lines);
+        public ValueTypeSizeAligmentCalculator Calculator => IsArch32 ? ValueTypeSizeAligmentCalculator.Caculator32 : ValueTypeSizeAligmentCalculator.Caculator64;
 
-        public abstract void GenerateNative2ManagedMethod(MethodBridgeSig method, List<string> lines);
 
-        public abstract void GenerateAdjustThunkMethod(MethodBridgeSig method, List<string> outputLines);
+        private readonly Dictionary<TypeSig, (int, int)> _typeSizeCache = new Dictionary<TypeSig, (int, int)>(TypeEqualityComparer.Instance);
 
-        protected abstract TypeInfo OptimizeSigType(TypeInfo type, bool returnType);
-
-        public virtual void OptimizeMethod(MethodBridgeSig method)
+        public (int Size, int Aligment) ComputeSizeAndAligment(TypeSig t)
         {
-            method.TransfromSigTypes(OptimizeSigType);
-        }
-
-        private readonly Dictionary<TypeSig, (int, int)> _typeSizeCache64 = new Dictionary<TypeSig, (int, int)>(TypeEqualityComparer.Instance);
-
-        private readonly Dictionary<TypeSig, (int, int)> _typeSizeCache32 = new Dictionary<TypeSig, (int, int)>(TypeEqualityComparer.Instance);
-
-        public (int Size, int Aligment) ComputeSizeAndAligmentOfArch64(TypeSig t)
-        {
-            if (_typeSizeCache64.TryGetValue(t, out var sizeAndAligment))
+            if (_typeSizeCache.TryGetValue(t, out var sizeAndAligment))
             {
                 return sizeAndAligment;
             }
-            sizeAndAligment = s_calculator64.SizeAndAligmentOf(t);
-            _typeSizeCache64.Add(t, sizeAndAligment);
+            sizeAndAligment = Calculator.SizeAndAligmentOf(t);
+            _typeSizeCache.Add(t, sizeAndAligment);
             return sizeAndAligment;
-        }
-
-        protected (int Size, int Aligment) ComputeSizeAndAligmentOfArch32(TypeSig t)
-        {
-            if (_typeSizeCache32.TryGetValue(t, out var sa))
-            {
-                return sa;
-            }
-            // all this just to invoke one opcode with no arguments!
-            sa = s_calculator32.SizeAndAligmentOf(t);
-            _typeSizeCache32.Add(t, sa);
-            return sa;
         }
 
         public TypeInfo CreateTypeInfo(TypeSig type)
@@ -70,7 +39,7 @@ namespace HybridCLR.Editor.MethodBridge
             {
                 return GetNativeIntTypeInfo();
             }
-            switch(type.ElementType)
+            switch (type.ElementType)
             {
                 case ElementType.Void: return TypeInfo.s_void;
                 case ElementType.Boolean: return TypeInfo.s_u1;
@@ -87,7 +56,7 @@ namespace HybridCLR.Editor.MethodBridge
                 case ElementType.R8: return TypeInfo.s_r8;
                 case ElementType.U: return IsArch32 ? TypeInfo.s_u4 : TypeInfo.s_u8;
                 case ElementType.I:
-                case ElementType.String: 
+                case ElementType.String:
                 case ElementType.Ptr:
                 case ElementType.ByRef:
                 case ElementType.Class:
@@ -98,7 +67,7 @@ namespace HybridCLR.Editor.MethodBridge
                 case ElementType.Module:
                 case ElementType.Var:
                 case ElementType.MVar:
-                    return GetNativeIntTypeInfo();
+                return GetNativeIntTypeInfo();
                 case ElementType.TypedByRef: return CreateValueType(type);
                 case ElementType.ValueType:
                 {
@@ -147,7 +116,7 @@ namespace HybridCLR.Editor.MethodBridge
                     continue;
                 }
                 TypeSig ftype = ctx != null ? MetaUtil.Inflate(field.FieldType, ctx) : field.FieldType;
-                switch(ftype.ElementType)
+                switch (ftype.ElementType)
                 {
                     case ElementType.R4:
                     case ElementType.R8:
@@ -203,7 +172,7 @@ namespace HybridCLR.Editor.MethodBridge
 
         protected static TypeInfo CreateGeneralValueType(TypeSig type, int size, int aligment)
         {
-            Debug.Assert(size % aligment == 0);
+            System.Diagnostics.Debug.Assert(size % aligment == 0);
             switch (aligment)
             {
                 case 1: return new TypeInfo(ParamOrReturnType.STRUCTURE_ALIGN1, size);
@@ -216,7 +185,7 @@ namespace HybridCLR.Editor.MethodBridge
 
         protected TypeInfo CreateValueType(TypeSig type)
         {
-            (int typeSize, int typeAligment) = IsArch32 ? ComputeSizeAndAligmentOfArch32(type) : ComputeSizeAndAligmentOfArch64(type);
+            (int typeSize, int typeAligment) = ComputeSizeAndAligment(type);
             if (IsSupportHFA && ComputHFATypeInfo(type, typeSize, out HFATypeInfo hfaTypeInfo))
             {
                 bool isFloat = hfaTypeInfo.Type.ElementType == ElementType.R4;
@@ -235,52 +204,12 @@ namespace HybridCLR.Editor.MethodBridge
             }
         }
 
-        public void GenerateManaged2NativeStub(List<MethodBridgeSig> methods, List<string> lines)
+
+        protected abstract TypeInfo OptimizeSigType(TypeInfo type, bool returnType);
+
+        public virtual void OptimizeMethod(MethodDesc method)
         {
-            lines.Add($@"
-Managed2NativeMethodInfo hybridclr::interpreter::g_managed2nativeStub[] = 
-{{
-");
-
-            foreach (var method in methods)
-            {
-                lines.Add($"\t{{\"{method.CreateInvokeSigName()}\", __M2N_{method.CreateInvokeSigName()}}},");
-            }
-
-            lines.Add($"\t{{nullptr, nullptr}},");
-            lines.Add("};");
-        }
-
-        public void GenerateNative2ManagedStub(List<MethodBridgeSig> methods, List<string> lines)
-        {
-            lines.Add($@"
-Native2ManagedMethodInfo hybridclr::interpreter::g_native2managedStub[] = 
-{{
-");
-
-            foreach (var method in methods)
-            {
-                lines.Add($"\t{{\"{method.CreateInvokeSigName()}\", (Il2CppMethodPointer)__N2M_{method.CreateInvokeSigName()}}},");
-            }
-
-            lines.Add($"\t{{nullptr, nullptr}},");
-            lines.Add("};");
-        }
-
-        public void GenerateAdjustThunkStub(List<MethodBridgeSig> methods, List<string> lines)
-        {
-            lines.Add($@"
-NativeAdjustThunkMethodInfo hybridclr::interpreter::g_adjustThunkStub[] = 
-{{
-");
-
-            foreach (var method in methods)
-            {
-                lines.Add($"\t{{\"{method.CreateInvokeSigName()}\", (Il2CppMethodPointer)__N2M_AdjustorThunk_{method.CreateCallSigName()}}},");
-            }
-
-            lines.Add($"\t{{nullptr, nullptr}},");
-            lines.Add("};");
+            method.TransfromSigTypes(OptimizeSigType);
         }
     }
 }

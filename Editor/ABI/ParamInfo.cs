@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HybridCLR.Editor.MethodBridge
+namespace HybridCLR.Editor.ABI
 {
 
     public class ParamInfo

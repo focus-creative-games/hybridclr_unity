@@ -7,15 +7,17 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace HybridCLR.Editor.MethodBridge
+namespace HybridCLR.Editor.ABI
 {
-    public class MethodBridgeSig : IEquatable<MethodBridgeSig>
+    public class MethodDesc : IEquatable<MethodDesc>
     {
         public MethodDef MethodDef { get; set; }
 
         public ReturnInfo ReturnInfo { get; set; }
 
         public List<ParamInfo> ParamInfos { get; set; }
+
+        private int _hashCode;
 
         public void Init()
         {
@@ -58,10 +60,10 @@ namespace HybridCLR.Editor.MethodBridge
 
         public override bool Equals(object obj)
         {
-            return Equals((MethodBridgeSig)obj);
+            return Equals((MethodDesc)obj);
         }
 
-        public bool Equals(MethodBridgeSig other)
+        public bool Equals(MethodDesc other)
         {
             if (other == null)
             {
@@ -88,6 +90,10 @@ namespace HybridCLR.Editor.MethodBridge
 
         public override int GetHashCode()
         {
+            if (_hashCode != 0)
+            {
+                return _hashCode;
+            }
             int hash = 17;
 
             hash = hash * 23  + ReturnInfo.Type.GetHashCode();
@@ -97,7 +103,7 @@ namespace HybridCLR.Editor.MethodBridge
                 hash = hash * 23 + p.Type.GetHashCode();
             }
 
-            return hash;
+            return _hashCode = hash;
         }
     }
 }

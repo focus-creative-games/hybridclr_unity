@@ -1,4 +1,5 @@
 ﻿using dnlib.DotNet;
+using HybridCLR.Editor.ABI;
 using HybridCLR.Editor.Meta;
 using System;
 using System.Collections.Generic;
@@ -9,17 +10,26 @@ using UnityEngine;
 
 namespace HybridCLR.Editor.ReversePInvokeWrap
 {
-    public class ReversePInvokeMethodInfo
+    public class RawReversePInvokeMethodInfo
     {
         public MethodDef Method { get; set; }
 
         public CustomAttribute GenerationAttribute { get; set; }
     }
 
+    public class ABIReversePInvokeMethodInfo
+    {
+        public MethodDesc Method { get; set; }
+
+        public int Count { get; set; }
+    }
+
     public class Analyzer
     {
 
         private readonly List<ModuleDefMD> _rootModules = new List<ModuleDefMD>();
+
+        private readonly List<RawReversePInvokeMethodInfo> _reversePInvokeMethods = new List<RawReversePInvokeMethodInfo>();
 
         public Analyzer(AssemblyCache cache, List<string> assemblyNames)
         {
@@ -29,10 +39,9 @@ namespace HybridCLR.Editor.ReversePInvokeWrap
             }
         }
 
-        public List<ReversePInvokeMethodInfo> CollectMonoPInvokeCallbackMethods()
+        private void CollectReversePInvokeMethods()
         {
-            var wrapperMethods = new List<ReversePInvokeMethodInfo>();
-            foreach(var mod in _rootModules)
+            foreach (var mod in _rootModules)
             {
                 Debug.Log($"ass:{mod.FullName} methodcount:{mod.Metadata.TablesStream.MethodTable.Rows}");
                 for (uint rid = 1, n = mod.Metadata.TablesStream.MethodTable.Rows; rid <= n; rid++)
@@ -52,14 +61,48 @@ namespace HybridCLR.Editor.ReversePInvokeWrap
                     //{
                     //    Debug.Log($"{ca.AttributeType.FullName} {ca.TypeFullName}");
                     //}
-                    wrapperMethods.Add(new ReversePInvokeMethodInfo()
+                    _reversePInvokeMethods.Add(new RawReversePInvokeMethodInfo()
                     {
                         Method = method,
                         GenerationAttribute = method.CustomAttributes.FirstOrDefault(ca => ca.AttributeType.FullName == "HybridCLR.ReversePInvokeWrapperGenerationAttribute"),
                     });
                 }
             }
-            return wrapperMethods;
+        }
+
+        public List<ABIReversePInvokeMethodInfo> BuildABIMethods(PlatformABI abi)
+        {
+            var methodsBySig = new Dictionary<string, ABIReversePInvokeMethodInfo>();
+            var typeCreator = TypeCreatorFactory.CreateTypeCreator(abi);
+            foreach(var method in _reversePInvokeMethods)
+            {
+                MethodDesc desc = new MethodDesc
+                {
+                    MethodDef = method.Method,
+                    ReturnInfo = new ReturnInfo { Type = typeCreator.CreateTypeInfo(method.Method.ReturnType)},
+                    ParamInfos = method.Method.Parameters.Select(p => new ParamInfo { Type = typeCreator.CreateTypeInfo(p.Type)}).ToList(),
+                };
+                desc.Init();
+                if (!methodsBySig.TryGetValue(desc.Sig, out var arm))
+                {
+                    arm = new ABIReversePInvokeMethodInfo()
+                    {
+                        Method = desc,
+                        Count = 0,
+                    };
+                    methodsBySig.Add(desc.Sig, arm);
+                }
+                int preserveCount = method.GenerationAttribute != null ? (int)method.GenerationAttribute.ConstructorArguments[0].Value : 1;
+                arm.Count += preserveCount;
+            }
+            var methods = methodsBySig.Values.ToList();
+            methods.Sort((a, b) => a.Method.Sig.CompareTo(b.Method.Sig));
+            return methods;
+        }
+
+        public void Run()
+        {
+            CollectReversePInvokeMethods();
         }
     }
 }

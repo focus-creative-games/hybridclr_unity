@@ -37,7 +37,7 @@ namespace HybridCLR.Editor
 
         public static string LocalIl2CppDir => $"{LocalUnityDataDir}/il2cpp";
 
-        public static string MethodBridgeCppDir => $"{LocalIl2CppDir}/libil2cpp/hybridclr/interpreter";
+        public static string GeneratedCppDir => $"{LocalIl2CppDir}/libil2cpp/hybridclr/generated";
 
         public static string Il2CppBuildCacheDir { get; } = $"{ProjectDir}/Library/Il2cppBuildCache";
 

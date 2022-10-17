@@ -1,5 +1,3 @@
-#include "MethodBridge.h"
-
 #include <codegen/il2cpp-codegen-metadata.h>
 #include "vm/ClassInlines.h"
 #include "vm/Object.h"
@@ -8,14 +6,15 @@
 #include "../metadata/MetadataModule.h"
 #include "../metadata/MetadataUtil.h"
 
-#include "Interpreter.h"
-#include "MemoryUtil.h"
-#include "InstrinctDef.h"
+#include "../interpreter/MethodBridge.h"
+#include "../interpreter/Interpreter.h"
+#include "../interpreter/MemoryUtil.h"
+#include "../interpreter/InstrinctDef.h"
 
 using namespace hybridclr::interpreter;
 
-#if HYBRIDCLR_ABI_ARM_64
-//!!!{{INVOKE_STUB
+#if {PLATFORM_ABI}
+//!!!{{CODE
 
-//!!!}}INVOKE_STUB
+//!!!}}CODE
 #endif

@@ -18,7 +18,6 @@ namespace HybridCLR.Editor
         private SerializedProperty m_OutputLinkFile;
         private SerializedProperty m_OutputAOTGenericReferenceFile;
         private SerializedProperty m_MaxGenericReferenceIteration;
-        private SerializedProperty m_ReversePInvokeWrapperCount;
         private SerializedProperty m_MaxMethodBridgeGenericIteration;
         private GUIStyle buttonStyle;
         public HybridCLRSettingsProvider() : base("Project/HybridCLR Settings", SettingsScope.Project) { }
@@ -37,7 +36,6 @@ namespace HybridCLR.Editor
             m_OutputLinkFile = m_SerializedObject.FindProperty("outputLinkFile");
             m_OutputAOTGenericReferenceFile = m_SerializedObject.FindProperty("outputAOTGenericReferenceFile");
             m_MaxGenericReferenceIteration = m_SerializedObject.FindProperty("maxGenericReferenceIteration");
-            m_ReversePInvokeWrapperCount = m_SerializedObject.FindProperty("ReversePInvokeWrapperCount");
             m_MaxMethodBridgeGenericIteration = m_SerializedObject.FindProperty("maxMethodBridgeGenericIteration");
         }
         public override void OnTitleBarGUI()
@@ -110,7 +108,6 @@ namespace HybridCLR.Editor
                 EditorGUILayout.PropertyField(m_OutputLinkFile);
                 EditorGUILayout.PropertyField(m_OutputAOTGenericReferenceFile);
                 EditorGUILayout.PropertyField(m_MaxGenericReferenceIteration);
-                EditorGUILayout.PropertyField(m_ReversePInvokeWrapperCount);
                 EditorGUILayout.PropertyField(m_MaxMethodBridgeGenericIteration);
                 if (EditorGUI.EndChangeCheck())
                 {

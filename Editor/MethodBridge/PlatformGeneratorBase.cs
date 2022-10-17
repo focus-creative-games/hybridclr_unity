@@ -36,7 +36,7 @@ Managed2NativeMethodInfo hybridclr::interpreter::g_managed2nativeStub[] =
                 lines.Add($"\t{{\"{method.CreateInvokeSigName()}\", __M2N_{method.CreateInvokeSigName()}}},");
             }
 
-            lines.Add($"\t{{nullptr, nullptr}},");
+            lines.Add($"\t{{\"\", nullptr}},");
             lines.Add("};");
         }
 

@@ -11,13 +11,13 @@ namespace HybridCLR.Editor.ABI
 {
     public class MethodDesc : IEquatable<MethodDesc>
     {
+        public string Sig { get; private set; }
+
         public MethodDef MethodDef { get; set; }
 
         public ReturnInfo ReturnInfo { get; set; }
 
         public List<ParamInfo> ParamInfos { get; set; }
-
-        private int _hashCode;
 
         public void Init()
         {
@@ -25,6 +25,7 @@ namespace HybridCLR.Editor.ABI
             {
                 ParamInfos[i].Index = i;
             }
+            Sig = CreateCallSigName();
         }
 
         public void TransfromSigTypes(Func<TypeInfo, bool, TypeInfo> transformer)
@@ -65,45 +66,12 @@ namespace HybridCLR.Editor.ABI
 
         public bool Equals(MethodDesc other)
         {
-            if (other == null)
-            {
-                return false;
-            }
-
-            if (!ReturnInfo.Type.Equals(other.ReturnInfo.Type))
-            {
-                return false;
-            }
-            if (ParamInfos.Count != other.ParamInfos.Count)
-            {
-                return false;
-            }
-            for(int i = 0; i < ParamInfos.Count; i++)
-            {
-                if (!ParamInfos[i].Type.Equals(other.ParamInfos[i].Type))
-                {
-                    return false;
-                }
-            }
-            return true;
+            return Sig == other.Sig;
         }
 
         public override int GetHashCode()
         {
-            if (_hashCode != 0)
-            {
-                return _hashCode;
-            }
-            int hash = 17;
-
-            hash = hash * 23  + ReturnInfo.Type.GetHashCode();
-
-            foreach(var p in ParamInfos)
-            {
-                hash = hash * 23 + p.Type.GetHashCode();
-            }
-
-            return _hashCode = hash;
+            return Sig.GetHashCode();
         }
     }
 }

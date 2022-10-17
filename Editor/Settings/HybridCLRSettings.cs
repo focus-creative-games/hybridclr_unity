@@ -32,8 +32,8 @@ namespace HybridCLR.Editor
         [Header("AOT泛型实例化搜索迭代次数")]
         public int maxGenericReferenceIteration = 10;
 
-        [Header("预留MonoPInvokeCallbackAttribute函数个数")]
-        public int ReversePInvokeWrapperCount = 10;
+        //[Header("预留MonoPInvokeCallbackAttribute函数个数")]
+        //public int ReversePInvokeWrapperCount = 10;
 
         [Header("MethodBridge泛型搜索迭代次数")]
         public int maxMethodBridgeGenericIteration = 10;

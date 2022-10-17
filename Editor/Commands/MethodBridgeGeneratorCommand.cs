@@ -28,20 +28,6 @@ namespace HybridCLR.Editor.Commands
             Directory.Delete(il2cppBuildCachePath, true);
         }
 
-        private static string GetTemplateCode(PlatformABI platform)
-        {
-            string tplFile;
-
-            switch (platform)
-            {
-                case PlatformABI.Universal32: tplFile = "Universal32"; break;
-                case PlatformABI.Universal64: tplFile = "Universal64"; break;
-                case PlatformABI.Arm64: tplFile = "Arm64"; break;
-                default: throw new NotSupportedException();
-            };
-            return File.ReadAllText($"{SettingsUtil.TemplatePathInPackage}/MethodBridge_{tplFile}.cpp.txt");
-        }
-
         private static void GenerateMethodBridgeCppFile(Analyzer analyzer, PlatformABI platform, string templateCode, string outputFile)
         {
             var g = new Generator(new Generator.Options()
@@ -84,18 +70,11 @@ namespace HybridCLR.Editor.Commands
 
                 analyzer.Run();
 
-                var generateJobs = new List<(PlatformABI, string)>()
-                {
-                    (PlatformABI.Arm64, "MethodBridge_Arm64"),
-                    (PlatformABI.Universal64, "MethodBridge_Universal64"),
-                    (PlatformABI.Universal32, "MethodBridge_Universal32"),
-                };
-
                 var tasks = new List<Task>();
-                foreach (var (platform, stubFile) in generateJobs)
+                string templateCode = File.ReadAllText($"{SettingsUtil.TemplatePathInPackage}/MethodBridgeStub.cpp");
+                foreach (PlatformABI platform in Enum.GetValues(typeof(PlatformABI)))
                 {
-                    string templateCode = GetTemplateCode(platform);
-                    string outputFile = $"{SettingsUtil.MethodBridgeCppDir}/{stubFile}.cpp";
+                    string outputFile = $"{SettingsUtil.GeneratedCppDir}/MethodBridge_{platform}.cpp";
                     tasks.Add(Task.Run(() =>
                     {
                         GenerateMethodBridgeCppFile(analyzer, platform, templateCode, outputFile);

@@ -30,6 +30,8 @@ namespace HybridCLR.Editor.MethodBridge
             public IReadOnlyCollection<GenericMethod> GenericMethods { get; set; }
         }
 
+        private PlatformABI _platformABI;
+
         private readonly IReadOnlyList<MethodDef> _notGenericMethods;
 
         private readonly IReadOnlyCollection<GenericMethod> _genericMethods;
@@ -56,6 +58,7 @@ namespace HybridCLR.Editor.MethodBridge
 
         public Generator(Options options)
         {
+            _platformABI = options.PlatformABI;
             _notGenericMethods = options.NotGenericMethods;
             _genericMethods = options.GenericMethods;
             _templateCode = options.TemplateCode;
@@ -98,26 +101,20 @@ namespace HybridCLR.Editor.MethodBridge
 
         private void AddManaged2NativeMethod(MethodDesc method)
         {
-            if (_managed2nativeMethodSet.Add(method))
-            {
-                method.Init();
-            }
+            method.Init();
+            _managed2nativeMethodSet.Add(method);
         }
 
         private void AddNative2ManagedMethod(MethodDesc method)
         {
-            if (_native2managedMethodSet.Add(method))
-            {
-                method.Init();
-            }
+            method.Init();
+            _native2managedMethodSet.Add(method);
         }
 
         private void AddAdjustThunkMethod(MethodDesc method)
         {
-            if (_adjustThunkMethodSet.Add(method))
-            {
-                method.Init();
-            }
+            method.Init();
+            _adjustThunkMethodSet.Add(method);
         }
 
         private void ProcessMethod(MethodDef method, List<TypeSig> klassInst, List<TypeSig> methodInst)
@@ -200,7 +197,7 @@ namespace HybridCLR.Editor.MethodBridge
 
         public void Generate()
         {
-            var frr = new FileRegionReplace(_templateCode);
+            var frr = new FileRegionReplace(_templateCode.Replace("{PLATFORM_ABI}", ABIUtil.GetHybridCLRPlatformMacro(_platformABI)));
 
             List<string> lines = new List<string>(20_0000);
 
@@ -228,7 +225,7 @@ namespace HybridCLR.Editor.MethodBridge
 
             _platformAdaptor.GenerateAdjustThunkStub(_adjustThunkMethodList, lines);
 
-            frr.Replace("INVOKE_STUB", string.Join("\n", lines));
+            frr.Replace("CODE", string.Join("\n", lines));
 
             Directory.CreateDirectory(Path.GetDirectoryName(_outputFile));
 

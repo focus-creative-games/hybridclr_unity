@@ -14,6 +14,7 @@ namespace HybridCLR.Editor
         private SerializedProperty m_CloneFromGitee;
         private SerializedProperty m_HotUpdateAssemblyDefinitions;
         private SerializedProperty m_HotUpdateAssemblies;
+        private SerializedProperty m_preserveHotUpdateAssemblies;
         private SerializedProperty m_collectAssetReferenceTypes;
         private SerializedProperty m_OutputLinkFile;
         private SerializedProperty m_OutputAOTGenericReferenceFile;
@@ -32,6 +33,7 @@ namespace HybridCLR.Editor
             m_CloneFromGitee = m_SerializedObject.FindProperty("cloneFromGitee");
             m_HotUpdateAssemblyDefinitions = m_SerializedObject.FindProperty("hotUpdateAssemblyDefinitions");
             m_HotUpdateAssemblies = m_SerializedObject.FindProperty("hotUpdateAssemblies");
+            m_preserveHotUpdateAssemblies = m_SerializedObject.FindProperty("preserveHotUpdateAssemblies");
             m_collectAssetReferenceTypes = m_SerializedObject.FindProperty("collectAssetReferenceTypes");
             m_OutputLinkFile = m_SerializedObject.FindProperty("outputLinkFile");
             m_OutputAOTGenericReferenceFile = m_SerializedObject.FindProperty("outputAOTGenericReferenceFile");
@@ -104,6 +106,7 @@ namespace HybridCLR.Editor
                 EditorGUILayout.PropertyField(m_UseGlobalIl2cpp);
                 EditorGUILayout.PropertyField(m_HotUpdateAssemblyDefinitions);
                 EditorGUILayout.PropertyField(m_HotUpdateAssemblies);
+                EditorGUILayout.PropertyField(m_preserveHotUpdateAssemblies);
                 EditorGUILayout.PropertyField(m_collectAssetReferenceTypes);
                 EditorGUILayout.PropertyField(m_OutputLinkFile);
                 EditorGUILayout.PropertyField(m_OutputAOTGenericReferenceFile);

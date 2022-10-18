@@ -20,6 +20,9 @@ namespace HybridCLR.Editor
         [Header("热更新dlls")]
         public string[] hotUpdateAssemblies;
 
+        [Header("预留的热更新dlls")]
+        public string[] preserveHotUpdateAssemblies;
+
         [Header("生成link.xml时扫描asset中引用的类型")]
         public bool collectAssetReferenceTypes;
 

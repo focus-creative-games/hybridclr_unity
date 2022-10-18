@@ -82,6 +82,7 @@ namespace HybridCLR.Editor.ReversePInvokeWrap
                     ReturnInfo = new ReturnInfo { Type = typeCreator.CreateTypeInfo(method.Method.ReturnType)},
                     ParamInfos = method.Method.Parameters.Select(p => new ParamInfo { Type = typeCreator.CreateTypeInfo(p.Type)}).ToList(),
                 };
+                typeCreator.OptimizeMethod(desc);
                 desc.Init();
                 if (!methodsBySig.TryGetValue(desc.Sig, out var arm))
                 {

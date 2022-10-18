@@ -52,7 +52,7 @@ namespace HybridCLR.Editor.ReversePInvokeWrap
                     {
                         continue;
                     }
-                    CustomAttribute wa = method.CustomAttributes.FirstOrDefault(ca => ca.AttributeType.FullName == "AOT.MonoPInvokeCallbackAttribute");
+                    CustomAttribute wa = method.CustomAttributes.FirstOrDefault(ca => ca.AttributeType.Name == "MonoPInvokeCallbackAttribute");
                     if (wa == null)
                     {
                         continue;

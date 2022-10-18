@@ -8,18 +8,18 @@ namespace HybridCLR.Editor
 {
     public class HybridCLRSettingsProvider : SettingsProvider
     {
-        private static SerializedObject m_SerializedObject;
-        private SerializedProperty m_Enable;
-        private SerializedProperty m_UseGlobalIl2cpp;
-        private SerializedProperty m_CloneFromGitee;
-        private SerializedProperty m_HotUpdateAssemblyDefinitions;
-        private SerializedProperty m_HotUpdateAssemblies;
-        private SerializedProperty m_preserveHotUpdateAssemblies;
-        private SerializedProperty m_collectAssetReferenceTypes;
-        private SerializedProperty m_OutputLinkFile;
-        private SerializedProperty m_OutputAOTGenericReferenceFile;
-        private SerializedProperty m_MaxGenericReferenceIteration;
-        private SerializedProperty m_MaxMethodBridgeGenericIteration;
+        private static SerializedObject _serializedObject;
+        private SerializedProperty _enable;
+        private SerializedProperty _useGlobalIl2cpp;
+        private SerializedProperty _cloneFromGitee;
+        private SerializedProperty _hotUpdateAssemblyDefinitions;
+        private SerializedProperty _hotUpdateAssemblies;
+        private SerializedProperty _preserveHotUpdateAssemblies;
+        private SerializedProperty _collectAssetReferenceTypes;
+        private SerializedProperty _outputLinkFile;
+        private SerializedProperty _outputAOTGenericReferenceFile;
+        private SerializedProperty _maxGenericReferenceIteration;
+        private SerializedProperty _maxMethodBridgeGenericIteration;
         private GUIStyle buttonStyle;
         public HybridCLRSettingsProvider() : base("Project/HybridCLR Settings", SettingsScope.Project) { }
         public override void OnActivate(string searchContext, VisualElement rootElement)
@@ -27,18 +27,18 @@ namespace HybridCLR.Editor
             HybridCLRSettings.Instance.Save();
             var setting = HybridCLRSettings.Instance;
             setting.hideFlags &= ~HideFlags.NotEditable;
-            m_SerializedObject = m_SerializedObject ?? new SerializedObject(setting);
-            m_Enable = m_SerializedObject.FindProperty("enable");
-            m_UseGlobalIl2cpp = m_SerializedObject.FindProperty("useGlobalIl2cpp");
-            m_CloneFromGitee = m_SerializedObject.FindProperty("cloneFromGitee");
-            m_HotUpdateAssemblyDefinitions = m_SerializedObject.FindProperty("hotUpdateAssemblyDefinitions");
-            m_HotUpdateAssemblies = m_SerializedObject.FindProperty("hotUpdateAssemblies");
-            m_preserveHotUpdateAssemblies = m_SerializedObject.FindProperty("preserveHotUpdateAssemblies");
-            m_collectAssetReferenceTypes = m_SerializedObject.FindProperty("collectAssetReferenceTypes");
-            m_OutputLinkFile = m_SerializedObject.FindProperty("outputLinkFile");
-            m_OutputAOTGenericReferenceFile = m_SerializedObject.FindProperty("outputAOTGenericReferenceFile");
-            m_MaxGenericReferenceIteration = m_SerializedObject.FindProperty("maxGenericReferenceIteration");
-            m_MaxMethodBridgeGenericIteration = m_SerializedObject.FindProperty("maxMethodBridgeGenericIteration");
+            _serializedObject = _serializedObject ?? new SerializedObject(setting);
+            _enable = _serializedObject.FindProperty("enable");
+            _useGlobalIl2cpp = _serializedObject.FindProperty("useGlobalIl2cpp");
+            _cloneFromGitee = _serializedObject.FindProperty("cloneFromGitee");
+            _hotUpdateAssemblyDefinitions = _serializedObject.FindProperty("hotUpdateAssemblyDefinitions");
+            _hotUpdateAssemblies = _serializedObject.FindProperty("hotUpdateAssemblies");
+            _preserveHotUpdateAssemblies = _serializedObject.FindProperty("preserveHotUpdateAssemblies");
+            _collectAssetReferenceTypes = _serializedObject.FindProperty("collectAssetReferenceTypes");
+            _outputLinkFile = _serializedObject.FindProperty("outputLinkFile");
+            _outputAOTGenericReferenceFile = _serializedObject.FindProperty("outputAOTGenericReferenceFile");
+            _maxGenericReferenceIteration = _serializedObject.FindProperty("maxGenericReferenceIteration");
+            _maxMethodBridgeGenericIteration = _serializedObject.FindProperty("maxMethodBridgeGenericIteration");
         }
         public override void OnTitleBarGUI()
         {
@@ -94,27 +94,27 @@ namespace HybridCLR.Editor
         {
             using (CreateSettingsWindowGUIScope())
             {
-                if (m_SerializedObject == null || !m_SerializedObject.targetObject)
+                if (_serializedObject == null || !_serializedObject.targetObject)
                 {
-                    m_SerializedObject = null;
-                    m_SerializedObject = new SerializedObject(HybridCLRSettings.Instance);
+                    _serializedObject = null;
+                    _serializedObject = new SerializedObject(HybridCLRSettings.Instance);
                 }
-                m_SerializedObject.Update();
+                _serializedObject.Update();
                 EditorGUI.BeginChangeCheck();
-                EditorGUILayout.PropertyField(m_Enable);
-                EditorGUILayout.PropertyField(m_CloneFromGitee);
-                EditorGUILayout.PropertyField(m_UseGlobalIl2cpp);
-                EditorGUILayout.PropertyField(m_HotUpdateAssemblyDefinitions);
-                EditorGUILayout.PropertyField(m_HotUpdateAssemblies);
-                EditorGUILayout.PropertyField(m_preserveHotUpdateAssemblies);
-                EditorGUILayout.PropertyField(m_collectAssetReferenceTypes);
-                EditorGUILayout.PropertyField(m_OutputLinkFile);
-                EditorGUILayout.PropertyField(m_OutputAOTGenericReferenceFile);
-                EditorGUILayout.PropertyField(m_MaxGenericReferenceIteration);
-                EditorGUILayout.PropertyField(m_MaxMethodBridgeGenericIteration);
+                EditorGUILayout.PropertyField(_enable);
+                EditorGUILayout.PropertyField(_cloneFromGitee);
+                EditorGUILayout.PropertyField(_useGlobalIl2cpp);
+                EditorGUILayout.PropertyField(_hotUpdateAssemblyDefinitions);
+                EditorGUILayout.PropertyField(_hotUpdateAssemblies);
+                EditorGUILayout.PropertyField(_preserveHotUpdateAssemblies);
+                EditorGUILayout.PropertyField(_collectAssetReferenceTypes);
+                EditorGUILayout.PropertyField(_outputLinkFile);
+                EditorGUILayout.PropertyField(_outputAOTGenericReferenceFile);
+                EditorGUILayout.PropertyField(_maxGenericReferenceIteration);
+                EditorGUILayout.PropertyField(_maxMethodBridgeGenericIteration);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    m_SerializedObject.ApplyModifiedProperties();
+                    _serializedObject.ApplyModifiedProperties();
                     HybridCLRSettings.Instance.Save();
                 }
             }
@@ -129,7 +129,7 @@ namespace HybridCLR.Editor
         {
             base.OnDeactivate();
             HybridCLRSettings.Instance.Save();
-            m_SerializedObject = null;
+            _serializedObject = null;
         }
         [SettingsProvider]
         public static SettingsProvider CreateMyCustomSettingsProvider()
@@ -138,7 +138,7 @@ namespace HybridCLR.Editor
             {
                 var provider = new HybridCLRSettingsProvider
                 {
-                    keywords = GetSearchKeywordsFromSerializedObject(m_SerializedObject = m_SerializedObject ?? new SerializedObject(HybridCLRSettings.Instance))
+                    keywords = GetSearchKeywordsFromSerializedObject(_serializedObject = _serializedObject ?? new SerializedObject(HybridCLRSettings.Instance))
                 };
                 return provider;
             }

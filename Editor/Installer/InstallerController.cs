@@ -277,10 +277,22 @@ namespace HybridCLR.Editor.Installer
             return $"https://{repoProvider}.com/focus-creative-games/{repoName}";
         }
 
+        private static string GetWindowsGitPath()
+        {
+            var result = BashUtil.RunCommand2(".", "where", new string[] { "git" });
+            if (result.ExitCode != 0) return "";
+            // Multiple programs may be installed, choose the first one
+            var cmds = result.StdOut.Split(Environment.NewLine);
+            if (cmds.Length == 0) return "";
+            return cmds[0];
+        }
+
         private void RunInitLocalIl2CppData(string il2cppBranch, string il2cppInstallPath)
         {
+            string gitCmd = "git";
 #if UNITY_EDITOR_WIN
-            if (!BashUtil.ExistProgram("git"))
+            gitCmd = GetWindowsGitPath();
+            if (gitCmd.Length == 0)
             {
                 throw new Exception($"安装本地il2cpp需要使用git从远程拉取仓库，请先安装git");
             }
@@ -298,7 +310,7 @@ namespace HybridCLR.Editor.Installer
             string hybridclrRepoDir = $"{workDir}/hybridclr_repo";
             {
                 BashUtil.RemoveDir(hybridclrRepoDir);
-                var ret = BashUtil.RunCommand(workDir, "git", new string[]
+                var ret = BashUtil.RunCommand(workDir, gitCmd, new string[]
                 {
                 "clone",
                 "--depth=1",

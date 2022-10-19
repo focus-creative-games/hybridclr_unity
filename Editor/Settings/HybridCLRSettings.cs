@@ -23,6 +23,9 @@ namespace HybridCLR.Editor
         [Header("预留的热更新dlls")]
         public string[] preserveHotUpdateAssemblies;
 
+        [Header("补充元数据AOT dlls")]
+        public string[] patchAOTAssemblies;
+
         [Header("生成link.xml时扫描asset中引用的类型")]
         public bool collectAssetReferenceTypes;
 

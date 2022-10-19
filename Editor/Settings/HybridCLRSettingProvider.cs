@@ -15,6 +15,7 @@ namespace HybridCLR.Editor
         private SerializedProperty _hotUpdateAssemblyDefinitions;
         private SerializedProperty _hotUpdateAssemblies;
         private SerializedProperty _preserveHotUpdateAssemblies;
+        private SerializedProperty _patchAOTAssemblies;
         private SerializedProperty _collectAssetReferenceTypes;
         private SerializedProperty _outputLinkFile;
         private SerializedProperty _outputAOTGenericReferenceFile;
@@ -34,6 +35,7 @@ namespace HybridCLR.Editor
             _hotUpdateAssemblyDefinitions = _serializedObject.FindProperty("hotUpdateAssemblyDefinitions");
             _hotUpdateAssemblies = _serializedObject.FindProperty("hotUpdateAssemblies");
             _preserveHotUpdateAssemblies = _serializedObject.FindProperty("preserveHotUpdateAssemblies");
+            _patchAOTAssemblies = _serializedObject.FindProperty("patchAOTAssemblies");
             _collectAssetReferenceTypes = _serializedObject.FindProperty("collectAssetReferenceTypes");
             _outputLinkFile = _serializedObject.FindProperty("outputLinkFile");
             _outputAOTGenericReferenceFile = _serializedObject.FindProperty("outputAOTGenericReferenceFile");
@@ -107,6 +109,7 @@ namespace HybridCLR.Editor
                 EditorGUILayout.PropertyField(_hotUpdateAssemblyDefinitions);
                 EditorGUILayout.PropertyField(_hotUpdateAssemblies);
                 EditorGUILayout.PropertyField(_preserveHotUpdateAssemblies);
+                EditorGUILayout.PropertyField(_patchAOTAssemblies);
                 EditorGUILayout.PropertyField(_collectAssetReferenceTypes);
                 EditorGUILayout.PropertyField(_outputLinkFile);
                 EditorGUILayout.PropertyField(_outputAOTGenericReferenceFile);

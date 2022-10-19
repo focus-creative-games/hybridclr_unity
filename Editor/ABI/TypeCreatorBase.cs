@@ -14,6 +14,8 @@ namespace HybridCLR.Editor.ABI
 
         public virtual bool IsSupportHFA => false;
 
+        public virtual bool IsSupportSingletonStruct => false;
+
         public TypeInfo GetNativeIntTypeInfo() => IsArch32 ? TypeInfo.s_i4 : TypeInfo.s_i8;
 
         public ValueTypeSizeAligmentCalculator Calculator => IsArch32 ? ValueTypeSizeAligmentCalculator.Caculator32 : ValueTypeSizeAligmentCalculator.Caculator64;
@@ -170,6 +172,78 @@ namespace HybridCLR.Editor.ABI
             return false;
         }
 
+        public static bool TryComputSingletonStruct(TypeSig type, out SingletonStruct result)
+        {
+            result = new SingletonStruct();
+            return TryComputSingletonStruct0(type, result) && result.Type != null;
+        }
+
+        public static bool TryComputSingletonStruct0(TypeSig type, SingletonStruct result)
+        {
+            TypeDef typeDef = type.ToTypeDefOrRef().ResolveTypeDefThrow();
+            if (typeDef.IsEnum)
+            {
+                if (result.Type == null)
+                {
+                    result.Type = typeDef.GetEnumUnderlyingType();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            List<TypeSig> klassInst = type.ToGenericInstSig()?.GenericArguments?.ToList();
+            GenericArgumentContext ctx = klassInst != null ? new GenericArgumentContext(klassInst, null) : null;
+
+            var fields = typeDef.Fields;// typeDef.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            foreach (FieldDef field in fields)
+            {
+                if (field.IsStatic)
+                {
+                    continue;
+                }
+                TypeSig ftype = ctx != null ? MetaUtil.Inflate(field.FieldType, ctx) : field.FieldType;
+
+                switch (ftype.ElementType)
+                {
+                    case ElementType.TypedByRef: return false;
+                    case ElementType.ValueType:
+                    {
+                        if (!TryComputSingletonStruct0(ftype, result))
+                        {
+                            return false;
+                        }
+                        break;
+                    }
+                    case ElementType.GenericInst:
+                    {
+                        if (!ftype.IsValueType)
+                        {
+                            goto default;
+                        }
+                        if (!TryComputSingletonStruct0(ftype, result))
+                        {
+                            return false;
+                        }
+                        break;
+                    }
+                    default:
+                    {
+                        if (result.Type != null)
+                        {
+                            return false;
+                        }
+                        result.Type = ftype;
+                        break;
+                    }
+                }
+            }
+
+            return true;
+        }
+
         protected static TypeInfo CreateGeneralValueType(TypeSig type, int size, int aligment)
         {
             System.Diagnostics.Debug.Assert(size % aligment == 0);
@@ -197,6 +271,10 @@ namespace HybridCLR.Editor.ABI
                     default: throw new NotSupportedException();
                 }
             }
+            //else if(IsSupportSingletonStruct && TryComputSingletonStruct(type, out var ssTypeInfo))
+            //{
+            //    return CreateTypeInfo(ssTypeInfo.Type);
+            //}
             else
             {
                 // 64位下结构体内存对齐规则是一样的

@@ -74,6 +74,7 @@ namespace HybridCLR.Editor.MethodBridge
                 case PlatformABI.Universal32: return new PlatformGeneratorUniversal32();
                 case PlatformABI.Universal64: return new PlatformGeneratorUniversal64();
                 case PlatformABI.Arm64: return new PlatformGeneratorArm64();
+                case PlatformABI.WebGL32: return new PlatformGeneratorWebGL32();
                 default: throw new NotSupportedException();
             }
         }

@@ -10,9 +10,10 @@ using UnityEngine;
 
 namespace HybridCLR.Editor.MethodBridge
 {
-    public class PlatformGeneratorUniversal32 : PlatformGeneratorBase
+    public class PlatformGeneratorWebGL32 : PlatformGeneratorBase
     {
-        public override PlatformABI PlatformABI { get; } = PlatformABI.Universal32;
+        public override PlatformABI PlatformABI { get; } = PlatformABI.WebGL32;
+
 
         public override void GenerateManaged2NativeMethod(MethodDesc method, List<string> lines)
         {

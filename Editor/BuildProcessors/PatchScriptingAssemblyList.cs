@@ -81,7 +81,7 @@ namespace HybridCLR.Editor.BuildProcessors
 
             if (jsonFiles.Length == 0)
             {
-                Debug.LogError($"can not find file {SettingsUtil.ScriptingAssembliesJsonFile}");
+                //Debug.LogError($"can not find file {SettingsUtil.ScriptingAssembliesJsonFile}");
                 return;
             }
 

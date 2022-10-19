@@ -5,5 +5,6 @@
         Universal32,
         Universal64,
         Arm64,
+        WebGL32,
     }
 }

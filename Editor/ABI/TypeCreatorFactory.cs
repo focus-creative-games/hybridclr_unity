@@ -15,6 +15,7 @@ namespace HybridCLR.Editor.ABI
                 case PlatformABI.Arm64: return new TypeCreatorArm64();
                 case PlatformABI.Universal32: return new TypeCreatorUniversal32();
                 case PlatformABI.Universal64: return new TypeCreatorUniversal64();
+                case PlatformABI.WebGL32: return new TypeCreatorWebGL32();
                 default: throw new NotSupportedException(abi.ToString());
             }
         }

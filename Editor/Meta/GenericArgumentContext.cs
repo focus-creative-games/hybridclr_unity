@@ -37,6 +37,7 @@ namespace HybridCLR.Editor.Meta
             {
 				return typeSig;
             }
+            typeSig = typeSig.RemovePinnedAndModifiers();
 			switch (typeSig.ElementType)
 			{
 				case ElementType.Ptr: return new PtrSig(Resolve(typeSig.Next));
@@ -64,7 +65,7 @@ namespace HybridCLR.Editor.Meta
                 {
                     GenericMVar genericVar = (GenericMVar)typeSig;
                     var newSig = Resolve(methodArgsStack, genericVar.Number, true);
-                    if (newSig is null)
+                    if (newSig == null)
                     {
                         throw new Exception();
                     }

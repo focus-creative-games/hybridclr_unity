@@ -1,4 +1,5 @@
 ﻿using dnlib.DotNet;
+using HybridCLR.Editor.ABI;
 using HybridCLR.Editor.Meta;
 using HybridCLR.Editor.Template;
 using System;
@@ -10,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
+using TypeInfo = HybridCLR.Editor.ABI.TypeInfo;
 
 namespace HybridCLR.Editor.MethodBridge
 {
@@ -17,7 +19,7 @@ namespace HybridCLR.Editor.MethodBridge
     {
         public class Options
         {
-            public PlatformABI CallConvention { get; set; }
+            public PlatformABI PlatformABI { get; set; }
 
             public string TemplateCode { get; set; }
 
@@ -28,6 +30,8 @@ namespace HybridCLR.Editor.MethodBridge
             public IReadOnlyCollection<GenericMethod> GenericMethods { get; set; }
         }
 
+        private PlatformABI _platformABI;
+
         private readonly IReadOnlyList<MethodDef> _notGenericMethods;
 
         private readonly IReadOnlyCollection<GenericMethod> _genericMethods;
@@ -36,41 +40,46 @@ namespace HybridCLR.Editor.MethodBridge
 
         private readonly string _outputFile;
 
-        private readonly PlatformAdaptorBase _platformAdaptor;
+        private readonly PlatformGeneratorBase _platformAdaptor;
 
-        private readonly HashSet<MethodBridgeSig> _managed2nativeMethodSet = new HashSet<MethodBridgeSig>();
+        private readonly TypeCreatorBase _typeCreator;
 
-        private List<MethodBridgeSig> _managed2nativeMethodList;
+        private readonly HashSet<MethodDesc> _managed2nativeMethodSet = new HashSet<MethodDesc>();
 
-        private readonly HashSet<MethodBridgeSig> _native2managedMethodSet = new HashSet<MethodBridgeSig>();
+        private List<MethodDesc> _managed2nativeMethodList;
 
-        private List<MethodBridgeSig> _native2managedMethodList;
+        private readonly HashSet<MethodDesc> _native2managedMethodSet = new HashSet<MethodDesc>();
 
-        private readonly HashSet<MethodBridgeSig> _adjustThunkMethodSet = new HashSet<MethodBridgeSig>();
+        private List<MethodDesc> _native2managedMethodList;
 
-        private List<MethodBridgeSig> _adjustThunkMethodList;
+        private readonly HashSet<MethodDesc> _adjustThunkMethodSet = new HashSet<MethodDesc>();
+
+        private List<MethodDesc> _adjustThunkMethodList;
 
         public Generator(Options options)
         {
+            _platformABI = options.PlatformABI;
             _notGenericMethods = options.NotGenericMethods;
             _genericMethods = options.GenericMethods;
             _templateCode = options.TemplateCode;
             _outputFile = options.OutputFile;
-            _platformAdaptor = CreatePlatformAdaptor(options.CallConvention);
+            _platformAdaptor = CreatePlatformAdaptor(options.PlatformABI);
+            _typeCreator = TypeCreatorFactory.CreateTypeCreator(options.PlatformABI);
         }
 
-        private static PlatformAdaptorBase CreatePlatformAdaptor(PlatformABI type)
+        private static PlatformGeneratorBase CreatePlatformAdaptor(PlatformABI type)
         {
             switch (type)
             {
-                case PlatformABI.Universal32: return new PlatformAdaptor_Universal32();
-                case PlatformABI.Universal64: return new PlatformAdaptor_Universal64();
-                case PlatformABI.Arm64: return new PlatformAdaptor_Arm64();
+                case PlatformABI.Universal32: return new PlatformGeneratorUniversal32();
+                case PlatformABI.Universal64: return new PlatformGeneratorUniversal64();
+                case PlatformABI.Arm64: return new PlatformGeneratorArm64();
+                case PlatformABI.WebGL32: return new PlatformGeneratorWebGL32();
                 default: throw new NotSupportedException();
             }
         }
 
-        private MethodBridgeSig CreateMethodBridgeSig(MethodDef methodDef, bool forceRemoveThis, TypeSig returnType, List<TypeSig> parameters)
+        private MethodDesc CreateMethodDesc(MethodDef methodDef, bool forceRemoveThis, TypeSig returnType, List<TypeSig> parameters)
         {
             var paramInfos = new List<ParamInfo>();
             if (forceRemoveThis && !methodDef.IsStatic)
@@ -79,40 +88,34 @@ namespace HybridCLR.Editor.MethodBridge
             }
             foreach (var paramInfo in parameters)
             {
-                paramInfos.Add(new ParamInfo() { Type = _platformAdaptor.CreateTypeInfo(paramInfo) });
+                paramInfos.Add(new ParamInfo() { Type = _typeCreator.CreateTypeInfo(paramInfo) });
             }
-            var mbs = new MethodBridgeSig()
+            var mbs = new MethodDesc()
             {
                 MethodDef = methodDef,
-                ReturnInfo = new ReturnInfo() { Type = returnType != null ? _platformAdaptor.CreateTypeInfo(returnType) : TypeInfo.s_void },
+                ReturnInfo = new ReturnInfo() { Type = returnType != null ? _typeCreator.CreateTypeInfo(returnType) : TypeInfo.s_void },
                 ParamInfos = paramInfos,
             };
-            _platformAdaptor.OptimizeMethod(mbs);
+            _typeCreator.OptimizeMethod(mbs);
             return mbs;
         }
 
-        private void AddManaged2NativeMethod(MethodBridgeSig method)
+        private void AddManaged2NativeMethod(MethodDesc method)
         {
-            if (_managed2nativeMethodSet.Add(method))
-            {
-                method.Init();
-            }
+            method.Init();
+            _managed2nativeMethodSet.Add(method);
         }
 
-        private void AddNative2ManagedMethod(MethodBridgeSig method)
+        private void AddNative2ManagedMethod(MethodDesc method)
         {
-            if (_native2managedMethodSet.Add(method))
-            {
-                method.Init();
-            }
+            method.Init();
+            _native2managedMethodSet.Add(method);
         }
 
-        private void AddAdjustThunkMethod(MethodBridgeSig method)
+        private void AddAdjustThunkMethod(MethodDesc method)
         {
-            if (_adjustThunkMethodSet.Add(method))
-            {
-                method.Init();
-            }
+            method.Init();
+            _adjustThunkMethodSet.Add(method);
         }
 
         private void ProcessMethod(MethodDef method, List<TypeSig> klassInst, List<TypeSig> methodInst)
@@ -136,7 +139,7 @@ namespace HybridCLR.Editor.MethodBridge
                 parameters = method.Parameters.Select(p => MetaUtil.Inflate(p.Type, gc)).ToList();
             }
 
-            var m2nMethod = CreateMethodBridgeSig(method, false, returnType, parameters);
+            var m2nMethod = CreateMethodDesc(method, false, returnType, parameters);
             AddManaged2NativeMethod(m2nMethod);
 
             if (method.IsVirtual)
@@ -145,12 +148,12 @@ namespace HybridCLR.Editor.MethodBridge
                 {
                     AddAdjustThunkMethod(m2nMethod);
                 }
-                //var adjustThunkMethod = CreateMethodBridgeSig(method, true, returnType, parameters);
+                //var adjustThunkMethod = CreateMethodDesc(method, true, returnType, parameters);
                 AddNative2ManagedMethod(m2nMethod);
             }
             if (method.Name == "Invoke" && method.DeclaringType.IsDelegate)
             {
-                var openMethod = CreateMethodBridgeSig(method, true, returnType, parameters);
+                var openMethod = CreateMethodDesc(method, true, returnType, parameters);
                 AddNative2ManagedMethod(openMethod);
             }
         }
@@ -168,7 +171,7 @@ namespace HybridCLR.Editor.MethodBridge
             }
             
             {
-                var sortedMethods = new SortedDictionary<string, MethodBridgeSig>();
+                var sortedMethods = new SortedDictionary<string, MethodDesc>();
                 foreach (var method in _managed2nativeMethodSet)
                 {
                     sortedMethods.Add(method.CreateCallSigName(), method);
@@ -176,7 +179,7 @@ namespace HybridCLR.Editor.MethodBridge
                 _managed2nativeMethodList = sortedMethods.Values.ToList();
             }
             {
-                var sortedMethods = new SortedDictionary<string, MethodBridgeSig>();
+                var sortedMethods = new SortedDictionary<string, MethodDesc>();
                 foreach (var method in _native2managedMethodSet)
                 {
                     sortedMethods.Add(method.CreateCallSigName(), method);
@@ -184,7 +187,7 @@ namespace HybridCLR.Editor.MethodBridge
                 _native2managedMethodList = sortedMethods.Values.ToList();
             }
             {
-                var sortedMethods = new SortedDictionary<string, MethodBridgeSig>();
+                var sortedMethods = new SortedDictionary<string, MethodDesc>();
                 foreach (var method in _adjustThunkMethodSet)
                 {
                     sortedMethods.Add(method.CreateCallSigName(), method);
@@ -195,7 +198,7 @@ namespace HybridCLR.Editor.MethodBridge
 
         public void Generate()
         {
-            var frr = new FileRegionReplace(_templateCode);
+            var frr = new FileRegionReplace(_templateCode.Replace("{PLATFORM_ABI}", ABIUtil.GetHybridCLRPlatformMacro(_platformABI)));
 
             List<string> lines = new List<string>(20_0000);
 
@@ -223,7 +226,7 @@ namespace HybridCLR.Editor.MethodBridge
 
             _platformAdaptor.GenerateAdjustThunkStub(_adjustThunkMethodList, lines);
 
-            frr.Replace("INVOKE_STUB", string.Join("\n", lines));
+            frr.Replace("CODE", string.Join("\n", lines));
 
             Directory.CreateDirectory(Path.GetDirectoryName(_outputFile));
 

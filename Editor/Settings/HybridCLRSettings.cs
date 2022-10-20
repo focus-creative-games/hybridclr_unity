@@ -20,19 +20,28 @@ namespace HybridCLR.Editor
         [Header("热更新dlls")]
         public string[] hotUpdateAssemblies;
 
-        [Header("自动扫描生成的link.xml路径")]
+        [Header("预留的热更新dlls")]
+        public string[] preserveHotUpdateAssemblies;
+
+        [Header("补充元数据AOT dlls")]
+        public string[] patchAOTAssemblies;
+
+        [Header("生成link.xml时扫描asset中引用的类型")]
+        public bool collectAssetReferenceTypes;
+
+        [Header("生成的link.xml路径")]
         public string outputLinkFile = "HybridCLRData/Generated/link.xml";
 
         [Header("自动扫描生成的AOTGenericReferences.cs路径")]
         public string outputAOTGenericReferenceFile = "HybridCLRData/Generated/AOTGenericReferences.cs";
 
         [Header("AOT泛型实例化搜索迭代次数")]
-        public int maxGenericReferenceIteration = 4;
+        public int maxGenericReferenceIteration = 10;
 
-        [Header("预留MonoPInvokeCallbackAttribute函数个数")]
-        public int ReversePInvokeWrapperCount = 10;
+        //[Header("预留MonoPInvokeCallbackAttribute函数个数")]
+        //public int ReversePInvokeWrapperCount = 10;
 
         [Header("MethodBridge泛型搜索迭代次数")]
-        public int maxMethodBridgeGenericIteration = 4;
+        public int maxMethodBridgeGenericIteration = 10;
     }
 }

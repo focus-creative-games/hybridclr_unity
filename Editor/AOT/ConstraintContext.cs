@@ -32,8 +32,8 @@ namespace HybridCLR.Editor.AOT
             public override bool Equals(object obj)
             {
                 ImplType o = (ImplType)obj;
-                return EqualityUtil.EqualsTypeSig(this.BaseType, o.BaseType)
-                    && EqualityUtil.EqualsTypeSigArray(this.Interfaces, o.Interfaces)
+                return MetaUtil.EqualsTypeSig(this.BaseType, o.BaseType)
+                    && MetaUtil.EqualsTypeSigArray(this.Interfaces, o.Interfaces)
                     && this.ValueType == o.ValueType;
             }
 

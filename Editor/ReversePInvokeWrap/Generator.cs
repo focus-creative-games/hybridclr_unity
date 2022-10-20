@@ -1,54 +1,56 @@
-﻿using HybridCLR.Editor.Template;
+﻿using HybridCLR.Editor.ABI;
+using HybridCLR.Editor.Template;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using UnityEngine;
 
 namespace HybridCLR.Editor.ReversePInvokeWrap
 {
     public class Generator
     {
-        public void Generate(string template, int wrapperCount, string outputFile)
+        public void Generate(string template, PlatformABI abi, List<ABIReversePInvokeMethodInfo> methods, string outputFile)
         {
-
+            template = template.Replace("{PLATFORM_ABI}", ABIUtil.GetHybridCLRPlatformMacro(abi));
             var frr = new FileRegionReplace(template);
             var codes = new List<string>();
 
-            codes.Add(@"
-	void CallLuaFunction(void* xState, int32_t wrapperIndex)
-	{
-		const MethodInfo* method = MetadataModule::GetMethodInfoByReversePInvokeWrapperIndex(wrapperIndex);
-		typedef void (*Callback)(void* xState, const MethodInfo* method);
-		((Callback)GetInterpreterDirectlyCallMethodPointer(method))(xState, method);
-	}
-");
-
-            for(int i = 0; i < wrapperCount; i++)
+            int methodIndex = 0;
+            var stubCodes = new List<string>();
+            foreach(var methodInfo in methods)
             {
-                codes.Add($@"
-	void __ReversePInvokeMethod_{i}(void* xState)
+                MethodDesc method = methodInfo.Method;
+                string paramDeclaringListWithoutMethodInfoStr = string.Join(", ", method.ParamInfos.Select(p => $"{p.Type.GetTypeName()} __arg{p.Index}"));
+                string paramNameListWithoutMethodInfoStr = string.Join(", ", method.ParamInfos.Select(p => $"__arg{p.Index}"));
+                string paramTypeListWithMethodInfoStr = string.Join(", ", method.ParamInfos.Select(p => $"{p.Type.GetTypeName()}").Concat(new string[] { "const MethodInfo*" }));
+                string methodTypeDef = $"typedef {method.ReturnInfo.Type.GetTypeName()} (*Callback)({paramTypeListWithMethodInfoStr})";
+                for (int i = 0; i < methodInfo.Count; i++, methodIndex++)
+                {
+                    codes.Add($@"
+	void __ReversePInvokeMethod_{methodIndex}({paramDeclaringListWithoutMethodInfoStr})
 	{{
-		CallLuaFunction(xState, {i});
+        const MethodInfo* method = MetadataModule::GetMethodInfoByReversePInvokeWrapperIndex({i});
+        {methodTypeDef};
+		((Callback)(method->methodPointerCallByInterp))({paramNameListWithoutMethodInfoStr}, method);
 	}}
 ");
+                    stubCodes.Add($"\t\t{{\"{method.Sig}\", (Il2CppMethodPointer)__ReversePInvokeMethod_{methodIndex}}},\n");
+                }
+                Debug.Log($"[ReversePInvokeWrap.Generator] method:{method.MethodDef} wrapperCount:{methodInfo.Count}");
             }
 
             codes.Add(@"
-    Il2CppMethodPointer s_ReversePInvokeMethodStub[]
+    ReversePInvokeMethodData g_reversePInvokeMethodStub[]
 	{
 ");
-            for(int i = 0;  i < wrapperCount; i++)
-            {
-                codes.Add($"\t\t(Il2CppMethodPointer)__ReversePInvokeMethod_{i},\n");
-            }
+            codes.AddRange(stubCodes);
 
             codes.Add(@"
-		nullptr,
+		{nullptr, nullptr},
 	};
 ");
 
-            frr.Replace("REVERSE_PINVOKE_METHOD_STUB", string.Join("", codes));
+            frr.Replace("CODE", string.Join("", codes));
             frr.Commit(outputFile);
         }
     }

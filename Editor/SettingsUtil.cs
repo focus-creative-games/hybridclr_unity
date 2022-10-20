@@ -37,7 +37,7 @@ namespace HybridCLR.Editor
 
         public static string LocalIl2CppDir => $"{LocalUnityDataDir}/il2cpp";
 
-        public static string MethodBridgeCppDir => $"{LocalIl2CppDir}/libil2cpp/hybridclr/interpreter";
+        public static string GeneratedCppDir => $"{LocalIl2CppDir}/libil2cpp/hybridclr/generated";
 
         public static string Il2CppBuildCacheDir { get; } = $"{ProjectDir}/Library/Il2cppBuildCache";
 
@@ -75,7 +75,31 @@ namespace HybridCLR.Editor
                 return hotfixAssembles.ToList();
             }
         }
+
         public static List<string> HotUpdateAssemblyFiles => HotUpdateAssemblyNames.Select(dll => dll + ".dll").ToList();
+
+        public static List<string> PatchingHotUpdateAssemblyFiles
+        {
+            get
+            {
+                List<string> patchingList = HotUpdateAssemblyFiles;
+                string[] preserveAssemblyNames = HybridCLRSettings.Instance.preserveHotUpdateAssemblies;
+                if (preserveAssemblyNames != null && preserveAssemblyNames.Length > 0)
+                {
+                    foreach(var assemblyName in preserveAssemblyNames)
+                    {
+                        string dllFileName = assemblyName + ".dll";
+                        if (patchingList.Contains(dllFileName))
+                        {
+                            throw new Exception($"[PatchingHotUpdateAssemblyFiles] assembly:'{assemblyName}' 重复");
+                        }
+                        patchingList.Add(dllFileName);
+                    }
+                }
+
+                return patchingList;
+            }
+        }
 
         public static HybridCLRSettings HybridCLRSettings => HybridCLRSettings.Instance;
     }

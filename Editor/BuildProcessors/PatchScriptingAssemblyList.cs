@@ -21,6 +21,9 @@ namespace HybridCLR.Editor.BuildProcessors
         IPostGenerateGradleAndroidProject,
 #endif
         IPostprocessBuildWithReport
+#if !UNITY_2021_1_OR_NEWER && UNITY_WEBGL
+     , IIl2CppProcessor
+#endif
     {
         public int callbackOrder => 0;
 
@@ -43,7 +46,7 @@ namespace HybridCLR.Editor.BuildProcessors
         {
             // 如果target为Android,由于已经在OnPostGenerateGradelAndroidProject中处理过，
             // 这里不再重复处理
-#if !UNITY_ANDROID
+#if !UNITY_ANDROID && !UNITY_WEBGL
 
             PathScriptingAssembilesFile(report.summary.outputPath);
 #endif
@@ -81,7 +84,7 @@ namespace HybridCLR.Editor.BuildProcessors
 
             if (jsonFiles.Length == 0)
             {
-                Debug.LogError($"can not find file {SettingsUtil.ScriptingAssembliesJsonFile}");
+                //Debug.LogError($"can not find file {SettingsUtil.ScriptingAssembliesJsonFile}");
                 return;
             }
 
@@ -89,7 +92,7 @@ namespace HybridCLR.Editor.BuildProcessors
             {
                 var patcher = new ScriptingAssembliesJsonPatcher();
                 patcher.Load(file);
-                patcher.AddScriptingAssemblies(SettingsUtil.HotUpdateAssemblyFiles);
+                patcher.AddScriptingAssemblies(SettingsUtil.PatchingHotUpdateAssemblyFiles);
                 patcher.Save(file);
             }
         }
@@ -120,7 +123,7 @@ namespace HybridCLR.Editor.BuildProcessors
             {
                 var binFile = new UnityBinFile();
                 binFile.Load(binPath);
-                binFile.AddScriptingAssemblies(SettingsUtil.HotUpdateAssemblyFiles);
+                binFile.AddScriptingAssemblies(SettingsUtil.PatchingHotUpdateAssemblyFiles);
                 binFile.Save(binPath);
                 Debug.Log($"[PatchScriptingAssemblyList] patch {binPath}");
             }
@@ -139,10 +142,17 @@ namespace HybridCLR.Editor.BuildProcessors
             foreach (string binPath in binFiles)
             {
                 var patcher = new Dataunity3dPatcher();
-                patcher.ApplyPatch(binPath, SettingsUtil.HotUpdateAssemblyFiles);
+                patcher.ApplyPatch(binPath, SettingsUtil.PatchingHotUpdateAssemblyFiles);
                 Debug.Log($"[PatchScriptingAssemblyList] patch {binPath}");
             }
             return true;
         }
+
+#if UNITY_WEBGL
+        public void OnBeforeConvertRun(BuildReport report, Il2CppBuildPipelineData data)
+        {
+            PathScriptingAssembilesFile($"{SettingsUtil.ProjectDir}/Temp/StagingArea/Data");
+        }
+#endif
     }
 }

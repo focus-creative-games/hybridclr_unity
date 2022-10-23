@@ -27,11 +27,11 @@ namespace HybridCLR.Editor
 
         public static string Dataunity3dBinFile { get; } = "data.unity3d";
 
-        public static string HotUpdateDllsRootOutputDir => $"{HybridCLRDataDir}/HotUpdateDlls";
+        public static string HotUpdateDllsRootOutputDir => HybridCLRSettings.Instance.hotUpdateDllCompileOutputRootDir;
+
+        public static string AssembliesPostIl2CppStripDir => HybridCLRSettings.Instance.strippedAOTDllOutputRootDir;
 
         public static string HybridCLRDataDir => $"{ProjectDir}/HybridCLRData";
-
-        public static string AssembliesPostIl2CppStripDir => $"{HybridCLRDataDir}/AssembliesPostIl2CppStrip";
 
         public static string LocalUnityDataDir => $"{HybridCLRDataDir}/LocalIl2CppData-{Application.platform}";
 

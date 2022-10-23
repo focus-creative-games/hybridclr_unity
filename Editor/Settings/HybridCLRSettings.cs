@@ -23,6 +23,12 @@ namespace HybridCLR.Editor
         [Header("预留的热更新dlls")]
         public string[] preserveHotUpdateAssemblies;
 
+        [Header("热更新dll编译输出根目录")]
+        public string hotUpdateDllCompileOutputRootDir = "HybridCLRData/HotUpdateDlls";
+
+        [Header("裁减后AOT dll输出根目录")]
+        public string strippedAOTDllOutputRootDir = "HybridCLRData/AssembliesPostIl2CppStrip";
+
         [Header("补充元数据AOT dlls")]
         public string[] patchAOTAssemblies;
 

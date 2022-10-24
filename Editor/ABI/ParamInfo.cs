@@ -40,5 +40,10 @@ namespace HybridCLR.Editor.ABI
         {
             return Type.GetParamSlotNum();
         }
+
+        public override string ToString()
+        {
+            return Type.GetTypeName();
+        }
     }
 }

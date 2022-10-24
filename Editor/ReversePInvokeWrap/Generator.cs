@@ -21,17 +21,17 @@ namespace HybridCLR.Editor.ReversePInvokeWrap
             {
                 MethodDesc method = methodInfo.Method;
                 string paramDeclaringListWithoutMethodInfoStr = string.Join(", ", method.ParamInfos.Select(p => $"{p.Type.GetTypeName()} __arg{p.Index}"));
-                string paramNameListWithoutMethodInfoStr = string.Join(", ", method.ParamInfos.Select(p => $"__arg{p.Index}"));
+                string paramNameListWithoutMethodInfoStr = string.Join(", ", method.ParamInfos.Select(p => $"__arg{p.Index}").Concat(new string[] { "method" }));
                 string paramTypeListWithMethodInfoStr = string.Join(", ", method.ParamInfos.Select(p => $"{p.Type.GetTypeName()}").Concat(new string[] { "const MethodInfo*" }));
                 string methodTypeDef = $"typedef {method.ReturnInfo.Type.GetTypeName()} (*Callback)({paramTypeListWithMethodInfoStr})";
                 for (int i = 0; i < methodInfo.Count; i++, methodIndex++)
                 {
                     codes.Add($@"
-	void __ReversePInvokeMethod_{methodIndex}({paramDeclaringListWithoutMethodInfoStr})
+	{method.ReturnInfo.Type.GetTypeName()} __ReversePInvokeMethod_{methodIndex}({paramDeclaringListWithoutMethodInfoStr})
 	{{
         const MethodInfo* method = MetadataModule::GetMethodInfoByReversePInvokeWrapperIndex({i});
         {methodTypeDef};
-		((Callback)(method->methodPointerCallByInterp))({paramNameListWithoutMethodInfoStr}, method);
+		{(method.ReturnInfo.IsVoid ? "" : "return ")}((Callback)(method->methodPointerCallByInterp))({paramNameListWithoutMethodInfoStr});
 	}}
 ");
                     stubCodes.Add($"\t\t{{\"{method.Sig}\", (Il2CppMethodPointer)__ReversePInvokeMethod_{methodIndex}}},\n");

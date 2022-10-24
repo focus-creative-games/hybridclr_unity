@@ -8,11 +8,13 @@ namespace HybridCLR.Editor
     {
         private Object m_Target;
         private Preset m_InitialValue;
+        private SettingsProvider m_Provider;
 
-        internal void Init(Object target)
+        internal void Init(Object target, SettingsProvider provider)
         {
             m_Target = target;
             m_InitialValue = new Preset(target);
+            m_Provider = provider;
         }
         public override void OnSelectionChanged(Preset selection)
         {
@@ -26,9 +28,7 @@ namespace HybridCLR.Editor
                 Undo.RecordObject(m_Target, "Cancel Preset");
                 m_InitialValue.ApplyTo(m_Target);
             }
-#if UNITY_2020_1_OR_NEWER
-            SettingsService.RepaintAllSettingsWindow();
-#endif
+            m_Provider.Repaint();
         }
         public override void OnSelectionClosed(Preset selection)
         {

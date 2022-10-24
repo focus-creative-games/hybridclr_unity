@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -15,18 +16,18 @@ namespace HybridCLR.Editor
             {
                 if (!s_Instance)
                 {
-                    CreateAndLoad();
+                    LoadOrCreate();
                 }
                 return s_Instance;
             }
         }
-        private static void CreateAndLoad()
+        public static void LoadOrCreate()
         {
             string filePath = GetFilePath();
             if (!string.IsNullOrEmpty(filePath))
             {
                 var arr = InternalEditorUtility.LoadSerializedFileAndForget(filePath);
-                s_Instance = arr.Length > 0 ? arr[0] as T : CreateInstance<T>();
+                s_Instance = arr.Length > 0 ? arr[0] as T : s_Instance??CreateInstance<T>();
             }
             else
             {
@@ -34,7 +35,7 @@ namespace HybridCLR.Editor
             }
         }
 
-        public void Save(bool saveAsText=true)
+        public void Save(bool saveAsText = true)
         {
             if (!s_Instance)
             {
@@ -56,18 +57,10 @@ namespace HybridCLR.Editor
         }
         protected static string GetFilePath()
         {
-            Type typeFromHandle = typeof(T);
-            object[] customAttributes = typeFromHandle.GetCustomAttributes(inherit: true);
-            object[] array = customAttributes;
-            foreach (object obj in array)
-            {
-                if (obj is FilePathAttribute)
-                {
-                    FilePathAttribute filePathAttribute = obj as FilePathAttribute;
-                    return filePathAttribute.filepath;
-                }
-            }
-            return string.Empty;
+            return typeof(T).GetCustomAttributes(inherit: true)
+                  .Cast<FilePathAttribute>()
+                  .FirstOrDefault(v => v != null)
+                  ?.filepath;
         }
     }
     [AttributeUsage(AttributeTargets.Class)]

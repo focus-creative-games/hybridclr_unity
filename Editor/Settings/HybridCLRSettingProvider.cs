@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.Presets;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UIElements;
 namespace HybridCLR.Editor
@@ -27,9 +28,9 @@ namespace HybridCLR.Editor
         public HybridCLRSettingsProvider() : base("Project/HybridCLR Settings", SettingsScope.Project) { }
         public override void OnActivate(string searchContext, VisualElement rootElement)
         {
+            EditorStatusWatcher.OnEditorFocused += OnEditorFocused;
             HybridCLRSettings.Instance.Save();
             var setting = HybridCLRSettings.Instance;
-            setting.hideFlags &= ~HideFlags.NotEditable;
             _serializedObject = _serializedObject ?? new SerializedObject(setting);
             _enable = _serializedObject.FindProperty("enable");
             _useGlobalIl2cpp = _serializedObject.FindProperty("useGlobalIl2cpp");
@@ -46,6 +47,13 @@ namespace HybridCLR.Editor
             _maxGenericReferenceIteration = _serializedObject.FindProperty("maxGenericReferenceIteration");
             _maxMethodBridgeGenericIteration = _serializedObject.FindProperty("maxMethodBridgeGenericIteration");
         }
+
+        private void OnEditorFocused()
+        {
+            _serializedObject = new SerializedObject(HybridCLRSettings.Instance);
+            SettingsService.NotifySettingsProviderChanged();
+        }
+
         public override void OnTitleBarGUI()
         {
             base.OnTitleBarGUI();
@@ -54,7 +62,7 @@ namespace HybridCLR.Editor
 
             #region  绘制官方网站跳转按钮
             var w = rect.x + rect.width;
-            rect.x = w - 58;
+            rect.x = w - 57;
             rect.y += 6;
             rect.width = rect.height = 18;
             var content = EditorGUIUtility.IconContent("_Help");
@@ -64,7 +72,6 @@ namespace HybridCLR.Editor
                 Application.OpenURL("https://focus-creative-games.github.io/hybridclr/");
             }
             #endregion
-
             #region 绘制 Preset
             rect.x += 19;
             content = EditorGUIUtility.IconContent("Preset.Context");
@@ -73,26 +80,33 @@ namespace HybridCLR.Editor
             {
                 var target = HybridCLRSettings.Instance;
                 var receiver = ScriptableObject.CreateInstance<SettingsPresetReceiver>();
-                receiver.Init(target);
+                receiver.Init(target, this);
                 PresetSelector.ShowSelector(target, null, true, receiver);
             }
             #endregion
             #region 绘制 Reset
             rect.x += 19;
-            content = EditorGUIUtility.IconContent("_Popup");
+            content = EditorGUIUtility.IconContent(
+#if UNITY_2021_3_OR_NEWER
+                "pane options"
+#else
+                "_Popup"
+#endif
+                );
             content.tooltip = "Reset";
             if (GUI.Button(rect, content, buttonStyle))
             {
-                GenericMenu menu = new GenericMenu(); 
-                menu.AddItem(new GUIContent("Reset"), false, () => 
+                GenericMenu menu = new GenericMenu();
+                menu.AddItem(new GUIContent("Reset"), false, () =>
                 {
                     Undo.RecordObject(HybridCLRSettings.Instance, "Capture Value for Reset");
                     var dv = ScriptableObject.CreateInstance<HybridCLRSettings>();
                     var json = EditorJsonUtility.ToJson(dv);
-                    EditorJsonUtility.FromJsonOverwrite(json,HybridCLRSettings.Instance);
+                    UnityEngine.Object.DestroyImmediate(dv);
+                    EditorJsonUtility.FromJsonOverwrite(json, HybridCLRSettings.Instance);
                     HybridCLRSettings.Instance.Save();
                 });
-                menu.ShowAsContext(); 
+                menu.ShowAsContext();
             }
             #endregion
         }
@@ -100,9 +114,9 @@ namespace HybridCLR.Editor
         {
             using (CreateSettingsWindowGUIScope())
             {
+                //防止配置文件意外删除
                 if (_serializedObject == null || !_serializedObject.targetObject)
                 {
-                    _serializedObject = null;
                     _serializedObject = new SerializedObject(HybridCLRSettings.Instance);
                 }
                 _serializedObject.Update();
@@ -137,6 +151,7 @@ namespace HybridCLR.Editor
         public override void OnDeactivate()
         {
             base.OnDeactivate();
+            EditorStatusWatcher.OnEditorFocused -= OnEditorFocused;
             HybridCLRSettings.Instance.Save();
             _serializedObject = null;
         }

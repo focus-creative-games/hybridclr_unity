@@ -68,10 +68,6 @@ namespace HybridCLR.Editor.Installer
 
         public string Il2CppBranch => GetIl2CppPlusBranchByUnityVersion(Application.unityVersion);
 
-        public string InitLocalIl2CppBatFile => Application.dataPath + "/../HybridCLRData/init_local_il2cpp_data.bat";
-
-        public string InitLocalIl2CppBashFile => Application.dataPath + "/../HybridCLRData/init_local_il2cpp_data.sh";
-
         public InstallerController()
         {
             PrepareIl2CppInstallPath();

@@ -53,6 +53,10 @@ namespace HybridCLR.Editor.MethodBridge
 
         private void TryAddAndWalkGenericType(GenericClass gc)
         {
+            if (gc == null)
+            {
+                return;
+            }
             lock(_lock)
             {
                 gc = gc.ToGenericShare();

@@ -1,4 +1,6 @@
-﻿using HybridCLR.Editor.Link;
+﻿using HybridCLR.Editor.ABI;
+using HybridCLR.Editor.Link;
+using HybridCLR.Editor.Meta;
 using HybridCLR.Editor.ReversePInvokeWrap;
 using System;
 using System.Collections.Generic;
@@ -19,12 +21,24 @@ namespace HybridCLR.Editor.Commands
         [MenuItem("HybridCLR/Generate/ReversePInvokeWrapper", priority = 103)]
         public static void GenerateReversePInvokeWrapper()
         {
-            string ReversePInvokeWrapperStubFile = $"{SettingsUtil.LocalIl2CppDir}/libil2cpp/hybridclr/metadata/ReversePInvokeMethodStub.cpp";
-            string wrapperTemplateStr = File.ReadAllText($"{SettingsUtil.TemplatePathInPackage}/ReversePInvokeMethodStub.cpp.txt");
-            int wrapperCount = SettingsUtil.HybridCLRSettings.ReversePInvokeWrapperCount;
-            var generator = new Generator();
-            generator.Generate(wrapperTemplateStr, wrapperCount,ReversePInvokeWrapperStubFile);
-            Debug.Log($"GenerateReversePInvokeWrapper. wraperCount:{wrapperCount} output:{ReversePInvokeWrapperStubFile}");
+            CompileDllCommand.CompileDllActiveBuildTarget();
+            using (var cache = new AssemblyCache(MetaUtil.CreateBuildTargetAssemblyResolver(EditorUserBuildSettings.activeBuildTarget)))
+            {
+                var analyzer = new ReversePInvokeWrap.Analyzer(cache, SettingsUtil.HotUpdateAssemblyNames);
+                analyzer.Run();
+
+
+                string templateCode = File.ReadAllText($"{SettingsUtil.TemplatePathInPackage}/ReversePInvokeMethodStub.cpp");
+                foreach (PlatformABI abi in Enum.GetValues(typeof(PlatformABI)))
+                {
+                    string outputFile = $"{SettingsUtil.GeneratedCppDir}/ReversePInvokeMethodStub_{abi}.cpp";
+
+                    List<ABIReversePInvokeMethodInfo> methods = analyzer.BuildABIMethods(abi);
+                    Debug.Log($"GenerateReversePInvokeWrapper. abi:{abi} wraperCount:{methods.Sum(m => m.Count)} output:{outputFile}");
+                    var generator = new Generator();
+                    generator.Generate(templateCode, abi, methods, outputFile);
+                }
+            }
             MethodBridgeGeneratorCommand.CleanIl2CppBuildCache();
         }
     }

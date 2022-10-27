@@ -33,8 +33,8 @@ namespace HybridCLR.Editor.Meta
         {
             GenericMethod o = (GenericMethod)obj;
             return Method == o.Method
-                && EqualityUtil.EqualsTypeSigArray(KlassInst, o.KlassInst)
-                && EqualityUtil.EqualsTypeSigArray(MethodInst, o.MethodInst);
+                && MetaUtil.EqualsTypeSigArray(KlassInst, o.KlassInst)
+                && MetaUtil.EqualsTypeSigArray(MethodInst, o.MethodInst);
         }
 
         public override int GetHashCode()
@@ -93,7 +93,7 @@ namespace HybridCLR.Editor.Meta
             methodDef = method.ResolveMethodDef();
             if (methodDef == null)
             {
-                Debug.LogError($"method:{method} ResolveMethodDef() == null");
+                Debug.LogWarning($"method:{method} ResolveMethodDef() == null");
                 return null;
             }
             if (method is MethodSpec methodSpec)

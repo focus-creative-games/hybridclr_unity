@@ -24,14 +24,14 @@ namespace HybridCLR
         /// <param name="dllBytes"></param>
         /// <returns></returns>
         /// <exception cref="NotSupportedException"></exception>
-        public static unsafe LoadImageErrorCode LoadMetadataForAOTAssembly(byte[] dllBytes)
+        public static unsafe LoadImageErrorCode LoadMetadataForAOTAssembly(byte[] dllBytes, HomologousImageMode mode)
         {
 #if UNITY_EDITOR
             return LoadImageErrorCode.OK;
 #else
             fixed(byte* data = dllBytes)
             {
-                return (LoadImageErrorCode)LoadMetadataForAOTAssembly((IntPtr)data, dllBytes.Length);
+                return (LoadImageErrorCode)LoadMetadataForAOTAssembly((IntPtr)data, dllBytes.Length, (int)mode);
             }
 #endif
         }
@@ -43,7 +43,7 @@ namespace HybridCLR
         /// <param name="dllSize"></param>
         /// <returns></returns>
         [DllImport(dllName, EntryPoint = "RuntimeApi_LoadMetadataForAOTAssembly")]
-        public static extern int LoadMetadataForAOTAssembly(IntPtr dllBytes, int dllSize);
+        public static extern int LoadMetadataForAOTAssembly(IntPtr dllBytes, int dllSize, int mode);
 
         /// <summary>
         /// 获取解释器线程栈的最大StackObject个数(size*8 为最终占用的内存大小)

@@ -45,7 +45,13 @@ namespace HybridCLR.Editor.Installer
             GUILayout.Space(10f);
 
             EditorGUILayout.BeginVertical("box");
-            EditorGUILayout.LabelField($"安装状态：{(m_Controller.HasInstalledHybridCLR() ? "已安装" : "未安装")}", EditorStyles.boldLabel);
+            bool hasInstall = m_Controller.HasInstalledHybridCLR();
+            EditorGUILayout.LabelField($"安装状态：{(hasInstall ? "已安装" : "未安装")}", EditorStyles.boldLabel);
+            if (hasInstall)
+            {
+                GUIInstallButton("检查更新", "检查", UpdateHybridCLR);
+            }
+            
             GUILayout.Space(5f);
             EditorGUILayout.LabelField($"当前Unity版本: {Application.unityVersion}，匹配的il2cpp_plus分支: {m_Controller.Il2CppBranch}");
             GUISelectUnityDirectory($"il2cpp_plus分支对应的Unity兼容版本的il2cpp路径", "Select");
@@ -119,6 +125,23 @@ namespace HybridCLR.Editor.Installer
         private void InitHybridCLR()
         {
             m_Controller.InitHybridCLR(m_Controller.Il2CppBranch, m_Controller.Il2CppInstallDirectory);
+        }
+
+        private void UpdateHybridCLR()
+        {
+            bool hasUpdateIl2Cpp = m_Controller.HasUpdateIl2Cpp(m_Controller.Il2CppBranch);
+            if (hasUpdateIl2Cpp)
+            {
+                bool ret = EditorUtility.DisplayDialog("检查更新", "版本不一致", "更新","取消");
+                if (ret)
+                {
+                    InitHybridCLR();
+                }
+            }
+            else
+            {
+                EditorUtility.DisplayDialog("检查更新", "暂无更新", "确定");    
+            }
         }
     }
 }

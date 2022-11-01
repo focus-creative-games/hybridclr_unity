@@ -2,14 +2,13 @@ using System;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.Presets;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UIElements;
 namespace HybridCLR.Editor
 {
     public class HybridCLRSettingsProvider : SettingsProvider
     {
-        private static SerializedObject _serializedObject;
+        private SerializedObject _serializedObject;
         private SerializedProperty _enable;
         private SerializedProperty _useGlobalIl2cpp;
         private SerializedProperty _cloneFromGitee;
@@ -29,9 +28,13 @@ namespace HybridCLR.Editor
         public override void OnActivate(string searchContext, VisualElement rootElement)
         {
             EditorStatusWatcher.OnEditorFocused += OnEditorFocused;
-            HybridCLRSettings.Instance.Save();
-            var setting = HybridCLRSettings.Instance;
-            _serializedObject = _serializedObject ?? new SerializedObject(setting);
+            InitGUI();
+        }
+        private void InitGUI()
+        {
+            var setting = HybridCLRSettings.LoadOrCreate();
+            _serializedObject?.Dispose();
+            _serializedObject = new SerializedObject(setting);
             _enable = _serializedObject.FindProperty("enable");
             _useGlobalIl2cpp = _serializedObject.FindProperty("useGlobalIl2cpp");
             _cloneFromGitee = _serializedObject.FindProperty("cloneFromGitee");
@@ -47,13 +50,11 @@ namespace HybridCLR.Editor
             _maxGenericReferenceIteration = _serializedObject.FindProperty("maxGenericReferenceIteration");
             _maxMethodBridgeGenericIteration = _serializedObject.FindProperty("maxMethodBridgeGenericIteration");
         }
-
         private void OnEditorFocused()
         {
-            _serializedObject = new SerializedObject(HybridCLRSettings.Instance);
-            SettingsService.NotifySettingsProviderChanged();
+            InitGUI();
+            Repaint();
         }
-
         public override void OnTitleBarGUI()
         {
             base.OnTitleBarGUI();
@@ -104,7 +105,7 @@ namespace HybridCLR.Editor
                     var json = EditorJsonUtility.ToJson(dv);
                     UnityEngine.Object.DestroyImmediate(dv);
                     EditorJsonUtility.FromJsonOverwrite(json, HybridCLRSettings.Instance);
-                    HybridCLRSettings.Instance.Save();
+                    HybridCLRSettings.Save();
                 });
                 menu.ShowAsContext();
             }
@@ -114,11 +115,6 @@ namespace HybridCLR.Editor
         {
             using (CreateSettingsWindowGUIScope())
             {
-                //防止配置文件意外删除
-                if (_serializedObject == null || !_serializedObject.targetObject)
-                {
-                    _serializedObject = new SerializedObject(HybridCLRSettings.Instance);
-                }
                 _serializedObject.Update();
                 EditorGUI.BeginChangeCheck();
                 EditorGUILayout.PropertyField(_enable);
@@ -138,7 +134,7 @@ namespace HybridCLR.Editor
                 if (EditorGUI.EndChangeCheck())
                 {
                     _serializedObject.ApplyModifiedProperties();
-                    HybridCLRSettings.Instance.Save();
+                    HybridCLRSettings.Save();
                 }
             }
         }
@@ -152,21 +148,22 @@ namespace HybridCLR.Editor
         {
             base.OnDeactivate();
             EditorStatusWatcher.OnEditorFocused -= OnEditorFocused;
-            HybridCLRSettings.Instance.Save();
-            _serializedObject = null;
+            HybridCLRSettings.Save();
         }
+
+        static HybridCLRSettingsProvider provider;
         [SettingsProvider]
         public static SettingsProvider CreateMyCustomSettingsProvider()
         {
-            if (HybridCLRSettings.Instance)
+            if (HybridCLRSettings.Instance && provider == null)
             {
-                var provider = new HybridCLRSettingsProvider
+                provider = new HybridCLRSettingsProvider();
+                using (var so = new SerializedObject(HybridCLRSettings.Instance))
                 {
-                    keywords = GetSearchKeywordsFromSerializedObject(_serializedObject = _serializedObject ?? new SerializedObject(HybridCLRSettings.Instance))
-                };
-                return provider;
+                    provider.keywords = GetSearchKeywordsFromSerializedObject(so);
+                }
             }
-            return null;
+            return provider;
         }
     }
 }

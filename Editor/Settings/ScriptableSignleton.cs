@@ -21,7 +21,7 @@ namespace HybridCLR.Editor
                 return s_Instance;
             }
         }
-        public static void LoadOrCreate()
+        public static T LoadOrCreate()
         {
             string filePath = GetFilePath();
             if (!string.IsNullOrEmpty(filePath))
@@ -33,9 +33,10 @@ namespace HybridCLR.Editor
             {
                 Debug.LogError($"{nameof(ScriptableSingleton<T>)}: 请指定单例存档路径！ ");
             }
+            return s_Instance;
         }
 
-        public void Save(bool saveAsText = true)
+        public static void Save(bool saveAsText = true)
         {
             if (!s_Instance)
             {

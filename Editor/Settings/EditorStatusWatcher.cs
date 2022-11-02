@@ -14,17 +14,13 @@ public static class EditorStatusWatcher
     static EditorStatusWatcher() => EditorApplication.update += Update;
     static void Update()
     {
-        //当编辑器 focus 后如果优先发生编译，则等待其完成编译再刷新内部逻辑（猜想&防御）
-        if (!EditorApplication.isCompiling)
+        if (isFocused != InternalEditorUtility.isApplicationActive)
         {
-            if (isFocused != InternalEditorUtility.isApplicationActive)
+            isFocused = InternalEditorUtility.isApplicationActive;
+            if (isFocused)
             {
-                isFocused = InternalEditorUtility.isApplicationActive;
-                if (isFocused)
-                {
-                    HybridCLRSettings.LoadOrCreate();
-                    OnEditorFocused?.Invoke();
-                }
+                HybridCLRSettings.LoadOrCreate();
+                OnEditorFocused?.Invoke();
             }
         }
     }

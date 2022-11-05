@@ -15,6 +15,9 @@ namespace HybridCLR.Editor.Commands
         [MenuItem("HybridCLR/Generate/All", priority = 200)]
         public static void GenerateAll()
         {
+            Il2CppDefGeneratorCommand.GenerateIl2CppDef();
+            DifferentialHybridExecutionCommand.GenerateAssemblyList();
+            DifferentialHybridExecutionCommand.GenerateAssemblyOptionDatas();
             // 顺序随意
             ReversePInvokeWrapperGeneratorCommand.GenerateReversePInvokeWrapper();
 

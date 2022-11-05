@@ -31,7 +31,7 @@ namespace HybridCLR
 #else
             fixed(byte* data = dllBytes)
             {
-                return (LoadImageErrorCode)LoadMetadataForAOTAssembly((IntPtr)data, dllBytes.Length, (int)mode);
+                return (LoadImageErrorCode)LoadMetadataForAOTAssembly(data, dllBytes.Length, (int)mode);
             }
 #endif
         }
@@ -43,7 +43,40 @@ namespace HybridCLR
         /// <param name="dllSize"></param>
         /// <returns></returns>
         [DllImport(dllName, EntryPoint = "RuntimeApi_LoadMetadataForAOTAssembly")]
-        public static extern int LoadMetadataForAOTAssembly(IntPtr dllBytes, int dllSize, int mode);
+        public static extern unsafe int LoadMetadataForAOTAssembly(byte* dllBytes, int dllSize, int mode);
+
+
+        //[DllImport(dllName, EntryPoint = "RuntimeApi_UseDifferentialHybridAOTAssembly")]
+        //public static unsafe LoadImageErrorCode UseDifferentialHybridAOTAssembly(string assemblyName)
+        //{
+        //    byte[] nameBytes = System.Text.Encoding.UTF8.GetBytes(assemblyName);
+        //    fixed(byte* namePtr = nameBytes)
+        //    {
+
+        //    }
+        //}
+
+        [DllImport(dllName, EntryPoint = "RuntimeApi_UseDifferentialHybridAOTAssembly")]
+        public static extern LoadImageErrorCode UseDifferentialHybridAOTAssembly(string assemblyName);
+
+
+        public static unsafe LoadImageErrorCode LoadDifferentialHybridAssembly(byte[] dllBytes, byte[] optionBytes)
+        {
+#if UNITY_EDITOR
+            return LoadImageErrorCode.OK;
+#else
+            fixed(byte* dllBytesPtr = dllBytes)
+            {
+                fixed(byte* tokenPtr = optionBytes)
+                {
+                    return (LoadImageErrorCode)LoadDifferentialHybridAssembly(dllBytesPtr, dllBytes.Length, tokenPtr, optionBytes.Length);
+                }
+            }
+#endif
+        }
+
+        [DllImport(dllName, EntryPoint = "RuntimeApi_LoadDifferentialHybridAssembly")]
+        public static extern unsafe int LoadDifferentialHybridAssembly(byte* dllBytes, int dllSize, byte* notChangeMethodTokens, int tokenCount);
 
         /// <summary>
         /// 获取解释器线程栈的最大StackObject个数(size*8 为最终占用的内存大小)

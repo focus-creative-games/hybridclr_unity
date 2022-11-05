@@ -32,6 +32,12 @@ namespace HybridCLR.Editor
         [Header("补充元数据AOT dlls")]
         public string[] patchAOTAssemblies;
 
+        [Header("差分混合热更新 dlls")]
+        public string[] differentialHybridAssemblies;
+
+        [Header("差分混合热更新配置数据输出目录")]
+        public string differentialHybridOptionOutputDir = "Assets/StreamingAssets";
+
         [Header("生成link.xml时扫描asset中引用的类型")]
         public bool collectAssetReferenceTypes;
 

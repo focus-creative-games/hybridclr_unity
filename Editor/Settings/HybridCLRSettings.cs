@@ -11,8 +11,8 @@ namespace HybridCLR.Editor
         [Header("使用全局安装的il2cpp")]
         public bool useGlobalIl2cpp;
 
-        [Header("从gitee clone插件代码")]
-        public bool cloneFromGitee = true; // false 则从github上拉取
+        [Header("基准 git clone URL")]
+        public string cloneHomeURL = "https://gitee.com/focus-creative-games";
 
         [Header("热更新Assembly Definitions")]
         public AssemblyDefinitionAsset[] hotUpdateAssemblyDefinitions;

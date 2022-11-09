@@ -10,7 +10,7 @@ namespace HybridCLR.Editor.Installer
 {
     public static class BashUtil
     {
-        public static int RunCommand(string workingDir, string program, string[] args)
+        public static int RunCommand(string workingDir, string program, string[] args, bool log = true)
         {
             using (Process p = new Process())
             {
@@ -20,7 +20,10 @@ namespace HybridCLR.Editor.Installer
                 p.StartInfo.CreateNoWindow = true;
                 string argsStr = string.Join(" ", args.Select(arg => "\"" + arg + "\""));
                 p.StartInfo.Arguments = argsStr;
-                UnityEngine.Debug.Log($"[BashUtil] run => {program} {argsStr}");
+                if (log)
+                {
+                    UnityEngine.Debug.Log($"[BashUtil] run => {program} {argsStr}");
+                }
                 p.Start();
                 p.WaitForExit();
                 return p.ExitCode;
@@ -28,7 +31,7 @@ namespace HybridCLR.Editor.Installer
         }
 
 
-        public static (int ExitCode, string StdOut, string StdErr) RunCommand2(string workingDir, string program, string[] args)
+        public static (int ExitCode, string StdOut, string StdErr) RunCommand2(string workingDir, string program, string[] args, bool log = true)
         {
             using (Process p = new Process())
             {
@@ -40,7 +43,10 @@ namespace HybridCLR.Editor.Installer
                 p.StartInfo.RedirectStandardError = true;
                 string argsStr = string.Join(" ", args.Select(arg => "\"" + arg + "\""));
                 p.StartInfo.Arguments = argsStr;
-                UnityEngine.Debug.Log($"[BashUtil] run => {program} {argsStr}");
+                if (log)
+                {
+                    UnityEngine.Debug.Log($"[BashUtil] run => {program} {argsStr}");
+                }
                 p.Start();
                 p.WaitForExit();
 

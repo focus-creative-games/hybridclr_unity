@@ -274,8 +274,8 @@ namespace HybridCLR.Editor.Installer
 
         private static string GetRepoUrl(string repoName)
         {
-            string repoProvider = SettingsUtil.HybridCLRSettings.cloneFromGitee ? "gitee" : "github";
-            return $"https://{repoProvider}.com/focus-creative-games/{repoName}";
+            string repoProvider = SettingsUtil.HybridCLRSettings.cloneHomeURL;
+            return $"{repoProvider}/{repoName}";
         }
 
         private void RunInitLocalIl2CppData(string il2cppBranch, string il2cppInstallPath)

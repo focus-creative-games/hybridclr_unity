@@ -81,7 +81,8 @@ namespace HybridCLR.Editor.Installer
 
         private bool TryParseMinorVersion(string installDir, out (int Major, int Minor1, int Minor2) unityVersion)
         {
-            var matches = s_unityVersionPat.Matches(installDir);
+            //直接用unity版本判断，不管安装在什么位置
+            var matches = s_unityVersionPat.Matches(Application.unityVersion);
             if (matches.Count == 0)
             {
                 unityVersion = default;
@@ -119,9 +120,6 @@ namespace HybridCLR.Editor.Installer
 
         private bool IsComaptibleWithIl2CppPlusBranch(string branch, string installDir)
         {
-            //暂时
-            return true;
-
             if (!TryParseMinorVersion(installDir, out var unityVersion))
             {
                 return false;

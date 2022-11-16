@@ -119,6 +119,9 @@ namespace HybridCLR.Editor.Installer
 
         private bool IsComaptibleWithIl2CppPlusBranch(string branch, string installDir)
         {
+            //暂时
+            return true;
+
             if (!TryParseMinorVersion(installDir, out var unityVersion))
             {
                 return false;

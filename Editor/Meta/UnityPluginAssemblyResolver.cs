@@ -21,7 +21,7 @@ namespace HybridCLR.Editor.Meta
         private bool IsPluginDll(string dllPath)
         {
             var fileOrDirs = new HashSet<string>(dllPath.Split('\\', '/'));
-            return !fileOrDirs.Intersect(s_ignoreDirs).Any();
+            return !fileOrDirs.Any(dir => dir.EndsWith("~")) && !fileOrDirs.Intersect(s_ignoreDirs).Any();
         }
 
         public string ResolveAssembly(string assemblyName, bool throwExIfNotFind)

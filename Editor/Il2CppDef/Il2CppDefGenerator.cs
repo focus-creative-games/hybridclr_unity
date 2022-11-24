@@ -50,7 +50,7 @@ namespace HybridCLR.Editor.Il2CppDef
                 }
             }
 
-            frr.Replace("UNITY_CONFIG", string.Join("\n", lines));
+            frr.Replace("UNITY_VERSION", string.Join("\n", lines));
 
             frr.Commit(_options.OutputFile);
             Debug.Log($"[HybridCLR.Editor.Il2CppDef.Generator] output:{_options.OutputFile}");

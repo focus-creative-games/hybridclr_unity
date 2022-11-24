@@ -18,7 +18,7 @@ namespace HybridCLR.Editor.Commands
             var options = new Il2CppDef.Il2CppDefGenerator.Options()
             {
                 UnityVersion = UnityEngine.Application.unityVersion,
-                OutputFile = $"{SettingsUtil.LocalIl2CppDir}/libil2cpp/hybridclr/Il2CppCompatibleDef.h",
+                OutputFile = $"{SettingsUtil.LocalIl2CppDir}/libil2cpp/il2cpp-config.h",
             };
 
             var g = new Il2CppDef.Il2CppDefGenerator(options);

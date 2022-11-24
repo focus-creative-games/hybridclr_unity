@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace HybridCLR.Runtime
 {
-    [AttributeUsage(AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Struct)]
     public class UnchangedAttribute : Attribute
     {
         public bool Unchanged { get; }

@@ -11,8 +11,11 @@ namespace HybridCLR.Editor
         [Header("使用全局安装的il2cpp")]
         public bool useGlobalIl2cpp;
 
-        [Header("基准 git clone URL")]
-        public string cloneHomeURL = "https://gitee.com/focus-creative-games";
+        [Header("hybridclr 仓库 URL")]
+        public string hybridclrRepoURL = "https://gitee.com/focus-creative-games/hybridclr";
+
+        [Header("il2cpp_plus 仓库 URL")]
+        public string il2cppPlusRepoURL = "https://gitee.com/focus-creative-games/il2cpp_plus";
 
         [Header("热更新Assembly Definitions")]
         public AssemblyDefinitionAsset[] hotUpdateAssemblyDefinitions;

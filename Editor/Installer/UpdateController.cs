@@ -4,7 +4,11 @@ namespace HybridCLR.Editor.Installer
 {
     public partial class InstallerController
     {
-        public string GetHybridCLRLocalVersion()
+        private string _hybridclrLocalVersion;
+
+        public string HybridclrLocalVersion => _hybridclrLocalVersion ??= GetHybridCLRLocalVersion();
+
+        private string GetHybridCLRLocalVersion()
         {
             string workDir = SettingsUtil.HybridCLRDataDir;
             string hybridclrRepoDir = $"{workDir}/{hybridclr_repo_path}";
@@ -25,14 +29,18 @@ namespace HybridCLR.Editor.Installer
             return "";
         }
 
-        public string GetIl2cppPlusLocalVersion(string il2cppBranch)
+        private string _il2cppPlusLocalVersion;
+
+        public string Il2cppPlusLocalVersion => _il2cppPlusLocalVersion ??= GetIl2cppPlusLocalVersion();
+
+        private string GetIl2cppPlusLocalVersion()
         {
             string workDir = SettingsUtil.HybridCLRDataDir;
             string il2cppPlusRepoDir = $"{workDir}/{il2cpp_plus_repo_path}";
             if (Directory.Exists(il2cppPlusRepoDir))
             {
                 var ret = BashUtil.RunCommand2(il2cppPlusRepoDir, "git",
-                    new string[] { "log", $"{il2cppBranch}", "-n", "1", "--pretty=format:\"%H\"", },
+                    new string[] { "log", "HEAD", "-n", "1", "--pretty=format:\"%H\"", },
                     false);
                 if (ret.ExitCode == 0)
                 {

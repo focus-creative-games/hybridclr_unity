@@ -27,9 +27,7 @@ namespace HybridCLR.Editor.Installer
     public partial class InstallerController
     {
         private const string hybridclr_repo_path = "hybridclr_repo";
-        private const string hybridclr_url = "hybridclr";
         private const string il2cpp_plus_repo_path = "il2cpp_plus_repo";
-        private const string il2cpp_plus_url = "il2cpp_plus";
         
         private string m_Il2CppInstallDirectory;
 
@@ -210,14 +208,14 @@ namespace HybridCLR.Editor.Installer
 #endif
         }
 
-        public void InitHybridCLR(string il2cppBranch, string il2cppInstallPath)
+        public void InitHybridCLR(string il2cppBranch, string il2cppInstallPath, string hybridclrVer, string il2cppPlusVer)
         {
             if (CheckValidIl2CppInstallDirectory(il2cppBranch, il2cppInstallPath) != InstallErrorCode.Ok)
             {
                 Debug.LogError($"请正确设置 il2cpp 安装目录");
                 return;
             }
-            RunInitLocalIl2CppData(il2cppBranch, il2cppInstallPath);
+            RunInitLocalIl2CppData(il2cppBranch, il2cppInstallPath, hybridclrVer, il2cppPlusVer);
         }
 
         public bool HasInstalledHybridCLR()
@@ -272,13 +270,7 @@ namespace HybridCLR.Editor.Installer
 #endif
         }
 
-        private static string GetRepoUrl(string repoName)
-        {
-            string repoProvider = SettingsUtil.HybridCLRSettings.cloneHomeURL;
-            return $"{repoProvider}/{repoName}";
-        }
-
-        private void RunInitLocalIl2CppData(string il2cppBranch, string il2cppInstallPath)
+        private void RunInitLocalIl2CppData(string il2cppBranch, string il2cppInstallPath, string hybridclrVer, string il2cppPlusVer)
         {
 #if UNITY_EDITOR_WIN
             if (!BashUtil.ExistProgram("git"))
@@ -296,16 +288,28 @@ namespace HybridCLR.Editor.Installer
             BashUtil.CopyDir($"{SettingsUtil.HybridCLRDataPathInPackage}/iOSBuild", buildiOSDir, true);
 
             // clone hybridclr
+            string hybridclrRepoURL = HybridCLRSettings.Instance.hybridclrRepoURL;
             string hybridclrRepoDir = $"{workDir}/{hybridclr_repo_path}";
             {
                 BashUtil.RemoveDir(hybridclrRepoDir);
-                var ret = BashUtil.RunCommand(workDir, "git", new string[]
+                string[] args = string.IsNullOrWhiteSpace(hybridclrVer) ? new string[]
                 {
                 "clone",
                 "--depth=1",
-                GetRepoUrl(hybridclr_url),
+                hybridclrRepoURL,
                 hybridclrRepoDir,
-                });
+                }
+                :
+                new string[]
+                {
+                "clone",
+                "--depth=1",
+                "-b",
+                hybridclrVer,
+                hybridclrRepoURL,
+                hybridclrRepoDir,
+                };
+                var ret = BashUtil.RunCommand(workDir, "git", args);
                 //if (ret != 0)
                 //{
                 //    throw new Exception($"git clone 失败");
@@ -313,18 +317,31 @@ namespace HybridCLR.Editor.Installer
             }
 
             // clone il2cpp_plus
+            string il2cppPlusRepoURL = HybridCLRSettings.Instance.il2cppPlusRepoURL;
             string il2cppPlusRepoDir = $"{workDir}/{il2cpp_plus_repo_path}";
             {
                 BashUtil.RemoveDir(il2cppPlusRepoDir);
-                var ret = BashUtil.RunCommand(workDir, "git", new string[]
+                string[] args = string.IsNullOrWhiteSpace(il2cppPlusVer) ?
+                    new string[]
                 {
                 "clone",
                 "--depth=1",
                 "-b",
                 il2cppBranch,
-                GetRepoUrl(il2cpp_plus_url),
+                il2cppPlusRepoURL,
                 il2cppPlusRepoDir,
-                });
+                }
+                :
+                new string[]
+                {
+                "clone",
+                "--depth=1",
+                "-b",
+                il2cppPlusVer,
+                il2cppPlusRepoURL,
+                il2cppPlusRepoDir,
+                };
+                var ret = BashUtil.RunCommand(workDir, "git", args);
                 //if (ret != 0)
                 //{
                 //    throw new Exception($"git clone 失败");
@@ -367,6 +384,8 @@ namespace HybridCLR.Editor.Installer
             if (HasInstalledHybridCLR())
             {
                 Debug.Log("安装成功！");
+                _hybridclrLocalVersion = hybridclrVer;
+                _il2cppPlusLocalVersion = il2cppPlusVer;
             }
             else
             {

@@ -10,6 +10,9 @@ namespace HybridCLR.Editor.Installer
     {
         private InstallerController m_Controller;
 
+        string _hybridclrVersion = "";
+        string _il2cppPlusVersion = "";
+
         private void OnEnable()
         {
             m_Controller = new InstallerController();
@@ -30,39 +33,57 @@ namespace HybridCLR.Editor.Installer
             {
                 SettingsService.OpenProjectSettings("Project/HybridCLR Settings");
             }
-            string minCompatibleVersion = m_Controller.GetMinCompatibleVersion(m_Controller.Il2CppBranch);
+
+            string il2cppBranch = m_Controller.Il2CppBranch;
+            string minCompatibleVersion = m_Controller.GetMinCompatibleVersion(il2cppBranch);
             GUI.enabled = true;
             GUILayout.Space(10f);
             EditorGUILayout.LabelField("=======================说明====================");
             EditorGUILayout.LabelField(
-                $"你所在项目的Unity版本可以与il2cpp_plus版本:{m_Controller.Il2CppBranch} 不一样。\n"
+                $"你所在项目的Unity版本可以与il2cpp_plus版本:{il2cppBranch} 不一样。\n"
                 + $"如果你的Unity的版本号 >= {minCompatibleVersion}, 可以直接安装。\n"
                 + $"如果你的Unity的版本号 < {minCompatibleVersion}, \n"
-                + $"由于安装HybridCLR时需要从il2cpp_plus兼容版本{m_Controller.Il2CppBranch}（而不是你项目版本）拷贝il2cpp目录，\n"
-                + $"你必须同时安装兼容版本 {m_Controller.Il2CppBranch} 才能完成安装", EditorStyles.wordWrappedLabel);
+                + $"由于安装HybridCLR时需要从il2cpp_plus兼容版本{il2cppBranch}（而不是你项目版本）拷贝il2cpp目录，\n"
+                + $"你必须同时安装兼容版本 {il2cppBranch} 才能完成安装", EditorStyles.wordWrappedLabel);
             EditorGUILayout.LabelField("==============================================");
 
             GUILayout.Space(10f);
 
-            EditorGUILayout.LabelField($"当前Unity版本: {Application.unityVersion}，匹配的il2cpp_plus分支: {m_Controller.Il2CppBranch}");
+            EditorGUILayout.LabelField($"当前Unity版本: {Application.unityVersion}，匹配的il2cpp_plus分支: {il2cppBranch}");
             GUILayout.Space(5f);
 
             EditorGUILayout.BeginVertical("box");
             bool hasInstall = m_Controller.HasInstalledHybridCLR();
             EditorGUILayout.LabelField($"安装状态：{(hasInstall ? "已安装" : "未安装")}", EditorStyles.boldLabel);
+
+            string hybridclrLocalVersion = m_Controller.HybridclrLocalVersion;
+            string il2cppPlusLocalVersion = m_Controller.Il2cppPlusLocalVersion;
             if (hasInstall)
             {
-                EditorGUILayout.LabelField($"HybridCLR 版本:    {m_Controller.GetHybridCLRLocalVersion()}");
+                EditorGUILayout.LabelField($"HybridCLR 版本:    {hybridclrLocalVersion}");
                 GUILayout.Space(5f);
-                EditorGUILayout.LabelField($"il2cpp_plus 版本:    {m_Controller.GetIl2cppPlusLocalVersion(m_Controller.Il2CppBranch)}");
+                EditorGUILayout.LabelField($"il2cpp_plus 版本:    {il2cppPlusLocalVersion}");
                 GUILayout.Space(5f);
-                GUIInstallButton("检查更新", "检查", UpdateHybridCLR);
-                GUILayout.Space(40f);
+                //GUIInstallButton("检查更新", "检查", UpdateHybridCLR);
+                //GUILayout.Space(40f);
             }
             
             GUISelectUnityDirectory($"il2cpp_plus分支对应的Unity兼容版本的il2cpp路径", "Select");
             GUILayout.Space(10f);
-            GUIInstallButton("安装最新HybridCLR插件代码到本项目", "安装", InitHybridCLR);
+
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("待安装的 hybridclr 仓库版本号(或tag)(默认取最新版本):", GUILayout.MaxWidth(400));
+            _hybridclrVersion = EditorGUILayout.TextField(_hybridclrVersion);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField($"待安装的 il2cpp_plus 仓库版本号(或tag)(默认取{il2cppBranch}分支最新版本):", GUILayout.MaxWidth(400));
+            _il2cppPlusVersion = EditorGUILayout.TextField(_il2cppPlusVersion);
+            EditorGUILayout.EndHorizontal();
+
+
+            GUIInstallButton("安装hybridclr+il2cpp_plus代码到本地目录", "安装", InitHybridCLR);
             EditorGUILayout.EndVertical();
         }
 
@@ -130,7 +151,7 @@ namespace HybridCLR.Editor.Installer
 
         private void InitHybridCLR()
         {
-            m_Controller.InitHybridCLR(m_Controller.Il2CppBranch, m_Controller.Il2CppInstallDirectory);
+            m_Controller.InitHybridCLR(m_Controller.Il2CppBranch, m_Controller.Il2CppInstallDirectory, _hybridclrVersion, _il2cppPlusVersion);
         }
 
         private void UpdateHybridCLR()

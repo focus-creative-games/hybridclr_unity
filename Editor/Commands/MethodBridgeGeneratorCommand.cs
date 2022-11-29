@@ -51,16 +51,22 @@ namespace HybridCLR.Editor.Commands
             GenerateMethodBridge(true);
         }
 
+        static IAssemblyResolver CreateBuildTargetAssemblyResolver(BuildTarget target)
+        {
+            return new CombinedAssemblyResolver(new PathAssemblyResolver(
+                SettingsUtil.GetAssembliesPostIl2CppStripDir(target),
+                SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target))
+                );
+        }
+
         public static void GenerateMethodBridge(bool compileDll)
         {
-            // 此处理论会有点问题，打每个平台的时候，都得针对当前平台生成桥接函数
-            // 但影响不大，先这样吧
+            BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
             if (compileDll)
             {
                 CompileDllCommand.CompileDllActiveBuildTarget();
             }
-
-            using (AssemblyReferenceDeepCollector collector = new AssemblyReferenceDeepCollector(MetaUtil.CreateBuildTargetAssemblyResolver(EditorUserBuildSettings.activeBuildTarget), SettingsUtil.HotUpdateAssemblyNames))
+            using (AssemblyReferenceDeepCollector collector = new AssemblyReferenceDeepCollector(CreateBuildTargetAssemblyResolver(target), SettingsUtil.HotUpdateAssemblyNames))
             {
                 var analyzer = new Analyzer(new Analyzer.Options
                 {

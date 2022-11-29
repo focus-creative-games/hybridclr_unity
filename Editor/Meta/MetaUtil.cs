@@ -124,7 +124,7 @@ namespace HybridCLR.Editor.Meta
 			return new CombinedAssemblyResolver(new PathAssemblyResolver(
 				SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target)),
 				new UnityPluginAssemblyResolver(),
-				new UnityAOTAssemblyResolver(),
+				new UnityDotNetAOTAssemblyResolver(),
 				new UnityEditorAssemblyResolver());
 		}
     }

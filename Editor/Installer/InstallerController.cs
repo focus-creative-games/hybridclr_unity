@@ -49,19 +49,7 @@ namespace HybridCLR.Editor.Installer
 
         private string GetIl2CppPlusBranchByUnityVersion(string unityVersion)
         {
-            if (unityVersion.Contains("2019."))
-            {
-                return "2019.4.40";
-            }
-            if (unityVersion.Contains("2020."))
-            {
-                return "2020.3.33";
-            }
-            if (unityVersion.Contains("2021."))
-            {
-                return "2021.3.1";
-            }
-            return "not support";
+            return unityVersion.Split('.')[0];
         }
 
         public string Il2CppBranch => GetIl2CppPlusBranchByUnityVersion(Application.unityVersion);
@@ -108,9 +96,9 @@ namespace HybridCLR.Editor.Installer
         {
             switch(branch)
             {
-                case "2019.4.40": return $"2019.4.{min2019_4_CompatibleMinorVersion}";
-                case "2020.3.33": return $"2020.3.{min2020_3_CompatibleMinorVersion}";
-                case "2021.3.1": return $"2021.3.{min2021_3_CompatibleMinorVersion}";
+                case "2019": return $"2019.4.{min2019_4_CompatibleMinorVersion}";
+                case "2020": return $"2020.3.{min2020_3_CompatibleMinorVersion}";
+                case "2021": return $"2021.3.{min2021_3_CompatibleMinorVersion}";
                 default: throw new Exception($"not support version:{branch}");
             }
         }
@@ -123,7 +111,7 @@ namespace HybridCLR.Editor.Installer
             }
             switch(branch)
             {
-                case "2019.4.40":
+                case "2019":
                     {
                         if (unityVersion.Major != 2019 || unityVersion.Minor1 != 4)
                         {
@@ -131,7 +119,7 @@ namespace HybridCLR.Editor.Installer
                         }
                         return unityVersion.Minor2 >= min2019_4_CompatibleMinorVersion;
                     }
-                case "2020.3.33":
+                case "2020":
                     {
                         if (unityVersion.Major != 2020 || unityVersion.Minor1 != 3)
                         {
@@ -139,7 +127,7 @@ namespace HybridCLR.Editor.Installer
                         }
                         return unityVersion.Minor2 >= min2020_3_CompatibleMinorVersion;
                     }
-                case "2021.3.1":
+                case "2021":
                     { 
                         if (unityVersion.Major != 2021 || unityVersion.Minor1 != 3)
                         {
@@ -248,7 +236,7 @@ namespace HybridCLR.Editor.Installer
         
         public bool IsUnity2019(string branch)
         {
-            return branch.Contains("2019.");
+            return branch.Contains("2019");
         }
 
 
@@ -327,7 +315,7 @@ namespace HybridCLR.Editor.Installer
                 "clone",
                 "--depth=1",
                 "-b",
-                il2cppBranch,
+                $"{il2cppBranch}-main",
                 il2cppPlusRepoURL,
                 il2cppPlusRepoDir,
                 }

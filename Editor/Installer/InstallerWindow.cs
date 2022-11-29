@@ -38,19 +38,6 @@ namespace HybridCLR.Editor.Installer
             string minCompatibleVersion = m_Controller.GetMinCompatibleVersion(il2cppBranch);
             GUI.enabled = true;
             GUILayout.Space(10f);
-            EditorGUILayout.LabelField("=======================说明====================");
-            EditorGUILayout.LabelField(
-                $"你所在项目的Unity版本可以与il2cpp_plus版本:{il2cppBranch} 不一样。\n"
-                + $"如果你的Unity的版本号 >= {minCompatibleVersion}, 可以直接安装。\n"
-                + $"如果你的Unity的版本号 < {minCompatibleVersion}, \n"
-                + $"由于安装HybridCLR时需要从il2cpp_plus兼容版本{il2cppBranch}（而不是你项目版本）拷贝il2cpp目录，\n"
-                + $"你必须同时安装兼容版本 {il2cppBranch} 才能完成安装", EditorStyles.wordWrappedLabel);
-            EditorGUILayout.LabelField("==============================================");
-
-            GUILayout.Space(10f);
-
-            EditorGUILayout.LabelField($"当前Unity版本: {Application.unityVersion}，匹配的il2cpp_plus分支: {il2cppBranch}");
-            GUILayout.Space(5f);
 
             EditorGUILayout.BeginVertical("box");
             bool hasInstall = m_Controller.HasInstalledHybridCLR();
@@ -73,12 +60,12 @@ namespace HybridCLR.Editor.Installer
 
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("待安装的 hybridclr 仓库版本号(或tag)(默认取最新版本):", GUILayout.MaxWidth(400));
+            EditorGUILayout.LabelField("待安装的 hybridclr 仓库版本号(或branch或tag)(默认取最新版本):", GUILayout.MaxWidth(400));
             _hybridclrVersion = EditorGUILayout.TextField(_hybridclrVersion);
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField($"待安装的 il2cpp_plus 仓库版本号(或tag)(默认取{il2cppBranch}分支最新版本):", GUILayout.MaxWidth(400));
+            EditorGUILayout.LabelField($"待安装的 il2cpp_plus 仓库版本号(或branch或tag)(默认取{il2cppBranch}-main分支最新版本):", GUILayout.MaxWidth(400));
             _il2cppPlusVersion = EditorGUILayout.TextField(_il2cppPlusVersion);
             EditorGUILayout.EndHorizontal();
 

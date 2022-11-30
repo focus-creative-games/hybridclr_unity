@@ -55,7 +55,10 @@ namespace HybridCLR.Editor.Commands
         {
             return new CombinedAssemblyResolver(new PathAssemblyResolver(
                 SettingsUtil.GetAssembliesPostIl2CppStripDir(target),
-                SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target))
+                SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target)),
+                new UnityPluginAssemblyResolver(),
+                new UnityDotNetAOTAssemblyResolver(),
+                new UnityEditorAssemblyResolver()
                 );
         }
 

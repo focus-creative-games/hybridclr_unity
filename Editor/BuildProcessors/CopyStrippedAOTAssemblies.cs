@@ -57,6 +57,11 @@ namespace HybridCLR.Editor.BuildProcessors
 
         public static void CopyStripDlls(string srcStripDllPath, BuildTarget target)
         {
+            if (!SettingsUtil.Enable)
+            {
+                Debug.Log($"[CopyStrippedAOTAssemblies] disabled");
+                return;
+            }
             Debug.Log($"[CopyStrippedAOTAssemblies] CopyScripDlls. src:{srcStripDllPath} target:{target}");
 
             var dstPath = SettingsUtil.GetAssembliesPostIl2CppStripDir(target);

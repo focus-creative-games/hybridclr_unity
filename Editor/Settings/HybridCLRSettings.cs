@@ -29,6 +29,9 @@ namespace HybridCLR.Editor
         [Header("热更新dll编译输出根目录")]
         public string hotUpdateDllCompileOutputRootDir = "HybridCLRData/HotUpdateDlls";
 
+        [Header("外部热更新dll搜索路径")]
+        public string[] externalHotUpdateAssembliyDirs;
+
         [Header("裁减后AOT dll输出根目录")]
         public string strippedAOTDllOutputRootDir = "HybridCLRData/AssembliesPostIl2CppStrip";
 
@@ -39,7 +42,7 @@ namespace HybridCLR.Editor
         public string[] differentialHybridAssemblies;
 
         [Header("差分混合热更新配置数据输出目录")]
-        public string differentialHybridOptionOutputDir = "Assets/StreamingAssets";
+        public string differentialHybridOptionOutputDir = "HybridCLRData/DifferentialHybridOptionDatas";
 
         [Header("生成link.xml时扫描asset中引用的类型")]
         public bool collectAssetReferenceTypes;
@@ -52,9 +55,6 @@ namespace HybridCLR.Editor
 
         [Header("AOT泛型实例化搜索迭代次数")]
         public int maxGenericReferenceIteration = 10;
-
-        //[Header("预留MonoPInvokeCallbackAttribute函数个数")]
-        //public int ReversePInvokeWrapperCount = 10;
 
         [Header("MethodBridge泛型搜索迭代次数")]
         public int maxMethodBridgeGenericIteration = 10;

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEditor;
 
 namespace HybridCLR.Editor.Meta
 {
@@ -119,10 +120,30 @@ namespace HybridCLR.Editor.Meta
 			return typeSigs.Select(s => ToShareTypeSig(s)).ToList();
         }
 
-		public static IAssemblyResolver CreateBuildTargetAssemblyResolver(UnityEditor.BuildTarget target)
+		public static IAssemblyResolver CreateHotUpdateAssemblyResolver(BuildTarget target)
         {
-			return new CombinedAssemblyResolver(new PathAssemblyResolver(
-				SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target)),
+			var externalDirs = HybridCLRSettings.Instance.externalHotUpdateAssembliyDirs;
+			var defaultHotUpdateOutputDir = SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target);
+			if (externalDirs == null || externalDirs.Length == 0)
+            {
+				return new PathAssemblyResolver(defaultHotUpdateOutputDir);
+            }
+			else
+            {
+				var externalDirList = new List<string>();
+				foreach (var dir in externalDirs)
+                {
+					externalDirList.Add($"{dir}/{target}");
+					externalDirList.Add(dir);
+                }
+				externalDirList.Add(defaultHotUpdateOutputDir);
+				return new PathAssemblyResolver(externalDirList.ToArray());
+            }
+		}
+
+		public static IAssemblyResolver CreateBuildTargetAssemblyResolver(BuildTarget target)
+        {
+			return new CombinedAssemblyResolver(CreateHotUpdateAssemblyResolver(target),
 				new UnityPluginAssemblyResolver(),
 				new UnityDotNetAOTAssemblyResolver(),
 				new UnityEditorAssemblyResolver());

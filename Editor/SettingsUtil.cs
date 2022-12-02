@@ -11,7 +11,15 @@ namespace HybridCLR.Editor
 {
     public static class SettingsUtil
     {
-        public static bool Enable => HybridCLRSettings.Instance.enable;
+        public static bool Enable
+        { 
+            get => HybridCLRSettings.Instance.enable;
+            set 
+            {
+                HybridCLRSettings.Instance.enable = value;
+                HybridCLRSettings.Save();
+            }
+        }
 
         public static string PackageName { get; } = "com.focus-creative-games.hybridclr_unity";
 

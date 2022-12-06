@@ -10,12 +10,14 @@ namespace HybridCLR.Editor.Installer
     {
         private InstallerController m_Controller;
 
-        string _hybridclrVersion = "";
-        string _il2cppPlusVersion = "";
+        string _hybridclrVersion;
+        string _il2cppPlusVersion;
 
         private void OnEnable()
         {
             m_Controller = new InstallerController();
+            _hybridclrVersion = "1.0";
+            _il2cppPlusVersion = $"{m_Controller.Il2CppBranch}-1.0";
         }
 
         private void OnGUI()
@@ -138,7 +140,9 @@ namespace HybridCLR.Editor.Installer
 
         private void InitHybridCLR()
         {
-            m_Controller.InitHybridCLR(m_Controller.Il2CppBranch, m_Controller.Il2CppInstallDirectory, _hybridclrVersion, _il2cppPlusVersion);
+            string hybridclrVersion = string.IsNullOrWhiteSpace(_hybridclrVersion) ? "1.0" : _hybridclrVersion;
+            string il2cppPlusVersion = string.IsNullOrWhiteSpace(_il2cppPlusVersion) ? $"{m_Controller.Il2CppBranch}-1.0" : _il2cppPlusVersion;
+            m_Controller.InitHybridCLR(m_Controller.Il2CppBranch, m_Controller.Il2CppInstallDirectory, hybridclrVersion, il2cppPlusVersion);
         }
 
         private void UpdateHybridCLR()

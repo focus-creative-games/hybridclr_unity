@@ -124,6 +124,20 @@ namespace HybridCLR.Editor.Installer
 
         public string HybridclrLocalVersion => _hybridclrLocalVersion != null ? _hybridclrLocalVersion : _hybridclrLocalVersion = GetHybridCLRLocalVersion();
 
+
+        public string HybridCLRRepoInstalledVersion
+        {
+            get { return EditorPrefs.GetString("hybridclr_repo"); }
+            set { EditorPrefs.SetString("hybridclr_repo", value); }
+        }
+
+        public string Il2CppRepoInstalledVersion
+        {
+            get { return EditorPrefs.GetString("il2cpp_plus_repo"); }
+            set { EditorPrefs.SetString("il2cpp_plus_repo", value); }
+        }
+
+
         private string GetHybridCLRLocalVersion()
         {
             string workDir = SettingsUtil.HybridCLRDataDir;
@@ -226,15 +240,7 @@ namespace HybridCLR.Editor.Installer
             string hybridclrRepoDir = $"{workDir}/{hybridclr_repo_path}";
             {
                 BashUtil.RemoveDir(hybridclrRepoDir);
-                string[] args = string.IsNullOrWhiteSpace(hybridclrVer) ? new string[]
-                {
-                "clone",
-                "--depth=1",
-                hybridclrRepoURL,
-                hybridclrRepoDir,
-                }
-                :
-                new string[]
+                string[] args = new string[]
                 {
                 "clone",
                 "--depth=1",
@@ -255,18 +261,7 @@ namespace HybridCLR.Editor.Installer
             string il2cppPlusRepoDir = $"{workDir}/{il2cpp_plus_repo_path}";
             {
                 BashUtil.RemoveDir(il2cppPlusRepoDir);
-                string[] args = string.IsNullOrWhiteSpace(il2cppPlusVer) ?
-                    new string[]
-                {
-                "clone",
-                "--depth=1",
-                "-b",
-                $"{version.major}-main",
-                il2cppPlusRepoURL,
-                il2cppPlusRepoDir,
-                }
-                :
-                new string[]
+                string[] args = new string[]
                 {
                 "clone",
                 "--depth=1",
@@ -320,6 +315,8 @@ namespace HybridCLR.Editor.Installer
                 Debug.Log("安装成功！");
                 _hybridclrLocalVersion = null;
                 _il2cppPlusLocalVersion = null;
+                HybridCLRRepoInstalledVersion = hybridclrVer;
+                Il2CppRepoInstalledVersion = il2cppPlusVer;
             }
             else
             {

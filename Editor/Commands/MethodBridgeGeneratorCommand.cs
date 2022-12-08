@@ -42,7 +42,6 @@ namespace HybridCLR.Editor.Commands
             g.PrepareMethods();
             g.Generate();
             Debug.LogFormat("== output:{0} ==", outputFile);
-            CleanIl2CppBuildCache();
         }
 
         [MenuItem("HybridCLR/Generate/MethodBridge", priority = 101)]
@@ -92,6 +91,7 @@ namespace HybridCLR.Editor.Commands
                 Task.WaitAll(tasks.ToArray());
             }
 
+            CleanIl2CppBuildCache();
         }
     }
 }

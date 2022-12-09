@@ -181,7 +181,7 @@ namespace HybridCLR.Editor.Installer
                 Il2CppInstallDirectory = $"{curAppInstallPath}/Contents/il2cpp";
                 return;
             }
-            string unityHubRootDir = Directory.GetParent(curAppInstallPath).Parent.Parent.ToString();
+            string unityHubRootDir = Directory.GetParent(curAppInstallPath).Parent.ToString();
             foreach (var unityInstallDir in Directory.GetDirectories(unityHubRootDir, "*", SearchOption.TopDirectoryOnly))
             {
                 Debug.Log("nity install dir:" + unityInstallDir);

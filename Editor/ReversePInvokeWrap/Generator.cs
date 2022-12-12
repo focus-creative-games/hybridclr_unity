@@ -29,7 +29,7 @@ namespace HybridCLR.Editor.ReversePInvokeWrap
                     codes.Add($@"
 	{method.ReturnInfo.Type.GetTypeName()} __ReversePInvokeMethod_{methodIndex}({paramDeclaringListWithoutMethodInfoStr})
 	{{
-        const MethodInfo* method = MetadataModule::GetMethodInfoByReversePInvokeWrapperIndex({i});
+        const MethodInfo* method = MetadataModule::GetMethodInfoByReversePInvokeWrapperIndex({methodIndex});
         {methodTypeDef};
 		{(method.ReturnInfo.IsVoid ? "" : "return ")}((Callback)(method->methodPointerCallByInterp))({paramNameListWithoutMethodInfoStr});
 	}}

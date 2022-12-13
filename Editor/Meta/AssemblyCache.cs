@@ -27,7 +27,7 @@ namespace HybridCLR.Editor.Meta
             _asmResolver.UseGAC = false;
         }
 
-        public ModuleDefMD LoadModule(string moduleName)
+        public ModuleDefMD LoadModule(string moduleName, bool loadReferenceAssemblies = true)
         {
             // Debug.Log($"load module:{moduleName}");
             if (LoadedModules.TryGetValue(moduleName, out var mod))
@@ -37,10 +37,14 @@ namespace HybridCLR.Editor.Meta
             mod = DoLoadModule(_assemblyPathResolver.ResolveAssembly(moduleName, true));
             LoadedModules.Add(moduleName, mod);
 
-            foreach (var refAsm in mod.GetAssemblyRefs())
+            if (loadReferenceAssemblies)
             {
-                LoadModule(refAsm.Name);
+                foreach (var refAsm in mod.GetAssemblyRefs())
+                {
+                    LoadModule(refAsm.Name);
+                }
             }
+
             return mod;
         }
 

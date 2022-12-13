@@ -38,10 +38,10 @@ namespace HybridCLR.Editor.Link
                 var typeRefs = new HashSet<TypeRef>(TypeEqualityComparer.Instance);
                 foreach (var rootAss in rootAssemblies)
                 {
-                    var dnAss = assCollector.LoadModule(rootAss);
+                    var dnAss = assCollector.LoadModule(rootAss, _analyzeAssetType);
                     foreach (var type in dnAss.GetTypeRefs())
                     {
-                        if (!rootAssemblyName.Contains(type.DefinitionAssembly.Name))
+                        if (!rootAssemblyName.Contains(type.DefinitionAssembly.Name.ToString()))
                         {
                             typeRefs.Add(type);
                         }

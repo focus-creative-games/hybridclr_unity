@@ -52,12 +52,9 @@ namespace HybridCLR.Editor.Commands
 
         static IAssemblyResolver CreateBuildTargetAssemblyResolver(BuildTarget target)
         {
-            return new CombinedAssemblyResolver(new PathAssemblyResolver(
-                SettingsUtil.GetAssembliesPostIl2CppStripDir(target),
-                SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target)),
-                new UnityPluginAssemblyResolver(),
-                new UnityDotNetAOTAssemblyResolver(),
-                new UnityEditorAssemblyResolver()
+            return new CombinedAssemblyResolver(
+                new PathAssemblyResolver(SettingsUtil.GetAssembliesPostIl2CppStripDir(target)),
+                MetaUtil.CreateHotUpdateAssemblyResolver(target)
                 );
         }
 

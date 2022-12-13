@@ -16,7 +16,11 @@ namespace HybridCLR.Editor.Meta
             {
                 return refAss.Location;
             }
-            return Assembly.Load(assemblyName).Location;
+            if (throwExIfNotFind)
+            {
+                throw new Exception($"resolve assembly:{assemblyName} fail");
+            }
+            return null;
         }
     }
 }

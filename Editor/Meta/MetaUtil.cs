@@ -141,6 +141,25 @@ namespace HybridCLR.Editor.Meta
             }
 		}
 
+		public static IAssemblyResolver CreateExternalAssemblyResolver(BuildTarget target)
+		{
+			var externalDirs = HybridCLRSettings.Instance.externalHotUpdateAssembliyDirs;
+			if (externalDirs == null || externalDirs.Length == 0)
+			{
+				return new PathAssemblyResolver();
+			}
+			else
+			{
+				var externalDirList = new List<string>();
+				foreach (var dir in externalDirs)
+				{
+					externalDirList.Add($"{dir}/{target}");
+					externalDirList.Add(dir);
+				}
+				return new PathAssemblyResolver(externalDirList.ToArray());
+			}
+		}
+
 		public static IAssemblyResolver CreateBuildTargetAssemblyResolver(BuildTarget target)
         {
 			return new CombinedAssemblyResolver(CreateHotUpdateAssemblyResolver(target),

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HybridCLR.Editor.Meta;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,10 +36,12 @@ namespace HybridCLR.Editor.BuildProcessors
                 }
             }
 
+            var assResolver = MetaUtil.CreateHotUpdateAssemblyResolver(EditorUserBuildSettings.activeBuildTarget);
             // 检查是否填写了正确的dll名称
             foreach (var hotUpdateDll in allHotUpdateDllFiles)
             {
-                if (assemblies.All(ass => !ass.EndsWith(hotUpdateDll)))
+                string hotUpdateAssName = hotUpdateDll.Substring(0, hotUpdateDll.Length - 4);
+                if (assemblies.All(ass => !ass.EndsWith(hotUpdateDll)) && string.IsNullOrEmpty(assResolver.ResolveAssembly(hotUpdateAssName, false)))
                 {
                     throw new Exception($"热更新 assembly:{hotUpdateDll} 不存在，请检查拼写错误");
                 }

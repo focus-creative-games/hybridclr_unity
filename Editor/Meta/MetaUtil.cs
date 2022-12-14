@@ -120,52 +120,39 @@ namespace HybridCLR.Editor.Meta
 			return typeSigs.Select(s => ToShareTypeSig(s)).ToList();
         }
 
-		public static IAssemblyResolver CreateHotUpdateAssemblyResolver(BuildTarget target)
+		public static IAssemblyResolver CreateHotUpdateAssemblyResolver(BuildTarget target, List<string> hotUpdateDlls)
         {
 			var externalDirs = HybridCLRSettings.Instance.externalHotUpdateAssembliyDirs;
 			var defaultHotUpdateOutputDir = SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target);
+			IAssemblyResolver defaultHotUpdateResolver = new FixedSetAssemblyResolver(defaultHotUpdateOutputDir, hotUpdateDlls);
 			if (externalDirs == null || externalDirs.Length == 0)
             {
-				return new PathAssemblyResolver(defaultHotUpdateOutputDir);
+				return defaultHotUpdateResolver;
             }
 			else
             {
-				var externalDirList = new List<string>();
+				var resolvers = new List<IAssemblyResolver>();
 				foreach (var dir in externalDirs)
                 {
-					externalDirList.Add($"{dir}/{target}");
-					externalDirList.Add(dir);
+					resolvers.Add(new FixedSetAssemblyResolver($"{dir}/{target}", hotUpdateDlls));
+					resolvers.Add(new FixedSetAssemblyResolver(dir, hotUpdateDlls));
                 }
-				externalDirList.Add(defaultHotUpdateOutputDir);
-				return new PathAssemblyResolver(externalDirList.ToArray());
+				resolvers.Add(defaultHotUpdateResolver);
+				return new CombinedAssemblyResolver(resolvers.ToArray());
             }
 		}
 
-		public static IAssemblyResolver CreateExternalAssemblyResolver(BuildTarget target)
-		{
-			var externalDirs = HybridCLRSettings.Instance.externalHotUpdateAssembliyDirs;
-			if (externalDirs == null || externalDirs.Length == 0)
-			{
-				return new PathAssemblyResolver();
-			}
-			else
-			{
-				var externalDirList = new List<string>();
-				foreach (var dir in externalDirs)
-				{
-					externalDirList.Add($"{dir}/{target}");
-					externalDirList.Add(dir);
-				}
-				return new PathAssemblyResolver(externalDirList.ToArray());
-			}
-		}
-
-		public static IAssemblyResolver CreateBuildTargetAssemblyResolver(BuildTarget target)
+		public static IAssemblyResolver CreateAOTAssemblyResolver(BuildTarget target)
         {
-			return new CombinedAssemblyResolver(CreateHotUpdateAssemblyResolver(target),
-				new UnityPluginAssemblyResolver(),
-				new UnityDotNetAOTAssemblyResolver(),
-				new UnityEditorAssemblyResolver());
-		}
+			return new PathAssemblyResolver(SettingsUtil.GetAssembliesPostIl2CppStripDir(target));
+        }
+
+		public static IAssemblyResolver CreateHotUpdateAndAOTAssemblyResolver(BuildTarget target, List<string> hotUpdateDlls)
+        {
+			return new CombinedAssemblyResolver(
+				CreateHotUpdateAssemblyResolver(target, hotUpdateDlls),
+				CreateAOTAssemblyResolver(target)
+				);
+        }
     }
 }

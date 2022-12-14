@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HybridCLR.Editor.Meta
 {
-    public class CombinedAssemblyResolver : IAssemblyResolver
+    public class CombinedAssemblyResolver : AssemblyResolverBase
     {
         private readonly IAssemblyResolver[] _resolvers;
 
@@ -15,21 +15,19 @@ namespace HybridCLR.Editor.Meta
             _resolvers = resolvers;
         }
 
-        public string ResolveAssembly(string assemblyName, bool throwExIfNotFind)
+        protected override bool TryResolveAssembly(string assemblyName, out string assemblyPath)
         {
             foreach(var resolver in _resolvers)
             {
                 var assembly = resolver.ResolveAssembly(assemblyName, false);
                 if (assembly != null)
                 {
-                    return assembly;
+                    assemblyPath = assembly;
+                    return true;
                 }
             }
-            if (throwExIfNotFind)
-            {
-                throw new Exception($"resolve assembly:{assemblyName} fail");
-            }
-            return null;
+            assemblyPath = null;
+            return false;
         }
     }
 }

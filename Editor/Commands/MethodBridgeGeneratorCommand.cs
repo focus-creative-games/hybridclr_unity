@@ -45,27 +45,17 @@ namespace HybridCLR.Editor.Commands
         }
 
         [MenuItem("HybridCLR/Generate/MethodBridge", priority = 101)]
-        public static void GenerateMethodBridge()
-        {
-            GenerateMethodBridge(true);
-        }
-
-        static IAssemblyResolver CreateBuildTargetAssemblyResolver(BuildTarget target)
-        {
-            return new CombinedAssemblyResolver(
-                new PathAssemblyResolver(SettingsUtil.GetAssembliesPostIl2CppStripDir(target)),
-                MetaUtil.CreateHotUpdateAssemblyResolver(target)
-                );
-        }
-
-        public static void GenerateMethodBridge(bool compileDll)
+        public static void CompileAndGenerateMethodBridge()
         {
             BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
-            if (compileDll)
-            {
-                CompileDllCommand.CompileDllActiveBuildTarget();
-            }
-            using (AssemblyReferenceDeepCollector collector = new AssemblyReferenceDeepCollector(CreateBuildTargetAssemblyResolver(target), SettingsUtil.HotUpdateAssemblyNames))
+            CompileDllCommand.CompileDll(target);
+            GenerateMethodBridge(target);
+        }
+
+        public static void GenerateMethodBridge(BuildTarget target)
+        {
+            List<string> hotUpdateDllNames = SettingsUtil.HotUpdateAssemblyNames;
+            using (AssemblyReferenceDeepCollector collector = new AssemblyReferenceDeepCollector(MetaUtil.CreateHotUpdateAndAOTAssemblyResolver(target, hotUpdateDllNames), hotUpdateDllNames))
             {
                 var analyzer = new Analyzer(new Analyzer.Options
                 {

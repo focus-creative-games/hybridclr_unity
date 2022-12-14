@@ -19,12 +19,20 @@ namespace HybridCLR.Editor.Commands
     {
 
         [MenuItem("HybridCLR/Generate/ReversePInvokeWrapper", priority = 103)]
-        public static void GenerateReversePInvokeWrapper()
+
+        public static void CompileAndGenerateReversePInvokeWrapper()
         {
-            CompileDllCommand.CompileDllActiveBuildTarget();
-            using (var cache = new AssemblyCache(MetaUtil.CreateBuildTargetAssemblyResolver(EditorUserBuildSettings.activeBuildTarget)))
+            BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
+            CompileDllCommand.CompileDll(target);
+            GenerateReversePInvokeWrapper(target);
+        }
+
+        public static void GenerateReversePInvokeWrapper(BuildTarget target)
+        {
+            List<string> hotUpdateDlls = SettingsUtil.HotUpdateAssemblyNames;
+            using (var cache = new AssemblyCache(MetaUtil.CreateHotUpdateAndAOTAssemblyResolver(target, hotUpdateDlls)))
             {
-                var analyzer = new ReversePInvokeWrap.Analyzer(cache, SettingsUtil.HotUpdateAssemblyNames);
+                var analyzer = new ReversePInvokeWrap.Analyzer(cache, hotUpdateDlls);
                 analyzer.Run();
 
 

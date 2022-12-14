@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace HybridCLR.Editor.ABI
 {
@@ -74,6 +75,10 @@ namespace HybridCLR.Editor.ABI
                 case ElementType.ValueType:
                 {
                     TypeDef typeDef = type.ToTypeDefOrRef().ResolveTypeDef();
+                    if (typeDef == null)
+                    {
+                        throw new Exception($"type:{type} 未能找到定义。请尝试 `HybridCLR/Genergate/LinkXml`，然后Build一次生成AOT dll，再重新生成桥接函数");
+                    }
                     if (typeDef.IsEnum)
                     {
                         return CreateTypeInfo(typeDef.GetEnumUnderlyingType());

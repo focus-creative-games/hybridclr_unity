@@ -74,11 +74,11 @@ namespace HybridCLR.Editor.ABI
 				{
 					continue;
 				}
-				if (sa != null && typeDef.Layout.HasFlag(dnlib.DotNet.TypeAttributes.ExplicitLayout))
+				if (typeDef.Layout.HasFlag(dnlib.DotNet.TypeAttributes.ExplicitLayout))
 				{
 					int offset = (int)field.FieldOffset.Value;
 					totalSize = Math.Max(totalSize, offset + fs);
-					if (offset > sa.ClassSize)
+					if (sa != null && offset > sa.ClassSize)
 					{
 						useSLSize = false;
 					}
@@ -90,7 +90,7 @@ namespace HybridCLR.Editor.ABI
 						totalSize = (totalSize + fa - 1) / fa * fa;
 					}
 					totalSize += fs;
-					if (sa != null && typeDef.Layout.HasFlag(dnlib.DotNet.TypeAttributes.SequentialLayout) && totalSize > sa.ClassSize)
+					if (sa != null && totalSize > sa.ClassSize)
                     {
 						useSLSize = false;
                     }

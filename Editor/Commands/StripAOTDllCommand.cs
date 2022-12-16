@@ -40,7 +40,11 @@ namespace HybridCLR.Editor.Commands
             var buildOptions = BuildOptions.BuildScriptsOnly;
 
             bool oldExportAndroidProj = EditorUserBuildSettings.exportAsGoogleAndroidProject;
-            bool oldCreateSolutionWin = UnityEditor.WindowsStandalone.UserBuildSettings.createSolution;
+#if UNITY_EDITOR_OSX
+            bool oldCreateSolution = UnityEditor.OSXStandalone.UserBuildSettings.createXcodeProject;
+#elif UNITY_EDITOR_WIN
+            bool oldCreateSolution = UnityEditor.WindowsStandalone.UserBuildSettings.createSolution;
+#endif
             bool oldBuildScriptsOnly = EditorUserBuildSettings.buildScriptsOnly;
             EditorUserBuildSettings.buildScriptsOnly = true;
 
@@ -49,7 +53,16 @@ namespace HybridCLR.Editor.Commands
                 case BuildTarget.StandaloneWindows:
                 case BuildTarget.StandaloneWindows64:
                 {
+#if UNITY_EDITOR_WIN
                     UnityEditor.WindowsStandalone.UserBuildSettings.createSolution = true;
+#endif
+                        break;
+                }
+                case BuildTarget.StandaloneOSX:
+                {
+#if UNITY_EDITOR_OSX
+                    UnityEditor.OSXStandalone.UserBuildSettings.createXcodeProject = true;
+#endif
                     break;
                 }
                 case BuildTarget.Android:
@@ -75,10 +88,19 @@ namespace HybridCLR.Editor.Commands
             {
                 case BuildTarget.StandaloneWindows:
                 case BuildTarget.StandaloneWindows64:
-                {
-                    UnityEditor.WindowsStandalone.UserBuildSettings.createSolution = oldCreateSolutionWin;
-                    break;
-                }
+                    {
+#if UNITY_EDITOR_WIN
+                    UnityEditor.WindowsStandalone.UserBuildSettings.createSolution = oldCreateSolution;
+#endif
+                        break;
+                    }
+                case BuildTarget.StandaloneOSX:
+                    {
+#if UNITY_EDITOR_OSX
+                        UnityEditor.OSXStandalone.UserBuildSettings.createXcodeProject = oldCreateSolution;
+#endif
+                        break;
+                    }
                 case BuildTarget.Android:
                 {
                     EditorUserBuildSettings.exportAsGoogleAndroidProject = oldExportAndroidProj;

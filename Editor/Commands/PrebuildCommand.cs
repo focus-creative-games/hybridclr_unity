@@ -17,16 +17,18 @@ namespace HybridCLR.Editor.Commands
         {
             BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
             CompileDllCommand.CompileDll(target);
-
             Il2CppDefGeneratorCommand.GenerateIl2CppDef();
 
             // 这几个生成依赖HotUpdateDlls
             LinkGeneratorCommand.GenerateLinkXml(target);
-            ReversePInvokeWrapperGeneratorCommand.GenerateReversePInvokeWrapper(target);
-            AOTReferenceGeneratorCommand.GenerateAOTGenericReference(target);
+
+            // 生成裁剪后的aot dll
+            StripAOTDllCommand.GenerateStripedAOTDlls(target, EditorUserBuildSettings.selectedBuildTargetGroup);
 
             // 桥接函数生成依赖于AOT dll，必须保证已经build过，生成AOT dll
             MethodBridgeGeneratorCommand.GenerateMethodBridge(target);
+            ReversePInvokeWrapperGeneratorCommand.GenerateReversePInvokeWrapper(target);
+            AOTReferenceGeneratorCommand.GenerateAOTGenericReference(target);
         }
     }
 }

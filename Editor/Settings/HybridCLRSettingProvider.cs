@@ -53,6 +53,7 @@ namespace HybridCLR.Editor
             _outputAOTGenericReferenceFile = _serializedObject.FindProperty("outputAOTGenericReferenceFile");
             _maxGenericReferenceIteration = _serializedObject.FindProperty("maxGenericReferenceIteration");
             _maxMethodBridgeGenericIteration = _serializedObject.FindProperty("maxMethodBridgeGenericIteration");
+
         }
         private void OnEditorFocused()
         {
@@ -120,7 +121,7 @@ namespace HybridCLR.Editor
             using (CreateSettingsWindowGUIScope())
             {
                 //解决编辑器打包时出现的 _serializedObject.targetObject 意外销毁的情况
-                if (_serializedObject == null||!_serializedObject.targetObject)
+                if (!_serializedObject?.targetObject)
                 {
                     InitGUI();
                 }

@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using UnityEditor;
 
 namespace HybridCLR.Editor.Installer
 {
@@ -59,7 +56,7 @@ namespace HybridCLR.Editor.Installer
         public static bool ExistProgram(string prog)
         {
 #if UNITY_EDITOR_WIN
-            return RunCommand(".", "where", new string[] {prog}) == 0;
+            return RunCommand(".", "where", new string[] { prog }) == 0;
 #elif UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
             return RunCommand(".", "which", new string[] {prog}) == 0;
 #endif
@@ -76,21 +73,16 @@ namespace HybridCLR.Editor.Installer
             {
                 return;
             }
-            foreach (var file in Directory.GetFiles(dir))
+            foreach (var file in Directory.GetFiles(dir, "*", SearchOption.AllDirectories))
             {
                 File.SetAttributes(file, FileAttributes.Normal);
-                File.Delete(file);
             }
-            foreach (var subDir in Directory.GetDirectories(dir))
-            {
-                RemoveDir(subDir);
-            }
-            Directory.Delete(dir);
+            Directory.Delete(dir, true);
         }
 
         public static void RecreateDir(string dir)
         {
-            if(Directory.Exists(dir))
+            if (Directory.Exists(dir))
             {
                 RemoveDir(dir, true);
             }
@@ -103,15 +95,14 @@ namespace HybridCLR.Editor.Installer
             {
                 UnityEngine.Debug.Log($"[BashUtil] CopyDir {src} => {dst}");
             }
-            RemoveDir(dst);
-            Directory.CreateDirectory(dst);
-            foreach(var file in Directory.GetFiles(src))
+            RecreateDir(dst);
+            foreach (string dirPath in Directory.GetDirectories(src, "*", SearchOption.AllDirectories))
             {
-                File.Copy(file, $"{dst}/{Path.GetFileName(file)}");
+                Directory.CreateDirectory(dirPath.Replace(src, dst));
             }
-            foreach(var subDir in Directory.GetDirectories(src))
+            foreach (string newPath in Directory.GetFiles(src, "*", SearchOption.AllDirectories))
             {
-                CopyDir(subDir, $"{dst}/{Path.GetFileName(subDir)}");
+                File.Copy(newPath, newPath.Replace(src, dst), true);
             }
         }
     }

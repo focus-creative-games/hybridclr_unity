@@ -127,14 +127,14 @@ namespace HybridCLR.Editor.Installer
 
         public string HybridCLRRepoInstalledVersion
         {
-            get { return EditorPrefs.GetString("hybridclr_repo"); }
-            set { EditorPrefs.SetString("hybridclr_repo", value); }
+            get { return EditorPrefs.GetString($"hybridclr_repo#{MajorVersion}"); }
+            set { EditorPrefs.SetString($"hybridclr_repo#{MajorVersion}", value); }
         }
 
         public string Il2CppRepoInstalledVersion
         {
-            get { return EditorPrefs.GetString("il2cpp_plus_repo"); }
-            set { EditorPrefs.SetString("il2cpp_plus_repo", value); }
+            get { return EditorPrefs.GetString($"il2cpp_plus_repo#{MajorVersion}"); }
+            set { EditorPrefs.SetString($"il2cpp_plus_repo#{MajorVersion}", value); }
         }
 
 

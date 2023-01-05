@@ -45,21 +45,17 @@ namespace HybridCLR.Editor.Commands
         }
 
         [MenuItem("HybridCLR/Generate/MethodBridge", priority = 101)]
-        public static void GenerateMethodBridge()
+        public static void CompileAndGenerateMethodBridge()
         {
-            GenerateMethodBridge(true);
+            BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
+            CompileDllCommand.CompileDll(target);
+            GenerateMethodBridge(target);
         }
 
-        public static void GenerateMethodBridge(bool compileDll)
+        public static void GenerateMethodBridge(BuildTarget target)
         {
-            // 此处理论会有点问题，打每个平台的时候，都得针对当前平台生成桥接函数
-            // 但影响不大，先这样吧
-            if (compileDll)
-            {
-                CompileDllCommand.CompileDllActiveBuildTarget();
-            }
-
-            using (AssemblyReferenceDeepCollector collector = new AssemblyReferenceDeepCollector(MetaUtil.CreateBuildTargetAssemblyResolver(EditorUserBuildSettings.activeBuildTarget), SettingsUtil.HotUpdateAssemblyNames))
+            List<string> hotUpdateDllNames = SettingsUtil.HotUpdateAssemblyNames;
+            using (AssemblyReferenceDeepCollector collector = new AssemblyReferenceDeepCollector(MetaUtil.CreateHotUpdateAndAOTAssemblyResolver(target, hotUpdateDllNames), hotUpdateDllNames))
             {
                 var analyzer = new Analyzer(new Analyzer.Options
                 {

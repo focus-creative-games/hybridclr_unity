@@ -15,16 +15,20 @@ namespace HybridCLR.Editor.Commands
         [MenuItem("HybridCLR/Generate/All", priority = 200)]
         public static void GenerateAll()
         {
+            BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
+            CompileDllCommand.CompileDll(target);
             Il2CppDefGeneratorCommand.GenerateIl2CppDef();
-            // 顺序随意
-            ReversePInvokeWrapperGeneratorCommand.GenerateReversePInvokeWrapper();
 
-            // AOTReferenceGeneratorCommand 涉及到代码生成，必须在MethodBridgeGeneratorCommand之前
-            AOTReferenceGeneratorCommand.GenerateAOTGenericReference();
-            MethodBridgeGeneratorCommand.GenerateMethodBridge();
+            // 这几个生成依赖HotUpdateDlls
+            LinkGeneratorCommand.GenerateLinkXml(target);
 
-            // 顺序随意，只要保证 GenerateLinkXml之前有调用过CompileDll即可
-            LinkGeneratorCommand.GenerateLinkXml(false);
+            // 生成裁剪后的aot dll
+            StripAOTDllCommand.GenerateStripedAOTDlls(target, EditorUserBuildSettings.selectedBuildTargetGroup);
+
+            // 桥接函数生成依赖于AOT dll，必须保证已经build过，生成AOT dll
+            MethodBridgeGeneratorCommand.GenerateMethodBridge(target);
+            ReversePInvokeWrapperGeneratorCommand.GenerateReversePInvokeWrapper(target);
+            AOTReferenceGeneratorCommand.GenerateAOTGenericReference(target);
         }
     }
 }

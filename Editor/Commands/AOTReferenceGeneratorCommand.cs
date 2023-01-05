@@ -14,23 +14,19 @@ namespace HybridCLR.Editor.Commands
     {
 
         [MenuItem("HybridCLR/Generate/AOTGenericReference", priority = 102)]
-        public static void GenerateAOTGenericReference()
+        public static void CompileAndGenerateAOTGenericReference()
         {
-            GenerateAOTGenericReference(true);
+            BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
+            CompileDllCommand.CompileDll(target);
+            GenerateAOTGenericReference(target);
         }
 
-        public static void GenerateAOTGenericReference(bool compileDll)
+        public static void GenerateAOTGenericReference(BuildTarget target)
         {
-            // 此处理论会有点问题，打每个平台的时候，都得针对当前平台生成桥接函数
-            // 但影响不大，先这样吧
-            if (compileDll)
-            {
-                CompileDllCommand.CompileDllActiveBuildTarget();
-            }
-
             var gs = SettingsUtil.HybridCLRSettings;
+            List<string> hotUpdateDllNames = SettingsUtil.HotUpdateAssemblyNames;
 
-            using (AssemblyReferenceDeepCollector collector = new AssemblyReferenceDeepCollector(MetaUtil.CreateBuildTargetAssemblyResolver(EditorUserBuildSettings.activeBuildTarget), SettingsUtil.HotUpdateAssemblyNames))
+            using (AssemblyReferenceDeepCollector collector = new AssemblyReferenceDeepCollector(MetaUtil.CreateHotUpdateAndAOTAssemblyResolver(target, hotUpdateDllNames), hotUpdateDllNames))
             {
                 var analyzer = new Analyzer(new Analyzer.Options
                 {

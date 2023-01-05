@@ -1,4 +1,5 @@
 ﻿using HybridCLR.Editor.Link;
+using HybridCLR.Editor.Meta;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -14,41 +15,21 @@ namespace HybridCLR.Editor.Commands
         [MenuItem("HybridCLR/Generate/LinkXml", priority = 100)]
         public static void GenerateLinkXml()
         {
-            GenerateLinkXml(true);
+            BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
+            CompileDllCommand.CompileDll(target);
+            GenerateLinkXml(target);
         }
 
-        public static void GenerateLinkXml(bool compileDll)
+        public static void GenerateLinkXml(BuildTarget target)
         {
-            if (compileDll)
-            {
-                CompileDllCommand.CompileDllActiveBuildTarget();
-            }
-
             var ls = SettingsUtil.HybridCLRSettings;
 
-            var allAssByNames = new Dictionary<string, Assembly>();
-            foreach (var ass in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                allAssByNames[ass.GetName().Name] = ass;
-            }
+            List<string> hotfixAssemblies = SettingsUtil.HotUpdateAssemblyNames;
 
-            var hotfixAssembles = new List<Assembly>();
-            foreach(var assName in SettingsUtil.HotUpdateAssemblyNames)
-            {
-                if (allAssByNames.TryGetValue(assName, out var ass))
-                {
-                    hotfixAssembles.Add(ass);
-                }
-                else
-                {
-                    throw new Exception($"assembly:{assName} 不存在");
-                }
-            }
+            var analyzer = new Analyzer(MetaUtil.CreateHotUpdateAndAOTAssemblyResolver(target, hotfixAssemblies), HybridCLRSettings.Instance.collectAssetReferenceTypes);
+            var refTypes = analyzer.CollectRefs(hotfixAssemblies);
 
-            var analyzer = new Analyzer(Meta.MetaUtil.CreateBuildTargetAssemblyResolver(EditorUserBuildSettings.activeBuildTarget), HybridCLRSettings.Instance.collectAssetReferenceTypes);
-            var refTypes = analyzer.CollectRefs(hotfixAssembles);
-
-            Debug.Log($"[LinkGeneratorCommand] hotfix assembly count:{hotfixAssembles.Count}, ref type count:{refTypes.Count} output:{Application.dataPath}/{ls.outputLinkFile}");
+            Debug.Log($"[LinkGeneratorCommand] hotfix assembly count:{hotfixAssemblies.Count}, ref type count:{refTypes.Count} output:{Application.dataPath}/{ls.outputLinkFile}");
             var linkXmlWriter = new LinkXmlWriter();
             linkXmlWriter.Write($"{Application.dataPath}/{ls.outputLinkFile}", refTypes);
             AssetDatabase.Refresh();

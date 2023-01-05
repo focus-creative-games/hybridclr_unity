@@ -22,26 +22,19 @@ namespace HybridCLR.Editor.Link
             _analyzeAssetType = analyzeAssetType;
         }
 
-        public HashSet<TypeRef> CollectRefs(List<Assembly> rootAssemblies)
+        public HashSet<TypeRef> CollectRefs(List<string> rootAssemblies)
         {
             using (var assCollector = new AssemblyCache(_resolver))
             {
-                var rootAssemblyName = new HashSet<string>();
-                foreach (var ass in rootAssemblies)
-                {
-                    if (!rootAssemblyName.Add(ass.GetName().Name))
-                    {
-                        throw new Exception($"assembly:{ass.GetName().Name} 重复");
-                    }
-                }
+                var rootAssemblyNames = new HashSet<string>(rootAssemblies);
 
                 var typeRefs = new HashSet<TypeRef>(TypeEqualityComparer.Instance);
                 foreach (var rootAss in rootAssemblies)
                 {
-                    var dnAss = assCollector.LoadModule(rootAss.GetName().Name);
+                    var dnAss = assCollector.LoadModule(rootAss, _analyzeAssetType);
                     foreach (var type in dnAss.GetTypeRefs())
                     {
-                        if (!rootAssemblyName.Contains(type.DefinitionAssembly.Name))
+                        if (!rootAssemblyNames.Contains(type.DefinitionAssembly.Name.ToString()))
                         {
                             typeRefs.Add(type);
                         }
@@ -51,7 +44,7 @@ namespace HybridCLR.Editor.Link
                 if (_analyzeAssetType)
                 {
                     var modsExludeRoots = assCollector.LoadedModules
-                        .Where(e => !rootAssemblyName.Contains(e.Key))
+                        .Where(e => !rootAssemblyNames.Contains(e.Key))
                         .ToDictionary(e => e.Key, e => e.Value);
                     CollectObjectTypeInAssets(modsExludeRoots, typeRefs);
                 }

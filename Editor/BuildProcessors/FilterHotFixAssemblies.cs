@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HybridCLR.Editor.Meta;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,11 +24,12 @@ namespace HybridCLR.Editor.BuildProcessors
                 Debug.Log($"[FilterHotFixAssemblies] disabled");
                 return assemblies;
             }
-            List<string> allHotUpdateDllFiles = SettingsUtil.HotUpdateAssemblyFiles;
+            List<string> allHotUpdateDllNames = SettingsUtil.HotUpdateAssemblyNames;
+            List<string> allHotupdateDllFiles = SettingsUtil.HotUpdateAssemblyFiles;
 
             // 检查是否重复填写
             var hotUpdateDllSet = new HashSet<string>();
-            foreach(var hotUpdateDll in allHotUpdateDllFiles)
+            foreach(var hotUpdateDll in allHotUpdateDllNames)
             {
                 if (!hotUpdateDllSet.Add(hotUpdateDll))
                 {
@@ -35,18 +37,20 @@ namespace HybridCLR.Editor.BuildProcessors
                 }
             }
 
+            var assResolver = MetaUtil.CreateHotUpdateAssemblyResolver(EditorUserBuildSettings.activeBuildTarget, allHotUpdateDllNames);
             // 检查是否填写了正确的dll名称
-            foreach (var hotUpdateDll in allHotUpdateDllFiles)
+            foreach (var hotUpdateDllName in allHotUpdateDllNames)
             {
-                if (assemblies.All(ass => !ass.EndsWith(hotUpdateDll)))
+                string hotUpdateDllFile = hotUpdateDllName + ".dll";
+                if (assemblies.All(ass => !ass.EndsWith(hotUpdateDllFile)) && string.IsNullOrEmpty(assResolver.ResolveAssembly(hotUpdateDllName, false)))
                 {
-                    throw new Exception($"热更新 assembly:{hotUpdateDll} 不存在，请检查拼写错误");
+                    throw new Exception($"热更新 assembly:{hotUpdateDllFile} 不存在，请检查拼写错误");
                 }
-                Debug.Log($"[FilterHotFixAssemblies] 过滤热更新assembly:{hotUpdateDll}");
+                Debug.Log($"[FilterHotFixAssemblies] 过滤热更新assembly:{hotUpdateDllFile}");
             }
             
             // 将热更dll从打包列表中移除
-            return assemblies.Where(ass => allHotUpdateDllFiles.All(dll => !ass.EndsWith(dll, StringComparison.OrdinalIgnoreCase))).ToArray();
+            return assemblies.Where(ass => allHotupdateDllFiles.All(dll => !ass.EndsWith(dll, StringComparison.OrdinalIgnoreCase))).ToArray();
         }
     }
 }

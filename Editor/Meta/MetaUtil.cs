@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEditor;
 
 namespace HybridCLR.Editor.Meta
 {
@@ -119,13 +120,39 @@ namespace HybridCLR.Editor.Meta
 			return typeSigs.Select(s => ToShareTypeSig(s)).ToList();
         }
 
-		public static IAssemblyResolver CreateBuildTargetAssemblyResolver(UnityEditor.BuildTarget target)
+		public static IAssemblyResolver CreateHotUpdateAssemblyResolver(BuildTarget target, List<string> hotUpdateDlls)
         {
-			return new CombinedAssemblyResolver(new PathAssemblyResolver(
-				SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target)),
-				new UnityPluginAssemblyResolver(),
-				new UnityAOTAssemblyResolver(),
-				new UnityEditorAssemblyResolver());
+			var externalDirs = HybridCLRSettings.Instance.externalHotUpdateAssembliyDirs;
+			var defaultHotUpdateOutputDir = SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target);
+			IAssemblyResolver defaultHotUpdateResolver = new FixedSetAssemblyResolver(defaultHotUpdateOutputDir, hotUpdateDlls);
+			if (externalDirs == null || externalDirs.Length == 0)
+            {
+				return defaultHotUpdateResolver;
+            }
+			else
+            {
+				var resolvers = new List<IAssemblyResolver>();
+				foreach (var dir in externalDirs)
+                {
+					resolvers.Add(new FixedSetAssemblyResolver($"{dir}/{target}", hotUpdateDlls));
+					resolvers.Add(new FixedSetAssemblyResolver(dir, hotUpdateDlls));
+                }
+				resolvers.Add(defaultHotUpdateResolver);
+				return new CombinedAssemblyResolver(resolvers.ToArray());
+            }
 		}
+
+		public static IAssemblyResolver CreateAOTAssemblyResolver(BuildTarget target)
+        {
+			return new PathAssemblyResolver(SettingsUtil.GetAssembliesPostIl2CppStripDir(target));
+        }
+
+		public static IAssemblyResolver CreateHotUpdateAndAOTAssemblyResolver(BuildTarget target, List<string> hotUpdateDlls)
+        {
+			return new CombinedAssemblyResolver(
+				CreateHotUpdateAssemblyResolver(target, hotUpdateDlls),
+				CreateAOTAssemblyResolver(target)
+				);
+        }
     }
 }

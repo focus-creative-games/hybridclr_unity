@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace HybridCLR.Editor.Meta
 {
-    public class PathAssemblyResolver : IAssemblyResolver
+    public class PathAssemblyResolver : AssemblyResolverBase
     {
         private readonly string[] _searchPaths;
         public PathAssemblyResolver(params string[] searchPaths)
@@ -16,7 +16,7 @@ namespace HybridCLR.Editor.Meta
             _searchPaths = searchPaths;
         }
 
-        public string ResolveAssembly(string assemblyName, bool throwExIfNotFind)
+        protected override bool TryResolveAssembly(string assemblyName, out string assemblyPath)
         {
             foreach(var path in _searchPaths)
             {
@@ -24,14 +24,12 @@ namespace HybridCLR.Editor.Meta
                 if (File.Exists(assPath))
                 {
                     Debug.Log($"resolve {assemblyName} at {assPath}");
-                    return assPath;
+                    assemblyPath = assPath;
+                    return true;
                 }
             }
-            if (throwExIfNotFind)
-            {
-                throw new Exception($"resolve assembly:{assemblyName} fail");
-            }
-            return null;
+            assemblyPath = null;
+            return false;
         }
     }
 }

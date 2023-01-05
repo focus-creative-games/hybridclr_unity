@@ -15,7 +15,11 @@ namespace HybridCLR.Editor.Il2CppDef
     {
         public class Options
         {
+            public List<string> HotUpdateAssemblies { get; set; }
+
             public string OutputFile { get; set; }
+
+            public string OutputFile2 { get; set; }
 
             public string UnityVersion { get; set; }
         }
@@ -30,6 +34,12 @@ namespace HybridCLR.Editor.Il2CppDef
         private static readonly Regex s_unityVersionPat = new Regex(@"(\d+)\.(\d+)\.(\d+)");
 
         public void Generate()
+        {
+            GenerateIl2CppConfig();
+            GeneratePlaceHolderAssemblies();
+        }
+
+        private void GenerateIl2CppConfig()
         {
             var frr = new FileRegionReplace(File.ReadAllText(_options.OutputFile));
 
@@ -54,6 +64,23 @@ namespace HybridCLR.Editor.Il2CppDef
 
             frr.Commit(_options.OutputFile);
             Debug.Log($"[HybridCLR.Editor.Il2CppDef.Generator] output:{_options.OutputFile}");
+        }
+
+        private void GeneratePlaceHolderAssemblies()
+        {
+            var frr = new FileRegionReplace(File.ReadAllText(_options.OutputFile2));
+
+            List<string> lines = new List<string>();
+
+            foreach (var ass in _options.HotUpdateAssemblies)
+            {
+                lines.Add($"\t\t\"{ass}\",");
+            }
+
+            frr.Replace("PLACE_HOLDER", string.Join("\n", lines));
+
+            frr.Commit(_options.OutputFile2);
+            Debug.Log($"[HybridCLR.Editor.Il2CppDef.Generator] output:{_options.OutputFile2}");
         }
     }
 }

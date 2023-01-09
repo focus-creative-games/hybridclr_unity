@@ -1,9 +1,4 @@
 ﻿using HybridCLR.Editor.Installer;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
@@ -16,7 +11,7 @@ namespace HybridCLR.Editor.Commands
         private static void Open()
         {
             InstallerWindow window = EditorWindow.GetWindow<InstallerWindow>("HybridCLR Installer", true);
-            window.minSize = new Vector2(800f, 500f);
+            window.minSize = new Vector2(500f, 300f);
         }
     }
 }

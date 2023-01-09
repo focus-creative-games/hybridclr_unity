@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HybridCLR.Editor.Installer;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -46,8 +47,7 @@ namespace HybridCLR.Editor.BuildProcessors
                 UnityEditor.PlayerSettings.gcIncremental = false;
             }
 
-            var installer = new Installer.InstallerController();
-            if (!installer.HasInstalledHybridCLR())
+            if (!InstallerController.HasInstalledHybridCLR)
             {
                 throw new Exception($"你没有初始化HybridCLR，请通过菜单'HybridCLR/Installer'安装");
             }

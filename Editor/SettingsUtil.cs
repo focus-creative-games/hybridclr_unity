@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -39,7 +40,11 @@ namespace HybridCLR.Editor
 
         public static string AssembliesPostIl2CppStripDir => HybridCLRSettings.Instance.strippedAOTDllOutputRootDir;
 
-        public static string HybridCLRDataDir => $"{ProjectDir}/HybridCLRData";
+        public static string HybridCLRDataDir => $"{ProjectDir}/HybridCLRData/{UnityMajorVersion}";
+
+        public static string HybridCLRRepoFolder => "hybridclr_repo";
+
+        public static string Il2cppPlusRepoFolder => "il2cpp_plus_repo";
 
         public static string LocalUnityDataDir => $"{HybridCLRDataDir}/LocalIl2CppData-{Application.platform}";
 
@@ -49,14 +54,22 @@ namespace HybridCLR.Editor
 
         public static string Il2CppBuildCacheDir { get; } = $"{ProjectDir}/Library/Il2cppBuildCache";
 
-        public static string GetHotUpdateDllsOutputDirByTarget(BuildTarget target)
-        {
-            return $"{HotUpdateDllsRootOutputDir}/{target}";
-        }
+        public static string UnityMajorVersion => Regex.Match(Application.unityVersion, @"(\d{4})(?=\.)").Value;
+        
+        public static string GetHotUpdateDllsOutputDirByTarget(BuildTarget target) => $"{HotUpdateDllsRootOutputDir}/{target}";
 
-        public static string GetAssembliesPostIl2CppStripDir(BuildTarget target)
+        public static string GetAssembliesPostIl2CppStripDir(BuildTarget target) => $"{AssembliesPostIl2CppStripDir}/{target}";
+
+        public static string GetRepositoryLocation(Repository repo)
         {
-            return $"{AssembliesPostIl2CppStripDir}/{target}";
+            switch (repo)
+            {
+                case Repository.HybridCLR:
+                    return $"{HybridCLRDataDir}/{HybridCLRRepoFolder}";
+                case Repository.IL2CPP_Plus:
+                    return $"{HybridCLRDataDir}/{Il2cppPlusRepoFolder}";
+            }
+            return null;
         }
 
         class AssemblyDefinitionData
@@ -94,7 +107,7 @@ namespace HybridCLR.Editor
                 string[] preserveAssemblyNames = HybridCLRSettings.Instance.preserveHotUpdateAssemblies;
                 if (preserveAssemblyNames != null && preserveAssemblyNames.Length > 0)
                 {
-                    foreach(var assemblyName in preserveAssemblyNames)
+                    foreach (var assemblyName in preserveAssemblyNames)
                     {
                         string dllFileName = assemblyName + ".dll";
                         if (patchingList.Contains(dllFileName))

@@ -24,7 +24,7 @@ namespace HybridCLR.Editor.Commands
         {
             var ls = SettingsUtil.HybridCLRSettings;
 
-            List<string> hotfixAssemblies = SettingsUtil.HotUpdateAssemblyNames;
+            List<string> hotfixAssemblies = SettingsUtil.HotUpdateAssemblyNamesExcludePreserved;
 
             var analyzer = new Analyzer(MetaUtil.CreateHotUpdateAndAOTAssemblyResolver(target, hotfixAssemblies), HybridCLRSettings.Instance.collectAssetReferenceTypes);
             var refTypes = analyzer.CollectRefs(hotfixAssemblies);

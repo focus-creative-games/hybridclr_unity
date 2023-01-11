@@ -24,8 +24,8 @@ namespace HybridCLR.Editor.BuildProcessors
                 Debug.Log($"[FilterHotFixAssemblies] disabled");
                 return assemblies;
             }
-            List<string> allHotUpdateDllNames = SettingsUtil.HotUpdateAssemblyNames;
-            List<string> allHotupdateDllFiles = SettingsUtil.HotUpdateAssemblyFiles;
+            List<string> allHotUpdateDllNames = SettingsUtil.HotUpdateAssemblyNamesExcludePreserved;
+            List<string> allHotupdateDllFiles = SettingsUtil.HotUpdateAssemblyFilesExcludePreserved;
 
             // 检查是否重复填写
             var hotUpdateDllSet = new HashSet<string>();

@@ -18,7 +18,7 @@ namespace HybridCLR.Editor.Commands
             var options = new Il2CppDef.Il2CppDefGenerator.Options()
             {
                 UnityVersion = Application.unityVersion,
-                HotUpdateAssemblies = SettingsUtil.HotUpdateAssemblyNames,
+                HotUpdateAssemblies = SettingsUtil.HotUpdateAssemblyNamesIncludePreserved,
                 OutputFile = $"{SettingsUtil.LocalIl2CppDir}/libil2cpp/il2cpp-config.h",
                 OutputFile2 = $"{SettingsUtil.LocalIl2CppDir}/libil2cpp/hybridclr/Il2CppCompatibleDef.cpp",
             };

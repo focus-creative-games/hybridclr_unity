@@ -65,9 +65,9 @@ namespace HybridCLR.Editor
         }
 
         /// <summary>
-        /// 所有热更新dll列表。放到此列表中的dll在打包时OnFilterAssemblies回调中被过滤。
+        /// 热更新dll列表。不包含 preserveHotUpdateAssemblies。
         /// </summary>
-        public static List<string> HotUpdateAssemblyNames
+        public static List<string> HotUpdateAssemblyNamesExcludePreserved
         {
             get
             {
@@ -84,30 +84,34 @@ namespace HybridCLR.Editor
             }
         }
 
-        public static List<string> HotUpdateAssemblyFiles => HotUpdateAssemblyNames.Select(dll => dll + ".dll").ToList();
+        public static List<string> HotUpdateAssemblyFilesExcludePreserved => HotUpdateAssemblyNamesExcludePreserved.Select(dll => dll + ".dll").ToList();
 
-        public static List<string> PatchingHotUpdateAssemblyFiles
+
+        public static List<string> HotUpdateAssemblyNamesIncludePreserved
         {
             get
             {
-                List<string> patchingList = HotUpdateAssemblyFiles;
+                List<string> allAsses = HotUpdateAssemblyNamesExcludePreserved;
                 string[] preserveAssemblyNames = HybridCLRSettings.Instance.preserveHotUpdateAssemblies;
                 if (preserveAssemblyNames != null && preserveAssemblyNames.Length > 0)
                 {
-                    foreach(var assemblyName in preserveAssemblyNames)
+                    foreach (var assemblyName in preserveAssemblyNames)
                     {
-                        string dllFileName = assemblyName + ".dll";
-                        if (patchingList.Contains(dllFileName))
+                        if (allAsses.Contains(assemblyName))
                         {
-                            throw new Exception($"[PatchingHotUpdateAssemblyFiles] assembly:'{assemblyName}' 重复");
+                            throw new Exception($"[HotUpdateAssemblyNamesIncludePreserved] assembly:'{assemblyName}' 重复");
                         }
-                        patchingList.Add(dllFileName);
+                        allAsses.Add(assemblyName);
                     }
                 }
 
-                return patchingList;
+                return allAsses;
             }
         }
+
+        public static List<string> HotUpdateAssemblyFilesIncludePreserved => HotUpdateAssemblyNamesIncludePreserved.Select(ass => ass + ".dll").ToList();
+
+        public static List<string> AOTAssemblyNames => HybridCLRSettings.Instance.patchAOTAssemblies.ToList();
 
         public static HybridCLRSettings HybridCLRSettings => HybridCLRSettings.Instance;
     }

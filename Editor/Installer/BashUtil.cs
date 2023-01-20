@@ -41,7 +41,7 @@ namespace HybridCLR.Editor.Installer
                 p.StartInfo.CreateNoWindow = true;
                 p.StartInfo.RedirectStandardOutput = true;
                 p.StartInfo.RedirectStandardError = true;
-                string argsStr = string.Join(" ", args.Select(arg => "\"" + arg + "\""));
+                string argsStr = string.Join(" ", args);
                 p.StartInfo.Arguments = argsStr;
                 if (log)
                 {
@@ -54,15 +54,6 @@ namespace HybridCLR.Editor.Installer
                 string stdErr = p.StandardError.ReadToEnd();
                 return (p.ExitCode, stdOut, stdErr);
             }
-        }
-
-        public static bool ExistProgram(string prog)
-        {
-#if UNITY_EDITOR_WIN
-            return RunCommand(".", "where", new string[] {prog}) == 0;
-#elif UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
-            return RunCommand(".", "which", new string[] {prog}) == 0;
-#endif
         }
 
 

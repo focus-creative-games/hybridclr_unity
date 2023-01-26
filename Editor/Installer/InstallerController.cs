@@ -20,24 +20,60 @@ namespace HybridCLR.Editor.Installer
         Ok,
     }
 
-    public partial class InstallerController
+
+
+
+    public class InstallerController
     {
         private const string hybridclr_repo_path = "hybridclr_repo";
 
         private const string il2cpp_plus_repo_path = "il2cpp_plus_repo";
-        
-
 
         public int MajorVersion => _curVersion.major;
 
-        private UnityVersion _curVersion;
+        private readonly UnityVersion _curVersion;
+
+        private readonly HybridclrVersionManifest _versionManifest;
+        private readonly HybridclrVersionInfo _curDefaultVersion;
 
         public InstallerController()
         {
             _curVersion = ParseUnityVersion(Application.unityVersion);
+            _versionManifest = GetHybridCLRVersionManifest();
+            _curDefaultVersion = _versionManifest.versions.Find(v => v.unity_version == _curVersion.major.ToString());
         }
 
-        public class UnityVersion
+        private HybridclrVersionManifest GetHybridCLRVersionManifest()
+        {
+            string versionFile = $"{SettingsUtil.ProjectDir}/{SettingsUtil.HybridCLRDataPathInPackage}/hybridclr_version.json";
+            return JsonUtility.FromJson<HybridclrVersionManifest>(File.ReadAllText(versionFile, Encoding.UTF8));
+        }
+
+        [Serializable]
+        class VersionDesc
+        {
+            public string branch;
+
+            public string hash;
+        }
+
+        [Serializable]
+        class HybridclrVersionInfo
+        {
+            public string unity_version;
+
+            public VersionDesc hybridclr;
+
+            public VersionDesc il2cpp_plus;
+        }
+
+        [Serializable]
+        class HybridclrVersionManifest
+        {
+            public List<HybridclrVersionInfo> versions;
+        }
+
+        private class UnityVersion
         {
             public int major;
             public int minor1;
@@ -120,73 +156,20 @@ namespace HybridCLR.Editor.Installer
             }
         }
 
-        private string _hybridclrLocalVersion;
+        public string HybridclrLocalVersion => _curDefaultVersion.hybridclr.hash;
 
-        public string HybridclrLocalVersion => _hybridclrLocalVersion != null ? _hybridclrLocalVersion : _hybridclrLocalVersion = GetHybridCLRLocalVersion();
+        public string Il2cppPlusLocalVersion => _curDefaultVersion.il2cpp_plus.hash;
 
-
-        public string HybridCLRRepoInstalledVersion
-        {
-            get { return EditorPrefs.GetString($"hybridclr_repo#{MajorVersion}"); }
-            set { EditorPrefs.SetString($"hybridclr_repo#{MajorVersion}", value); }
-        }
-
-        public string Il2CppRepoInstalledVersion
-        {
-            get { return EditorPrefs.GetString($"il2cpp_plus_repo#{MajorVersion}"); }
-            set { EditorPrefs.SetString($"il2cpp_plus_repo#{MajorVersion}", value); }
-        }
-
-
-        private string GetHybridCLRLocalVersion()
-        {
-            string workDir = SettingsUtil.HybridCLRDataDir;
-            string hybridclrRepoDir = $"{workDir}/{hybridclr_repo_path}";
-            if (Directory.Exists(hybridclrRepoDir))
-            {
-                var ret = BashUtil.RunCommand2(hybridclrRepoDir, "git",
-                    new string[] { "log", "HEAD", "-n", "1", "--pretty=format:\"%H\"", },
-                    false);
-                if (ret.ExitCode == 0)
-                {
-                    return ret.StdOut.Trim();
-                }
-                else
-                {
-                    return "ERROR";
-                }
-            }
-            return "";
-        }
-
-        private string _il2cppPlusLocalVersion;
-
-        public string Il2cppPlusLocalVersion => _il2cppPlusLocalVersion != null ? _il2cppPlusLocalVersion : _il2cppPlusLocalVersion = GetIl2cppPlusLocalVersion();
-
-        private string GetIl2cppPlusLocalVersion()
-        {
-            string workDir = SettingsUtil.HybridCLRDataDir;
-            string il2cppPlusRepoDir = $"{workDir}/{il2cpp_plus_repo_path}";
-            if (Directory.Exists(il2cppPlusRepoDir))
-            {
-                var ret = BashUtil.RunCommand2(il2cppPlusRepoDir, "git",
-                    new string[] { "log", "HEAD", "-n", "1", "--pretty=format:\"%H\"", },
-                    false);
-                if (ret.ExitCode == 0)
-                {
-                    return ret.StdOut.Trim();
-                }
-                else
-                {
-                    return "ERROR";
-                }
-            }
-            return "";
-        }
 
         private string GetIl2CppPathByContentPath(string contentPath)
         {
             return $"{contentPath}/il2cpp";
+        }
+
+
+        public void InstallDefaultHybridCLR()
+        {
+            InstallLocalHybridCLR(HybridclrLocalVersion, Il2cppPlusLocalVersion);
         }
 
         public void InstallLocalHybridCLR(string hybridclrVer, string il2cppPlusVer)
@@ -218,8 +201,20 @@ namespace HybridCLR.Editor.Installer
 #endif
         }
 
+        void CloneSpeicificCommitId(string workDir, string repoUrl, string branch, string repoDir, string commitId)
+        {
+            BashUtil.RemoveDir(repoDir);
+            BashUtil.RunCommand(workDir, "git", new string[] {"clone", "-b", branch, repoUrl, repoDir});
+            BashUtil.RunCommand($"{repoDir}", "git", new string[] { "checkout", commitId });
+        }
+
         private void RunInitLocalIl2CppData(string editorIl2cppPath, UnityVersion version, string hybridclrVer, string il2cppPlusVer)
         {
+            if (!IsComaptibleVersion())
+            {
+                Debug.LogError($"il2cpp 版本不兼容，最小版本为 {GetCurrentUnityVersionMinCompatibleVersionStr()}");
+                return;
+            }
             string workDir = SettingsUtil.HybridCLRDataDir;
             Directory.CreateDirectory(workDir);
             //BashUtil.RecreateDir(workDir);
@@ -231,44 +226,12 @@ namespace HybridCLR.Editor.Installer
             // clone hybridclr
             string hybridclrRepoURL = HybridCLRSettings.Instance.hybridclrRepoURL;
             string hybridclrRepoDir = $"{workDir}/{hybridclr_repo_path}";
-            {
-                BashUtil.RemoveDir(hybridclrRepoDir);
-                string[] args = new string[]
-                {
-                "clone",
-                "--depth=1",
-                "-b",
-                hybridclrVer,
-                hybridclrRepoURL,
-                hybridclrRepoDir,
-                };
-                var ret = BashUtil.RunCommand(workDir, "git", args);
-                //if (ret != 0)
-                //{
-                //    throw new Exception($"git clone 失败");
-                //}
-            }
+            CloneSpeicificCommitId(workDir, hybridclrRepoURL, _curDefaultVersion.hybridclr.branch, hybridclrRepoDir, hybridclrVer);
 
             // clone il2cpp_plus
             string il2cppPlusRepoURL = HybridCLRSettings.Instance.il2cppPlusRepoURL;
             string il2cppPlusRepoDir = $"{workDir}/{il2cpp_plus_repo_path}";
-            {
-                BashUtil.RemoveDir(il2cppPlusRepoDir);
-                string[] args = new string[]
-                {
-                "clone",
-                "--depth=1",
-                "-b",
-                il2cppPlusVer,
-                il2cppPlusRepoURL,
-                il2cppPlusRepoDir,
-                };
-                var ret = BashUtil.RunCommand(workDir, "git", args);
-                //if (ret != 0)
-                //{
-                //    throw new Exception($"git clone 失败");
-                //}
-            }
+            CloneSpeicificCommitId(workDir, il2cppPlusRepoURL, _curDefaultVersion.il2cpp_plus.branch, il2cppPlusRepoDir, il2cppPlusVer);
 
             // create LocalIl2Cpp
             string localUnityDataDir = SettingsUtil.LocalUnityDataDir;
@@ -303,17 +266,17 @@ namespace HybridCLR.Editor.Installer
                     Debug.LogError($"未找到当前版本:{curVersionStr} 对应的改造过的 Unity.IL2CPP.dll，打包出的程序将会崩溃");
                 }
             }
+            if (version.major >= 2021)
+            {
+                Debug.LogError($"如果需要打包iOS，必须手动替换UnityEditor.CoreModule.dll为修改后的版本，否则无法获得AOT dlls。详见 https://focus-creative-games.github.io/hybridclr/modify_unity_dll/#unityeditor-coremodule-dll");
+            }
             if (HasInstalledHybridCLR())
             {
-                Debug.Log("安装成功！");
-                _hybridclrLocalVersion = null;
-                _il2cppPlusLocalVersion = null;
-                HybridCLRRepoInstalledVersion = hybridclrVer;
-                Il2CppRepoInstalledVersion = il2cppPlusVer;
+                Debug.Log("安装成功");
             }
             else
             {
-                Debug.LogError("安装失败！");
+                Debug.LogError("安装失败");
             }
         }
     }

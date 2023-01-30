@@ -111,7 +111,7 @@ namespace HybridCLR.Editor
 
         public static List<string> HotUpdateAssemblyFilesIncludePreserved => HotUpdateAssemblyNamesIncludePreserved.Select(ass => ass + ".dll").ToList();
 
-        public static List<string> AOTAssemblyNames => HybridCLRSettings.Instance.patchAOTAssemblies.ToList();
+        public static List<string> AOTAssemblyNames => HybridCLRSettings.Instance.patchAOTAssemblies.Select(ass => ass + ".dll").ToList();
 
         public static HybridCLRSettings HybridCLRSettings => HybridCLRSettings.Instance;
     }

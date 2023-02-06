@@ -266,10 +266,6 @@ namespace HybridCLR.Editor.Installer
                     Debug.LogError($"未找到当前版本:{curVersionStr} 对应的改造过的 Unity.IL2CPP.dll，打包出的程序将会崩溃");
                 }
             }
-            if (version.major >= 2021)
-            {
-                Debug.LogError($"如果需要打包iOS，必须手动替换UnityEditor.CoreModule.dll为修改后的版本，否则无法获得AOT dlls。详见 https://focus-creative-games.github.io/hybridclr/modify_unity_dll/#unityeditor-coremodule-dll");
-            }
             if (HasInstalledHybridCLR())
             {
                 Debug.Log("安装成功");

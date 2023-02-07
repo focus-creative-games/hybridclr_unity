@@ -26,7 +26,7 @@ namespace HybridCLR.Editor.Commands
 
             List<string> hotfixAssemblies = SettingsUtil.HotUpdateAssemblyNamesExcludePreserved;
 
-            var analyzer = new Analyzer(MetaUtil.CreateHotUpdateAndAOTAssemblyResolver(target, hotfixAssemblies), HybridCLRSettings.Instance.collectAssetReferenceTypes);
+            var analyzer = new Analyzer(MetaUtil.CreateHotUpdateAndAOTAssemblyResolver(target, hotfixAssemblies));
             var refTypes = analyzer.CollectRefs(hotfixAssemblies);
 
             Debug.Log($"[LinkGeneratorCommand] hotfix assembly count:{hotfixAssemblies.Count}, ref type count:{refTypes.Count} output:{Application.dataPath}/{ls.outputLinkFile}");

@@ -19,7 +19,7 @@ namespace HybridCLR.Editor.ABI
 
         public override bool IsSupportHFA => false;
 
-        public override bool IsSupportSingletonStruct => true;
+        public override bool IsSupportWebGLSpecialValueType => true;
 
 
         protected override TypeInfo OptimizeSigType(TypeInfo type, bool returnType)

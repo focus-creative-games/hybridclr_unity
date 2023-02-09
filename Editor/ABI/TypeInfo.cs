@@ -90,6 +90,10 @@ namespace HybridCLR.Editor.ABI
                 case ParamOrReturnType.STRUCTURE_ALIGN2: return "A" + Size;
                 case ParamOrReturnType.STRUCTURE_ALIGN4: return "B" + Size;
                 case ParamOrReturnType.STRUCTURE_ALIGN8: return "C" + Size;
+                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN1: return "X" + Size;
+                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN2: return "Y" + Size;
+                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN4: return "Z" + Size;
+                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN8: return "W" + Size;
                 default: throw new NotSupportedException(PorType.ToString());
             };
         }
@@ -121,6 +125,10 @@ namespace HybridCLR.Editor.ABI
                 case ParamOrReturnType.STRUCTURE_ALIGN2: return $"ValueTypeSizeAlign2<{Size}>";
                 case ParamOrReturnType.STRUCTURE_ALIGN4: return $"ValueTypeSizeAlign4<{Size}>";
                 case ParamOrReturnType.STRUCTURE_ALIGN8: return $"ValueTypeSizeAlign8<{Size}>";
+                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN1: return $"WebGLSpeicalValueType<{Size}>";
+                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN2: return $"WebGLSpeicalValueTypeAlign2<{Size}>";
+                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN4: return $"WebGLSpeicalValueTypeAlign4<{Size}>";
+                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN8: return $"WebGLSpeicalValueTypeAlign8<{Size}>";
                 default: throw new NotImplementedException(PorType.ToString());
             };
         }
@@ -141,7 +149,12 @@ namespace HybridCLR.Editor.ABI
                 case ParamOrReturnType.STRUCTURE_ALIGN1:
                 case ParamOrReturnType.STRUCTURE_ALIGN2:
                 case ParamOrReturnType.STRUCTURE_ALIGN4:
-                case ParamOrReturnType.STRUCTURE_ALIGN8: return (Size + 7) / 8;
+                case ParamOrReturnType.STRUCTURE_ALIGN8:
+                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN1:
+                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN2:
+                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN4:
+                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN8:
+                    return (Size + 7) / 8;
                 default:
                     {
                         Debug.Assert(PorType < ParamOrReturnType.STRUCT_NOT_PASS_AS_VALUE);

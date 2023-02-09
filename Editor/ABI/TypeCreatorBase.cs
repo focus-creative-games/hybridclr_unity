@@ -15,7 +15,7 @@ namespace HybridCLR.Editor.ABI
 
         public virtual bool IsSupportHFA => false;
 
-        public virtual bool IsSupportSingletonStruct => false;
+        public virtual bool IsSupportWebGLSpecialValueType => false;
 
         public TypeInfo GetNativeIntTypeInfo() => IsArch32 ? TypeInfo.s_i4 : TypeInfo.s_i8;
 
@@ -249,6 +249,21 @@ namespace HybridCLR.Editor.ABI
             return true;
         }
 
+        public static bool IsWebGLSpeicalValueType(TypeSig type)
+        {
+            TypeDef typeDef = type.ToTypeDefOrRef().ResolveTypeDefThrow();
+            if (typeDef.IsEnum)
+            {
+                return false;
+            }
+            var fields = typeDef.Fields;// typeDef.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            if (fields.Count == 0)
+            {
+                return true;
+            }
+            return fields.All(f => f.IsStatic);
+        }
+
         protected static TypeInfo CreateGeneralValueType(TypeSig type, int size, int aligment)
         {
             System.Diagnostics.Debug.Assert(size % aligment == 0);
@@ -276,10 +291,17 @@ namespace HybridCLR.Editor.ABI
                     default: throw new NotSupportedException();
                 }
             }
-            //else if(IsSupportSingletonStruct && TryComputSingletonStruct(type, out var ssTypeInfo))
-            //{
-            //    return CreateTypeInfo(ssTypeInfo.Type);
-            //}
+            if (IsSupportWebGLSpecialValueType && IsWebGLSpeicalValueType(type))
+            {
+                switch (typeAligment)
+                {
+                    case 1: return new TypeInfo(ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN1, typeSize);
+                    case 2: return new TypeInfo(ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN2, typeSize);
+                    case 4: return new TypeInfo(ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN4, typeSize);
+                    case 8: return new TypeInfo(ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN8, typeSize);
+                    default: throw new NotSupportedException();
+                }
+            }
             else
             {
                 // 64位下结构体内存对齐规则是一样的

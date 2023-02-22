@@ -54,7 +54,7 @@ namespace HybridCLR.Editor.Installer
         {
             public string branch;
 
-            public string hash;
+            //public string hash;
         }
 
         [Serializable]
@@ -156,9 +156,9 @@ namespace HybridCLR.Editor.Installer
             }
         }
 
-        public string HybridclrLocalVersion => _curDefaultVersion.hybridclr.hash;
+        public string HybridclrLocalVersion => _curDefaultVersion.hybridclr.branch;
 
-        public string Il2cppPlusLocalVersion => _curDefaultVersion.il2cpp_plus.hash;
+        public string Il2cppPlusLocalVersion => _curDefaultVersion.il2cpp_plus.branch;
 
 
         private string GetIl2CppPathByContentPath(string contentPath)
@@ -169,12 +169,7 @@ namespace HybridCLR.Editor.Installer
 
         public void InstallDefaultHybridCLR()
         {
-            InstallLocalHybridCLR(HybridclrLocalVersion, Il2cppPlusLocalVersion);
-        }
-
-        public void InstallLocalHybridCLR(string hybridclrVer, string il2cppPlusVer)
-        {
-            RunInitLocalIl2CppData(GetIl2CppPathByContentPath(EditorApplication.applicationContentsPath), _curVersion, hybridclrVer, il2cppPlusVer);
+            RunInitLocalIl2CppData(GetIl2CppPathByContentPath(EditorApplication.applicationContentsPath), _curVersion);
         }
 
         public bool HasInstalledHybridCLR()
@@ -201,14 +196,13 @@ namespace HybridCLR.Editor.Installer
 #endif
         }
 
-        void CloneSpeicificCommitId(string workDir, string repoUrl, string branch, string repoDir, string commitId)
+        void CloneBranch(string workDir, string repoUrl, string branch, string repoDir)
         {
             BashUtil.RemoveDir(repoDir);
-            BashUtil.RunCommand(workDir, "git", new string[] {"clone", "-b", branch, repoUrl, repoDir});
-            BashUtil.RunCommand($"{repoDir}", "git", new string[] { "checkout", commitId });
+            BashUtil.RunCommand(workDir, "git", new string[] {"clone", "-b", branch, "--depth", "1", repoUrl, repoDir});
         }
 
-        private void RunInitLocalIl2CppData(string editorIl2cppPath, UnityVersion version, string hybridclrVer, string il2cppPlusVer)
+        private void RunInitLocalIl2CppData(string editorIl2cppPath, UnityVersion version)
         {
             if (!IsComaptibleVersion())
             {
@@ -226,12 +220,12 @@ namespace HybridCLR.Editor.Installer
             // clone hybridclr
             string hybridclrRepoURL = HybridCLRSettings.Instance.hybridclrRepoURL;
             string hybridclrRepoDir = $"{workDir}/{hybridclr_repo_path}";
-            CloneSpeicificCommitId(workDir, hybridclrRepoURL, _curDefaultVersion.hybridclr.branch, hybridclrRepoDir, hybridclrVer);
+            CloneBranch(workDir, hybridclrRepoURL, _curDefaultVersion.hybridclr.branch, hybridclrRepoDir);
 
             // clone il2cpp_plus
             string il2cppPlusRepoURL = HybridCLRSettings.Instance.il2cppPlusRepoURL;
             string il2cppPlusRepoDir = $"{workDir}/{il2cpp_plus_repo_path}";
-            CloneSpeicificCommitId(workDir, il2cppPlusRepoURL, _curDefaultVersion.il2cpp_plus.branch, il2cppPlusRepoDir, il2cppPlusVer);
+            CloneBranch(workDir, il2cppPlusRepoURL, _curDefaultVersion.il2cpp_plus.branch, il2cppPlusRepoDir);
 
             // create LocalIl2Cpp
             string localUnityDataDir = SettingsUtil.LocalUnityDataDir;

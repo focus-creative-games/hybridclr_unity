@@ -2,18 +2,18 @@
     "versions": [
     {
         "unity_version":"2019",
-        "hybridclr" : { "branch":"main", "hash":"531f98365eebce5d1390175be2b41c41e217d918"},
-        "il2cpp_plus": { "branch":"2019-main", "hash":"ebe5190b0404d1857832bd1d52ebec7c3730a01d"}
+        "hybridclr" : { "branch":"v2.0.1"},
+        "il2cpp_plus": { "branch":"v2019-2.0.1"}
     },
     {
         "unity_version":"2020",
-        "hybridclr" : { "branch":"main", "hash":"531f98365eebce5d1390175be2b41c41e217d918"},
-        "il2cpp_plus": { "branch":"2020-main", "hash":"c6cf54285381d0b03a58126e0d39b6e4d11937b7"}
+        "hybridclr" : { "branch":"v2.0.1"},
+        "il2cpp_plus": { "branch":"v2020-2.0.1"}
     },
     {
         "unity_version":"2021",
-        "hybridclr" : { "branch":"main", "hash":"531f98365eebce5d1390175be2b41c41e217d918"},
-        "il2cpp_plus": { "branch":"2021-main", "hash":"99cd1cbbfc1f637460379e81c9a7776cd3e662ad"}
+        "hybridclr" : { "branch":"v2.0.1"},
+        "il2cpp_plus": { "branch":"v2021-2.0.1"}
     }
     ]
 }

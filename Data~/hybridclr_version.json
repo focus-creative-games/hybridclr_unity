@@ -8,12 +8,12 @@
     {
         "unity_version":"2020",
         "hybridclr" : { "branch":"v2.0.2"},
-        "il2cpp_plus": { "branch":"v2020-2.0.1"}
+        "il2cpp_plus": { "branch":"v2020-2.0.2"}
     },
     {
         "unity_version":"2021",
         "hybridclr" : { "branch":"v2.0.2"},
-        "il2cpp_plus": { "branch":"v2021-2.0.1"}
+        "il2cpp_plus": { "branch":"v2021-2.0.2"}
     }
     ]
 }

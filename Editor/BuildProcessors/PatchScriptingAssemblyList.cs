@@ -52,7 +52,7 @@ namespace HybridCLR.Editor.BuildProcessors
 #endif
         }
 
-        private void PathScriptingAssembilesFile(string path)
+        public void PathScriptingAssembilesFile(string path)
         {
             if (!SettingsUtil.Enable)
             {

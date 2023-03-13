@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 
 namespace DotNetDetour
 {
@@ -642,8 +641,15 @@ namespace DotNetDetour
             if(s_isArm.HasValue)
                 return s_isArm.Value;
 
-            var arch = RuntimeInformation.ProcessArchitecture;
-            s_isArm = arch == Architecture.Arm || arch == Architecture.Arm64;
+            string processorType = UnityEngine.SystemInfo.processorType;
+
+            /*
+             * appple M 系列
+             * SystemInfo.processorType 返回值为: Apple M1 Max, Apple M2 等
+             * SystemInfo.operatingSystem 返回值为: Mac OS X xx.x.x
+             * 
+             */
+            s_isArm = processorType.Contains("ARM") || processorType.Contains("Apple M");
 
             return s_isArm.Value;
         }

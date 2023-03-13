@@ -363,14 +363,8 @@ namespace MonoHook
         {
             if (s_fi_GUISkin_current.GetValue(null) != null)
             {
-                try
-                {
-                    DoInstall();
-                }
-                finally
-                {
-                    EditorApplication.update -= OnEditorUpdate;
-                }
+                DoInstall();
+                EditorApplication.update -= OnEditorUpdate;
             }
         }
 #endif

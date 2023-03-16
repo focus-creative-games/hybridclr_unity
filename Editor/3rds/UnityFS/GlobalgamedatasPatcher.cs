@@ -42,11 +42,11 @@ namespace HybridCLR.Editor.UnityBinFileReader
             writer.Write(new EndianBinaryWriter(output));
             Debug.Log($"patch file:{dataunity3dFile} size:{output.Length}");
 
-            string bakFile = dataunity3dFile + ".bak";
-            if (!File.Exists(bakFile))
-            {
-                File.Copy(dataunity3dFile, bakFile);
-            }
+            //string bakFile = dataunity3dFile + ".bak";
+            //if (!File.Exists(bakFile))
+            //{
+            //    File.Copy(dataunity3dFile, bakFile);
+            //}
             File.WriteAllBytes(dataunity3dFile, output.ToArray());
         }
     }

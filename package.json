@@ -1,6 +1,6 @@
 {
   "name": "com.focus-creative-games.hybridclr_unity",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "displayName": "HybridCLR",
   "description": "Unity package for HybridCLR. It includes editor and runtime scripts and assets for HybridCLR",
   "category": "Runtime",

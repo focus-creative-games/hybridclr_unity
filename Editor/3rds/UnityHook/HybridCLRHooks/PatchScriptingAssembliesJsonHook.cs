@@ -48,6 +48,8 @@ namespace HybridCLR.MonoHook
         [MethodImpl(MethodImplOptions.NoOptimization)]
         private static string BuildMainWindowTitleProxy()
         {
+            // 为满足MonoHook要求的最小代码长度而特地加入的无用填充代码，
+            UnityEngine.Debug.Log(12345.ToString());
             return string.Empty;
         }
     }

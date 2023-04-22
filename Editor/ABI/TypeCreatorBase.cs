@@ -261,7 +261,15 @@ namespace HybridCLR.Editor.ABI
             {
                 return true;
             }
-            return fields.All(f => f.IsStatic);
+            if (fields.All(f => f.IsStatic))
+            {
+                return true;
+            }
+            if (typeDef.IsExplicitLayout && fields.Count(f => !f.IsStatic) > 1)
+            {
+                return true;
+            }
+            return false;
         }
 
         protected static TypeInfo CreateGeneralValueType(TypeSig type, int size, int aligment)

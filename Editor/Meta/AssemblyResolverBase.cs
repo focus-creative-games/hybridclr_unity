@@ -16,11 +16,14 @@ namespace HybridCLR.Editor.Meta
             }
             if (throwExIfNotFind)
             {
-#if UNITY_2021_1_OR_NEWER && UNITY_IOS
-                throw new Exception($"resolve assembly:{assemblyName} 失败! 请按照Install文档正确替换了UnityEditor.CoreModule.dll或者升级hybridclr_unity到2.0.1及更高版本");
-#else
-                throw new Exception($"resolve assembly:{assemblyName} 失败! 请参阅常见错误文档");
-#endif
+                if (SettingsUtil.HotUpdateAssemblyNamesIncludePreserved.Contains(assemblyName))
+                {
+                    throw new Exception($"resolve 热更新 dll:{assemblyName} 失败！请确保已经编译了热更新dll或者外部热更新路径中配置了正确的值。更多请参阅常见错误文档");
+                }
+                else
+                {
+                    throw new Exception($"resolve AOT dll:{assemblyName} 失败! 请确保主工程已经引用了该dll并且正确生成了裁剪后的AOT dll。更多请参阅常见错误文档");
+                }
             }
             return null;
         }

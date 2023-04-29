@@ -88,6 +88,21 @@ namespace HybridCLR.Editor.Installer
             Directory.CreateDirectory(dir);
         }
 
+        private static void CopyWithCheckLongFile(string srcFile, string dstFile)
+        {
+            if (srcFile.Length > 255)
+            {
+                UnityEngine.Debug.LogError($"srcFile:{srcFile} path is too long. copy ignore!");
+                return;
+            }
+            if (dstFile.Length > 255)
+            {
+                UnityEngine.Debug.LogError($"dstFile:{dstFile} path is too long. copy ignore!");
+                return;
+            }
+            File.Copy(srcFile, dstFile);
+        }
+
         public static void CopyDir(string src, string dst, bool log = false)
         {
             if (log)
@@ -98,7 +113,7 @@ namespace HybridCLR.Editor.Installer
             Directory.CreateDirectory(dst);
             foreach(var file in Directory.GetFiles(src))
             {
-                File.Copy(file, $"{dst}/{Path.GetFileName(file)}");
+                CopyWithCheckLongFile(file, $"{dst}/{Path.GetFileName(file)}");
             }
             foreach(var subDir in Directory.GetDirectories(src))
             {

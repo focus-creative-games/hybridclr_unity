@@ -113,8 +113,7 @@ namespace HybridCLR.Editor.Commands
 
             if (report.summary.result != UnityEditor.Build.Reporting.BuildResult.Succeeded)
             {
-                Debug.LogError("GenerateStripedAOTDlls 失败");
-                return;
+                throw new Exception("GenerateStripedAOTDlls 失败");
             }
             Debug.Log($"GenerateStripedAOTDlls target:{target} group:{group} path:{outputPath}");
         }

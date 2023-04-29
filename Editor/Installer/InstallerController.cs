@@ -166,11 +166,11 @@ namespace HybridCLR.Editor.Installer
             return $"{contentPath}/il2cpp";
         }
 
+        public string ApplicationIl2cppPath => GetIl2CppPathByContentPath(EditorApplication.applicationContentsPath);
 
         public void InstallDefaultHybridCLR()
         {
-            string libil2cppDir = PrepareLibil2cppWithHybridclrFromGitRepo();
-            RunInitLocalIl2CppData(GetIl2CppPathByContentPath(EditorApplication.applicationContentsPath), libil2cppDir, _curVersion);
+            InstallFromLocal(PrepareLibil2cppWithHybridclrFromGitRepo());
         }
 
         public bool HasInstalledHybridCLR()
@@ -231,6 +231,11 @@ namespace HybridCLR.Editor.Installer
 
             Directory.Move($"{hybridclrRepoDir}/hybridclr", $"{il2cppPlusRepoDir}/libil2cpp/hybridclr");
             return $"{il2cppPlusRepoDir}/libil2cpp";
+        }
+
+        public void InstallFromLocal(string libil2cppWithHybridclrSourceDir)
+        {
+            RunInitLocalIl2CppData(ApplicationIl2cppPath, libil2cppWithHybridclrSourceDir, _curVersion);
         }
 
         private void RunInitLocalIl2CppData(string editorIl2cppPath, string libil2cppWithHybridclrSourceDir, UnityVersion version)

@@ -107,9 +107,12 @@ namespace HybridCLR.Editor.Installer
                     Debug.LogError($"本地libil2cpp不是合法有效的源码目录. '{_installLibil2cppWithHybridclrSourceDir}'");
                     return;
                 }
-                        
+                _controller.InstallFromLocal(_installLibil2cppWithHybridclrSourceDir);
             }
-            _controller.InstallDefaultHybridCLR();
+            else
+            {
+                _controller.InstallDefaultHybridCLR();
+            }
         }
     }
 }

@@ -30,7 +30,7 @@ namespace HybridCLR.Editor.BuildProcessors
 #elif UNITY_ANDROID
             return $"{projectDir}/Library/Bee/artifacts/Android/ManagedStripped";
 #elif UNITY_IOS
-            return $"{projectDir}/Temp/StagingArea/Data/Managed/tempStrip";
+            return $"{projectDir}/Library/Bee/artifacts/iOS/ManagedStripped";
 #elif UNITY_WEBGL
             return $"{projectDir}/Library/Bee/artifacts/WebGL/ManagedStripped";
 #elif UNITY_EDITOR_OSX
@@ -78,7 +78,7 @@ namespace HybridCLR.Editor.BuildProcessors
 
         public void OnPostprocessBuild(BuildReport report)
         {
-#if UNITY_2021_1_OR_NEWER && !UNITY_IOS
+#if (UNITY_2021 && !UNITY_IOS) || UNITY_2022_1_OR_NEWER
             BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
             CopyStripDlls(GetStripAssembliesDir2021(target), target);
 #endif

@@ -1,5 +1,16 @@
 # 发布日志
 
+## 3.0.0
+
+
+### 改动
+
+- 包名更改为com.code-philosophy.hybridclr
+- 移除对2019及2020版本支持
+- 移除UnityFS插件
+- 移除Zip插件
+- HybridCLR菜单位置调整
+
 ## 2.4.2
 
 ### 改动
@@ -42,6 +53,5 @@
 ### 修复
 
 - 修复2019版本MonoBleedingEdge的子目录中包含了过长路径的文件导致Installer复制文件出错的问题
-
 
 

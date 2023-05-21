@@ -1,27 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Diagnostics;
-
 using Debug = UnityEngine.Debug;
 using System.Text.RegularExpressions;
 
 namespace HybridCLR.Editor.Installer
 {
-    public enum InstallErrorCode
-    {
-        Ok,
-    }
-
-
-
 
     public class InstallerController
     {
@@ -87,9 +74,8 @@ namespace HybridCLR.Editor.Installer
 
         private static readonly Regex s_unityVersionPat = new Regex(@"(\d+)\.(\d+)\.(\d+)");
 
-        public const int min2019_4_CompatibleMinorVersion = 40;
-        public const int min2020_3_CompatibleMinorVersion = 21;
         public const int min2021_3_CompatibleMinorVersion = 0;
+        public const int min2022_3_CompatibleMinorVersion = 0;
 
         private UnityVersion ParseUnityVersion(string versionStr)
         {
@@ -116,9 +102,8 @@ namespace HybridCLR.Editor.Installer
         {
             switch(majorVersion)
             {
-                case 2019: return $"2019.4.{min2019_4_CompatibleMinorVersion}";
-                case 2020: return $"2020.3.{min2020_3_CompatibleMinorVersion}";
                 case 2021: return $"2021.3.{min2021_3_CompatibleMinorVersion}";
+                case 2022: return $"2022.2.{min2022_3_CompatibleMinorVersion}";
                 default: throw new Exception($"not support version:{majorVersion}");
             }
         }
@@ -128,29 +113,21 @@ namespace HybridCLR.Editor.Installer
             UnityVersion version = _curVersion;
             switch (version.major)
             {
-                case 2019:
-                    {
-                        if (version.major != 2019 || version.minor1 != 4)
-                        {
-                            return false;
-                        }
-                        return version.minor2 >= min2019_4_CompatibleMinorVersion;
-                    }
-                case 2020:
-                    {
-                        if (version.major != 2020 || version.minor1 != 3)
-                        {
-                            return false;
-                        }
-                        return version.minor2 >= min2020_3_CompatibleMinorVersion;
-                    }
                 case 2021:
                     { 
-                        if (version.major != 2021 || version.minor1 != 3)
+                        if (version.minor1 != 3)
                         {
                             return false;
                         }
                         return version.minor2 >= min2021_3_CompatibleMinorVersion;
+                    }
+                case 2022:
+                    {
+                        if (version.minor1 != 2)
+                        {
+                            return false;
+                        }
+                        return version.minor2 >= min2022_3_CompatibleMinorVersion;
                     }
                 default: throw new Exception($"not support il2cpp_plus branch:{version.major}");
             }
@@ -271,21 +248,6 @@ namespace HybridCLR.Editor.Installer
             // clean Il2cppBuildCache
             BashUtil.RemoveDir($"{SettingsUtil.ProjectDir}/Library/Il2cppBuildCache", true);
 
-            if (version.major == 2019)
-            {
-                string curVersionStr = version.ToString();
-                string srcIl2CppDll = GetUnityIl2CppDllModifiedPath(curVersionStr);
-                if (File.Exists(srcIl2CppDll))
-                {
-                    string dstIl2CppDll = GetUnityIl2CppDllInstallLocation();
-                    File.Copy(srcIl2CppDll, dstIl2CppDll, true);
-                    Debug.Log($"copy {srcIl2CppDll} => {dstIl2CppDll}");
-                }
-                else
-                {
-                    Debug.LogError($"未找到当前版本:{curVersionStr} 对应的改造过的 Unity.IL2CPP.dll，打包出的程序将会崩溃");
-                }
-            }
             if (HasInstalledHybridCLR())
             {
                 Debug.Log("安装成功");

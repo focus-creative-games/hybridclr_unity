@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace UnityFS
+namespace HybridCLR.Editor.BuildProcessors
 {
     public class ScriptingAssembliesJsonPatcher
     {

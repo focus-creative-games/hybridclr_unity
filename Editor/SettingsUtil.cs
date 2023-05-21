@@ -21,7 +21,7 @@ namespace HybridCLR.Editor
             }
         }
 
-        public static string PackageName { get; } = "com.focus-creative-games.hybridclr_unity";
+        public static string PackageName { get; } = "com.code-philosophy.hybridclr";
 
         public static string HybridCLRDataPathInPackage => $"Packages/{PackageName}/Data~";
 
@@ -30,10 +30,6 @@ namespace HybridCLR.Editor
         public static string ProjectDir { get; } = Directory.GetParent(Application.dataPath).ToString();
 
         public static string ScriptingAssembliesJsonFile { get; } = "ScriptingAssemblies.json";
-
-        public static string GlobalgamemanagersBinFile { get; } = "globalgamemanagers";
-
-        public static string Dataunity3dBinFile { get; } = "data.unity3d";
 
         public static string HotUpdateDllsRootOutputDir => HybridCLRSettings.Instance.hotUpdateDllCompileOutputRootDir;
 

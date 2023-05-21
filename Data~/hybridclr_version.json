@@ -1,19 +1,9 @@
 {
     "versions": [
     {
-        "unity_version":"2019",
-        "hybridclr" : { "branch":"v2.3.1"},
-        "il2cpp_plus": { "branch":"v2019-2.2.0"}
-    },
-    {
-        "unity_version":"2020",
-        "hybridclr" : { "branch":"v2.3.1"},
-        "il2cpp_plus": { "branch":"v2020-2.2.1"}
-    },
-    {
         "unity_version":"2021",
-        "hybridclr" : { "branch":"v2.3.1"},
-        "il2cpp_plus": { "branch":"v2021-2.2.1"}
+        "hybridclr" : { "branch":"v3.0.0"},
+        "il2cpp_plus": { "branch":"v2021-3.0.0"}
     }
     ]
 }

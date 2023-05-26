@@ -10,8 +10,6 @@ namespace HybridCLR.Editor.ABI
     {
         public override bool IsArch32 => true;
 
-        public override bool IsSupportHFA => false;
-
         protected override TypeInfo OptimizeSigType(TypeInfo type, bool returnType)
         {
             if (type.PorType > ParamOrReturnType.STRUCTURE_ALIGN1 && type.PorType <= ParamOrReturnType.STRUCTURE_ALIGN4)

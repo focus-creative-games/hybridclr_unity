@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,8 +10,6 @@ namespace HybridCLR.Editor.ABI
     public class TypeCreatorUniversal64 : TypeCreatorBase
     {
         public override bool IsArch32 => false;
-
-        public override bool IsSupportHFA => false;
 
         protected override TypeInfo OptimizeSigType(TypeInfo type, bool returnType)
         {

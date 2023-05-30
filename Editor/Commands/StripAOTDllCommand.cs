@@ -38,7 +38,7 @@ namespace HybridCLR.Editor.Commands
             BashUtil.RemoveDir(outputPath);
 
             var buildOptions = BuildOptions.BuildScriptsOnly;
-#if UNITY_2021_1_OR_NEWER
+#if UNITY_2021_2_OR_NEWER
             buildOptions |= BuildOptions.CleanBuildCache;
 #endif
 
@@ -113,8 +113,7 @@ namespace HybridCLR.Editor.Commands
 
             if (report.summary.result != UnityEditor.Build.Reporting.BuildResult.Succeeded)
             {
-                Debug.LogError("GenerateStripedAOTDlls 失败");
-                return;
+                throw new Exception("GenerateStripedAOTDlls 失败");
             }
             Debug.Log($"GenerateStripedAOTDlls target:{target} group:{group} path:{outputPath}");
         }

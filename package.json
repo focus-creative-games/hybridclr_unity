@@ -1,21 +1,23 @@
 {
   "name": "com.focus-creative-games.hybridclr_unity",
-  "version": "2.1.0",
+  "version": "2.4.2",
   "displayName": "HybridCLR",
-  "description": "Unity package for HybridCLR. It includes editor and runtime scripts and assets for HybridCLR",
+  "description": "HybridCLR is a fully featured, zero-cost, high-performance, low-memory solution for Unity's all-platform native c# hotupdate.",
   "category": "Runtime",
-  "documentationUrl": "https://focus-creative-games.github.io/hybridclr/index",
-  "changelogUrl": "https://github.com/focus-creative-games/hybridclr/commits/main",
+  "documentationUrl": "https://focus-creative-games.github.io/hybridclr-doc",
+  "changelogUrl": "https://focus-creative-games.github.io/hybridclr-doc/#/other/changelog",
   "licensesUrl": "https://github.com/focus-creative-games/hybridclr/blob/main/LICENSE",
   "keywords": [
     "HybridCLR",
     "hotupdate",
     "hotfix",
+    "code philosophy",
+    "unity",
     "focus-creative-games"
   ],
   "author": {
-    "name": "focus-creative-games",
-    "email": "hybridclr@focus-creative-games.com",
-    "url": "https://github.com/focus-creative-games/"
+    "name": "Code Philosophy",
+    "email": "hybridclr@code-philosophy.com",
+    "url": "https://code-philosophy.com"
   }
 }

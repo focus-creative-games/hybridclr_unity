@@ -10,7 +10,7 @@ namespace HybridCLR.Editor.ABI
     {
         public override bool IsArch32 => false;
 
-        public override bool IsSupportHFA => true;
+        public override bool IsSupportHFA => false;
 
         protected override TypeInfo OptimizeSigType(TypeInfo type, bool returnType)
         {

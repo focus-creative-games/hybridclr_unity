@@ -70,7 +70,7 @@ namespace HybridCLR.Editor.ABI
                 case ElementType.Module:
                 case ElementType.Var:
                 case ElementType.MVar:
-                return GetNativeIntTypeInfo();
+                    return GetNativeIntTypeInfo();
                 case ElementType.TypedByRef: return CreateValueType(type);
                 case ElementType.ValueType:
                 {
@@ -105,7 +105,7 @@ namespace HybridCLR.Editor.ABI
 
         private static bool IsNotHFAFastCheck(int typeSize)
         {
-            return typeSize != 8 && typeSize != 12 && typeSize != 16 && typeSize != 24 && typeSize != 32;
+            return typeSize % 4 != 0 || typeSize > 32;
         }
 
         private static bool ComputHFATypeInfo0(TypeSig type, HFATypeInfo typeInfo)
@@ -169,7 +169,7 @@ namespace HybridCLR.Editor.ABI
                 return false;
             }
             bool ok = ComputHFATypeInfo0(type, typeInfo);
-            if (ok && typeInfo.Count >= 2 && typeInfo.Count <= 4)
+            if (ok && typeInfo.Count >= 1 && typeInfo.Count <= 4)
             {
                 int fieldSize = typeInfo.Type.ElementType == ElementType.R4 ? 4 : 8;
                 return typeSize == fieldSize * typeInfo.Count;
@@ -261,7 +261,15 @@ namespace HybridCLR.Editor.ABI
             {
                 return true;
             }
-            return fields.All(f => f.IsStatic);
+            if (fields.All(f => f.IsStatic))
+            {
+                return true;
+            }
+            if (typeDef.IsExplicitLayout && fields.Count(f => !f.IsStatic) > 1)
+            {
+                return true;
+            }
+            return false;
         }
 
         protected static TypeInfo CreateGeneralValueType(TypeSig type, int size, int aligment)
@@ -285,6 +293,7 @@ namespace HybridCLR.Editor.ABI
                 bool isFloat = hfaTypeInfo.Type.ElementType == ElementType.R4;
                 switch (hfaTypeInfo.Count)
                 {
+                    case 1: return isFloat ? TypeInfo.s_r4 : TypeInfo.s_r8;
                     case 2: return isFloat ? TypeInfo.s_vf2 : TypeInfo.s_vd2;
                     case 3: return isFloat ? TypeInfo.s_vf3 : TypeInfo.s_vd3;
                     case 4: return isFloat ? TypeInfo.s_vf4 : TypeInfo.s_vd4;

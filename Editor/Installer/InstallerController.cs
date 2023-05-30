@@ -166,10 +166,11 @@ namespace HybridCLR.Editor.Installer
             return $"{contentPath}/il2cpp";
         }
 
+        public string ApplicationIl2cppPath => GetIl2CppPathByContentPath(EditorApplication.applicationContentsPath);
 
         public void InstallDefaultHybridCLR()
         {
-            RunInitLocalIl2CppData(GetIl2CppPathByContentPath(EditorApplication.applicationContentsPath), _curVersion);
+            InstallFromLocal(PrepareLibil2cppWithHybridclrFromGitRepo());
         }
 
         public bool HasInstalledHybridCLR()
@@ -202,7 +203,42 @@ namespace HybridCLR.Editor.Installer
             BashUtil.RunCommand(workDir, "git", new string[] {"clone", "-b", branch, "--depth", "1", repoUrl, repoDir});
         }
 
-        private void RunInitLocalIl2CppData(string editorIl2cppPath, UnityVersion version)
+        private string PrepareLibil2cppWithHybridclrFromGitRepo()
+        {
+            string workDir = SettingsUtil.HybridCLRDataDir;
+            Directory.CreateDirectory(workDir);
+            //BashUtil.RecreateDir(workDir);
+
+            // clone hybridclr
+            string hybridclrRepoURL = HybridCLRSettings.Instance.hybridclrRepoURL;
+            string hybridclrRepoDir = $"{workDir}/{hybridclr_repo_path}";
+            CloneBranch(workDir, hybridclrRepoURL, _curDefaultVersion.hybridclr.branch, hybridclrRepoDir);
+
+            if (!Directory.Exists(hybridclrRepoDir))
+            {
+                throw new Exception($"clone hybridclr fail. url: {hybridclrRepoURL}");
+            }
+
+            // clone il2cpp_plus
+            string il2cppPlusRepoURL = HybridCLRSettings.Instance.il2cppPlusRepoURL;
+            string il2cppPlusRepoDir = $"{workDir}/{il2cpp_plus_repo_path}";
+            CloneBranch(workDir, il2cppPlusRepoURL, _curDefaultVersion.il2cpp_plus.branch, il2cppPlusRepoDir);
+
+            if (!Directory.Exists(il2cppPlusRepoDir))
+            {
+                throw new Exception($"clone il2cpp_plus fail. url: {il2cppPlusRepoDir}");
+            }
+
+            Directory.Move($"{hybridclrRepoDir}/hybridclr", $"{il2cppPlusRepoDir}/libil2cpp/hybridclr");
+            return $"{il2cppPlusRepoDir}/libil2cpp";
+        }
+
+        public void InstallFromLocal(string libil2cppWithHybridclrSourceDir)
+        {
+            RunInitLocalIl2CppData(ApplicationIl2cppPath, libil2cppWithHybridclrSourceDir, _curVersion);
+        }
+
+        private void RunInitLocalIl2CppData(string editorIl2cppPath, string libil2cppWithHybridclrSourceDir, UnityVersion version)
         {
             if (!IsComaptibleVersion())
             {
@@ -217,15 +253,6 @@ namespace HybridCLR.Editor.Installer
             BashUtil.RemoveDir(buildiOSDir);
             BashUtil.CopyDir($"{SettingsUtil.HybridCLRDataPathInPackage}/iOSBuild", buildiOSDir, true);
 
-            // clone hybridclr
-            string hybridclrRepoURL = HybridCLRSettings.Instance.hybridclrRepoURL;
-            string hybridclrRepoDir = $"{workDir}/{hybridclr_repo_path}";
-            CloneBranch(workDir, hybridclrRepoURL, _curDefaultVersion.hybridclr.branch, hybridclrRepoDir);
-
-            // clone il2cpp_plus
-            string il2cppPlusRepoURL = HybridCLRSettings.Instance.il2cppPlusRepoURL;
-            string il2cppPlusRepoDir = $"{workDir}/{il2cpp_plus_repo_path}";
-            CloneBranch(workDir, il2cppPlusRepoURL, _curDefaultVersion.il2cpp_plus.branch, il2cppPlusRepoDir);
 
             // create LocalIl2Cpp
             string localUnityDataDir = SettingsUtil.LocalUnityDataDir;
@@ -239,8 +266,7 @@ namespace HybridCLR.Editor.Installer
 
             // replace libil2cpp
             string dstLibil2cppDir = $"{SettingsUtil.LocalIl2CppDir}/libil2cpp";
-            BashUtil.CopyDir($"{il2cppPlusRepoDir}/libil2cpp", dstLibil2cppDir, true);
-            BashUtil.CopyDir($"{hybridclrRepoDir}/hybridclr", $"{dstLibil2cppDir}/hybridclr", true);
+            BashUtil.CopyDir($"{libil2cppWithHybridclrSourceDir}", dstLibil2cppDir, true);
 
             // clean Il2cppBuildCache
             BashUtil.RemoveDir($"{SettingsUtil.ProjectDir}/Library/Il2cppBuildCache", true);

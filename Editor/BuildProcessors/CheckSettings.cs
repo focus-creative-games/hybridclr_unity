@@ -65,7 +65,7 @@ namespace HybridCLR.Editor.BuildProcessors
             if (curApiCompatibilityLevel != targetApiCompatibilityLevel)
             {
                 Debug.LogError($"[CheckSettings] 当前ApiCompatibilityLevel是:{curApiCompatibilityLevel}，已经自动切换为 {targetApiCompatibilityLevel}。由于下一次打包才生效，主动打断本次打包。");
-                PlayerSettings.SetApiCompatibilityLevel(buildTargetGroup, ApiCompatibilityLevel.NET_4_6);
+                PlayerSettings.SetApiCompatibilityLevel(buildTargetGroup, targetApiCompatibilityLevel);
                 throw new BuildFailedException("ApiCompatibilityLevel error");
             }
 

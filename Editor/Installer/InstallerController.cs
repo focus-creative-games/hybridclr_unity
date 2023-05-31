@@ -103,7 +103,7 @@ namespace HybridCLR.Editor.Installer
             switch(majorVersion)
             {
                 case 2021: return $"2021.3.{min2021_3_CompatibleMinorVersion}";
-                case 2022: return $"2022.2.{min2022_3_CompatibleMinorVersion}";
+                case 2022: return $"2022.3.{min2022_3_CompatibleMinorVersion}";
                 default: throw new Exception($"not support version:{majorVersion}");
             }
         }
@@ -123,7 +123,7 @@ namespace HybridCLR.Editor.Installer
                     }
                 case 2022:
                     {
-                        if (version.minor1 != 2)
+                        if (version.minor1 != 3)
                         {
                             return false;
                         }

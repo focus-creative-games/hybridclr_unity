@@ -55,11 +55,6 @@ namespace HybridCLR.Editor
             return $"{AssembliesPostIl2CppStripDir}/{target}";
         }
 
-        public static string GetAOTAssemblySnapshotDir(BuildTarget target)
-        {
-            return $"{HybridCLRSettings.Instance.strippedAOTDllSnapshotDir}/{target}";
-        }
-
         class AssemblyDefinitionData
         {
             public string name;

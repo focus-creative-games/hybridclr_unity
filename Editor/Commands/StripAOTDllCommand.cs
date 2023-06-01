@@ -12,13 +12,6 @@ namespace HybridCLR.Editor.Commands
 {
     public static class StripAOTDllCommand
     {
-        [MenuItem("HybridCLR/CreateAOTDllSnapshot", priority = 201)]
-        public static void CreateAOTDllSnapshot()
-        {
-            BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
-            BashUtil.CopyDir(SettingsUtil.GetAssembliesPostIl2CppStripDir(target), SettingsUtil.GetAOTAssemblySnapshotDir(target), true);
-        }
-
         [MenuItem("HybridCLR/Generate/AOTDlls", priority = 105)]
         public static void GenerateStripedAOTDlls()
         {

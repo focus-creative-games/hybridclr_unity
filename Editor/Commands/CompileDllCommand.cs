@@ -12,13 +12,17 @@ namespace HybridCLR.Editor.Commands
 {
     public class CompileDllCommand
     {
-        public static void CompileDll(string buildDir, BuildTarget target)
+        public static void CompileDll(string buildDir, BuildTarget target, bool developmentBuild)
         {
             var group = BuildPipeline.GetBuildTargetGroup(target);
 
             ScriptCompilationSettings scriptCompilationSettings = new ScriptCompilationSettings();
             scriptCompilationSettings.group = group;
             scriptCompilationSettings.target = target;
+            if (developmentBuild)
+            {
+                scriptCompilationSettings.options |= ScriptCompilationOptions.DevelopmentBuild;
+            }
             Directory.CreateDirectory(buildDir);
             ScriptCompilationResult scriptCompilationResult = PlayerBuildInterface.CompilePlayerScripts(scriptCompilationSettings, buildDir);
             foreach (var ass in scriptCompilationResult.assemblies)
@@ -28,15 +32,21 @@ namespace HybridCLR.Editor.Commands
             Debug.Log("compile finish!!!");
         }
 
-        public static void CompileDll(BuildTarget target)
+        public static void CompileDll(BuildTarget target, bool developmentBuild = false)
         {
-            CompileDll(SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target), target);
+            CompileDll(SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target), target, developmentBuild);
         }
 
         [MenuItem("HybridCLR/CompileDll/ActiveBuildTarget", priority = 100)]
         public static void CompileDllActiveBuildTarget()
         {
             CompileDll(EditorUserBuildSettings.activeBuildTarget);
+        }
+
+        [MenuItem("HybridCLR/CompileDll/ActiveBuildTarget_Development", priority = 101)]
+        public static void CompileDllActiveBuildTargetDevelopment()
+        {
+            CompileDll(EditorUserBuildSettings.activeBuildTarget, true);
         }
 
         [MenuItem("HybridCLR/CompileDll/Win32", priority = 200)]

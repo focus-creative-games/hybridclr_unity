@@ -1,5 +1,15 @@
 # 发布日志
 
+## 3.0.2
+
+### 改动
+
+- 移除 `HybridCLR/CreateAOTDllSnapshot`菜单
+
+### 修复
+
+- 修复Memory Profiler中创建内存快照时崩溃的bug
+
 ## 3.0.1
 
 ### 改动

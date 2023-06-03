@@ -74,6 +74,7 @@ namespace HybridCLR.Editor.Installer
 
         private static readonly Regex s_unityVersionPat = new Regex(@"(\d+)\.(\d+)\.(\d+)");
 
+        public const int min2020_3_CompatibleMinorVersion = 26;
         public const int min2021_3_CompatibleMinorVersion = 0;
         public const int min2022_3_CompatibleMinorVersion = 0;
 
@@ -111,22 +112,22 @@ namespace HybridCLR.Editor.Installer
         public bool IsComaptibleVersion()
         {
             UnityVersion version = _curVersion;
+            if (version.minor1 != 3)
+            {
+                return false;
+            }
             switch (version.major)
             {
+                case 2020:
+                    {
+                        return version.minor2 >= min2021_3_CompatibleMinorVersion;
+                    }
                 case 2021:
                     { 
-                        if (version.minor1 != 3)
-                        {
-                            return false;
-                        }
                         return version.minor2 >= min2021_3_CompatibleMinorVersion;
                     }
                 case 2022:
                     {
-                        if (version.minor1 != 3)
-                        {
-                            return false;
-                        }
                         return version.minor2 >= min2022_3_CompatibleMinorVersion;
                     }
                 default: throw new Exception($"not support il2cpp_plus branch:{version.major}");

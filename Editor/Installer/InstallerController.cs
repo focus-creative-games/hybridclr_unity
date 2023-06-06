@@ -156,25 +156,6 @@ namespace HybridCLR.Editor.Installer
             return Directory.Exists($"{SettingsUtil.LocalIl2CppDir}/libil2cpp/hybridclr");
         }
 
-
-        private string GetUnityIl2CppDllInstallLocation()
-        {
-#if UNITY_EDITOR_WIN
-            return $"{SettingsUtil.LocalIl2CppDir}/build/deploy/net471/Unity.IL2CPP.dll";
-#else
-            return $"{SettingsUtil.LocalIl2CppDir}/build/deploy/il2cppcore/Unity.IL2CPP.dll";
-#endif
-        }
-
-        private string GetUnityIl2CppDllModifiedPath(string curVersionStr)
-        {
-#if UNITY_EDITOR_WIN
-            return $"{SettingsUtil.ProjectDir}/{SettingsUtil.HybridCLRDataPathInPackage}/ModifiedUnityAssemblies/{curVersionStr}/Unity.IL2CPP-Win.dll.bytes";
-#else
-            return $"{SettingsUtil.ProjectDir}/{SettingsUtil.HybridCLRDataPathInPackage}/ModifiedUnityAssemblies/{curVersionStr}/Unity.IL2CPP-Mac.dll.bytes";
-#endif
-        }
-
         void CloneBranch(string workDir, string repoUrl, string branch, string repoDir)
         {
             BashUtil.RemoveDir(repoDir);

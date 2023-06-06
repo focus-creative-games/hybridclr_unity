@@ -25,10 +25,9 @@ namespace HybridCLR.Editor.Commands
             }
             Directory.CreateDirectory(buildDir);
             ScriptCompilationResult scriptCompilationResult = PlayerBuildInterface.CompilePlayerScripts(scriptCompilationSettings, buildDir);
-            foreach (var ass in scriptCompilationResult.assemblies)
-            {
-                //Debug.LogFormat("compile assemblies:{1}/{0}", ass, buildDir);
-            }
+#if UNITY_2022
+            UnityEditor.EditorUtility.ClearProgressBar();
+#endif
             Debug.Log("compile finish!!!");
         }
 

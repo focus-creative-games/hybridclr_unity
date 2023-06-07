@@ -30,12 +30,16 @@ namespace HybridCLR.Editor.MethodBridge
         private readonly HashSet<GenericClass> _genericTypes = new HashSet<GenericClass>();
         private readonly HashSet<GenericMethod> _genericMethods = new HashSet<GenericMethod>();
 
+        private readonly HashSet<GenericMethod> _speicalPreserveMethods = new HashSet<GenericMethod>();
+
         private List<GenericMethod> _processingMethods = new List<GenericMethod>();
         private List<GenericMethod> _newMethods = new List<GenericMethod>();
 
         public IReadOnlyList<TypeDef> TypeDefs => _typeDefs;
 
         public IReadOnlyList<MethodDef> NotGenericMethods => _notGenericMethods;
+
+        public HashSet<GenericMethod> SpeicalPreserveMethods => _speicalPreserveMethods;
 
         public IReadOnlyCollection<GenericClass> GenericTypes => _genericTypes;
 
@@ -67,13 +71,17 @@ namespace HybridCLR.Editor.MethodBridge
             }
         }
 
-        private void OnNewMethod(GenericMethod method)
+        private void OnNewMethod(MethodDef methodDef, List<TypeSig> klassGenericInst, List<TypeSig> methodGenericInst, GenericMethod method)
         {
             lock(_lock)
             {
                 if (_genericMethods.Add(method))
                 {
                     _newMethods.Add(method);
+                }
+                if (methodDef.HasGenericParameters)
+                {
+                    _speicalPreserveMethods.Add(method);
                 }
                 if (method.KlassInst != null)
                 {

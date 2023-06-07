@@ -37,6 +37,7 @@ namespace HybridCLR.Editor.Commands
                 OutputFile = outputFile,
                 GenericMethods = analyzer.GenericMethods,
                 NotGenericMethods = analyzer.NotGenericMethods,
+                SpeicalPreserveMethods = analyzer.SpeicalPreserveMethods,
             });
 
             g.PrepareMethods();

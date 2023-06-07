@@ -4,6 +4,7 @@ using HybridCLR.Editor.Meta;
 using HybridCLR.Editor.Template;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -28,6 +29,8 @@ namespace HybridCLR.Editor.MethodBridge
             public IReadOnlyList<MethodDef> NotGenericMethods { get; set; }
 
             public IReadOnlyCollection<GenericMethod> GenericMethods { get; set; }
+
+            public HashSet<GenericMethod> SpeicalPreserveMethods { get; set; }
         }
 
         private PlatformABI _platformABI;
@@ -35,6 +38,8 @@ namespace HybridCLR.Editor.MethodBridge
         private readonly IReadOnlyList<MethodDef> _notGenericMethods;
 
         private readonly IReadOnlyCollection<GenericMethod> _genericMethods;
+
+        private readonly HashSet<GenericMethod> _preservedMethods;
 
         private readonly string _templateCode;
 
@@ -61,6 +66,7 @@ namespace HybridCLR.Editor.MethodBridge
             _platformABI = options.PlatformABI;
             _notGenericMethods = options.NotGenericMethods;
             _genericMethods = options.GenericMethods;
+            _preservedMethods = options.SpeicalPreserveMethods;
             _templateCode = options.TemplateCode;
             _outputFile = options.OutputFile;
             _platformAdaptor = CreatePlatformAdaptor(options.PlatformABI);
@@ -122,7 +128,14 @@ namespace HybridCLR.Editor.MethodBridge
         {
             if (method.IsPrivate || (method.IsAssembly && !method.IsPublic && !method.IsFamily))
             {
-                return;
+                if (!_preservedMethods.Contains(new GenericMethod(method, klassInst, methodInst)))
+                {
+                    return;
+                }
+                else
+                {
+                    //Debug.Log($"[PreservedMethod] method:{method}");
+                }
             }
 
             TypeSig returnType;

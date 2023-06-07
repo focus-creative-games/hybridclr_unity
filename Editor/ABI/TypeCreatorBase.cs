@@ -136,7 +136,7 @@ namespace HybridCLR.Editor.ABI
             (int typeSize, int typeAligment) = ComputeSizeAndAligment(type);
             if (TryCreateCustomValueTypeInfo(type, typeSize, typeAligment, out var typeInfo))
             {
-                Debug.Log($"[{GetType().Name}] CustomeValueType:{type} => {typeInfo.CreateSigName()}");
+                //Debug.Log($"[{GetType().Name}] CustomeValueType:{type} => {typeInfo.CreateSigName()}");
                 return typeInfo;
             }
             else

@@ -79,7 +79,7 @@ namespace HybridCLR.Editor.AOT
             return IsAotType(method.DeclaringType) && method.HasGenericParameters;
         }
 
-        private void OnNewMethod(GenericMethod method)
+        private void OnNewMethod(MethodDef methodDef, List<TypeSig> klassGenericInst, List<TypeSig> methodGenericInst, GenericMethod method)
         {
             if(method == null)
             {

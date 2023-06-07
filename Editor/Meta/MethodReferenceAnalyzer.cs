@@ -1,4 +1,5 @@
 ﻿using dnlib.DotNet;
+using HybridCLR.Editor.ABI;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -10,11 +11,11 @@ namespace HybridCLR.Editor.Meta
 {
     public class MethodReferenceAnalyzer
     {
-        private readonly Action<GenericMethod> _onNewMethod;
+        private readonly Action<MethodDef, List<TypeSig>, List<TypeSig>, GenericMethod> _onNewMethod;
 
         private readonly ConcurrentDictionary<MethodDef, List<IMethod>> _methodEffectInsts = new ConcurrentDictionary<MethodDef, List<IMethod>>();
 
-        public MethodReferenceAnalyzer(Action<GenericMethod> onNewMethod)
+        public MethodReferenceAnalyzer(Action<MethodDef, List<TypeSig>, List<TypeSig>, GenericMethod> onNewMethod)
         {
             _onNewMethod = onNewMethod;
         }
@@ -37,7 +38,7 @@ namespace HybridCLR.Editor.Meta
                 foreach (var met in effectInsts)
                 {
                     var resolveMet = GenericMethod.ResolveMethod(met, ctx)?.ToGenericShare();
-                    _onNewMethod(resolveMet);
+                    _onNewMethod(method, klassGenericInst, methodGenericInst, resolveMet);
                 }
                 return;
             }
@@ -69,7 +70,7 @@ namespace HybridCLR.Editor.Meta
                             continue;
                         }
                         effectInsts.Add(met);
-                        _onNewMethod(resolveMet);
+                        _onNewMethod(method, klassGenericInst, methodGenericInst, resolveMet);
                         break;
                     }
                     case ITokenOperand token:

@@ -64,18 +64,22 @@ namespace HybridCLR.Editor.AOT
             Directory.CreateDirectory(parentDir);
 
             List<string> codes = new List<string>();
+            codes.Add("using System.Collections.Generic;");
             codes.Add("public class AOTGenericReferences : UnityEngine.MonoBehaviour");
             codes.Add("{");
 
             codes.Add("");
             codes.Add("\t// {{ AOT assemblies");
+            codes.Add("\tpublic static readonly IReadOnlyList<string> PatchedAOTAssemblyList = new List<string>");
+            codes.Add("\t{");
             List<dnlib.DotNet.ModuleDef> modules = new HashSet<dnlib.DotNet.ModuleDef>(
                 types.Select(t => t.Type.Module).Concat(methods.Select(m => m.Method.Module))).ToList();
             modules.Sort((a, b) => a.Name.CompareTo(b.Name));
             foreach (dnlib.DotNet.ModuleDef module in modules)
             {
-                codes.Add($"\t// {module.Name}");
+                codes.Add($"\t\t\"{module.Name}\",");
             }
+            codes.Add("\t};");
             codes.Add("\t// }}");
 
 

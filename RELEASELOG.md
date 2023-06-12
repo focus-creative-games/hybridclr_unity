@@ -1,5 +1,16 @@
 # 发布日志
 
+## 3.1.1
+
+- [fix] 修复 Win32、Android32、WebGL平台的编译错误
+- [fix] 修复计算桥接函数时未考虑到补充元数据泛型实例化会导致访问到一些非公开的函数的情况，导致少生成一些必要的桥接函数
+- [fix] 修复2021及更高版本，InterpreterModule::Managed2NativeCallByReflectionInvoke调用值类型成员函数时，对this指针多余this=this-1操作。
+- [fix] 修复解析CustomAttribute中Enum[]类型字段的bug
+- [fix] 修复2021及更高版本反射调用值类型 close Delegate的Invoke函数时未修复target指针的bug
+- [opt] 生成AOTGenericReferences时，补充元数据assembly列表由注释改成List<string>列表，方便在代码中直接使用。
+- [new] 新增对增量式GC宏的检查，避免build.gradle中意外开启增量式GC引发的极其隐蔽的问题
+- [change] CheckSettings中不再自动设置Api Compatible Level
+
 ## 3.1.0
 
 ### 改动

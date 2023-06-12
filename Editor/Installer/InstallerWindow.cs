@@ -48,24 +48,18 @@ namespace HybridCLR.Editor.Installer
             GUILayout.Space(5f);
             EditorGUILayout.LabelField($"il2cpp_plus 版本:    {_controller.Il2cppPlusLocalVersion}");
             GUILayout.Space(5f);
-            //GUIInstallButton("检查更新", "检查", UpdateHybridCLR);
-            //GUILayout.Space(40f);
             
             GUILayout.Space(10f);
 
+            if (_controller.IsComaptibleVersion())
+            {
+                GUIInstallButton("安装hybridclr+il2cpp_plus代码到本地目录", "安装");
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("与当前版本不兼容", MessageType.Error);
+            }
 
-            //EditorGUILayout.BeginHorizontal();
-            //EditorGUILayout.LabelField("待安装的 hybridclr 仓库版本号(或branch或tag)(默认取最新版本):", GUILayout.MaxWidth(400));
-            //_hybridclrVersion = EditorGUILayout.TextField(_hybridclrVersion);
-            //EditorGUILayout.EndHorizontal();
-
-            //EditorGUILayout.BeginHorizontal();
-            //EditorGUILayout.LabelField($"待安装的 il2cpp_plus 仓库版本号(或branch或tag)(默认取{_controller.MajorVersion}-main分支最新版本):", GUILayout.MaxWidth(400));
-            //_il2cppPlusVersion = EditorGUILayout.TextField(_il2cppPlusVersion);
-            //EditorGUILayout.EndHorizontal();
-
-
-            GUIInstallButton("安装hybridclr+il2cpp_plus代码到本地目录", "安装");
             EditorGUILayout.EndVertical();
         }
 

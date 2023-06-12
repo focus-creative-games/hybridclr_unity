@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace HybridCLR.Editor.Installer
 {
@@ -27,7 +28,7 @@ namespace HybridCLR.Editor.Installer
         {
             _curVersion = ParseUnityVersion(Application.unityVersion);
             _versionManifest = GetHybridCLRVersionManifest();
-            _curDefaultVersion = _versionManifest.versions.Find(v => v.unity_version == _curVersion.major.ToString());
+            _curDefaultVersion = _versionManifest.versions.FirstOrDefault(v => v.unity_version == _curVersion.major.ToString());
         }
 
         private HybridclrVersionManifest GetHybridCLRVersionManifest()
@@ -112,6 +113,10 @@ namespace HybridCLR.Editor.Installer
         public bool IsComaptibleVersion()
         {
             UnityVersion version = _curVersion;
+            if (version == null)
+            {
+                return false;
+            }
             if (version.minor1 != 3)
             {
                 return false;

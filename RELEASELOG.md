@@ -1,5 +1,13 @@
 # 发布日志
 
+## 3.2.0
+
+- [new] 支持直接从源码打包iOS，不再需要单独编译libil2cpp.a
+- [opt] 优化版本不兼容时错误提示，不再抛出异常，而是显示"与当前版本不兼容"
+- [fix] 修复未在PlaceHolder中的Assembly加载时，如果由于不在Assembly列表，也没有任何解释器栈，导致Class::resolve_parse_info_internal查找不到类型的bug
+- [fix] 修复读取CustomAttribute System.Type类型数据崩溃的bug
+
+
 ## 3.1.1
 
 - [fix] 修复 Win32、Android32、WebGL平台的编译错误

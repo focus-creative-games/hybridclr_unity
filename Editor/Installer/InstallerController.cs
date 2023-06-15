@@ -211,12 +211,6 @@ namespace HybridCLR.Editor.Installer
             }
             string workDir = SettingsUtil.HybridCLRDataDir;
             Directory.CreateDirectory(workDir);
-            //BashUtil.RecreateDir(workDir);
-
-            string buildiOSDir = $"{workDir}/iOSBuild";
-            BashUtil.RemoveDir(buildiOSDir);
-            BashUtil.CopyDir($"{SettingsUtil.HybridCLRDataPathInPackage}/iOSBuild", buildiOSDir, true);
-
 
             // create LocalIl2Cpp
             string localUnityDataDir = SettingsUtil.LocalUnityDataDir;

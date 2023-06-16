@@ -24,17 +24,35 @@ namespace HybridCLR.Editor.Installer
         private readonly HybridclrVersionManifest _versionManifest;
         private readonly HybridclrVersionInfo _curDefaultVersion;
 
+        public string PackageVersion { get; private set; }
+
         public InstallerController()
         {
             _curVersion = ParseUnityVersion(Application.unityVersion);
             _versionManifest = GetHybridCLRVersionManifest();
             _curDefaultVersion = _versionManifest.versions.FirstOrDefault(v => v.unity_version == _curVersion.major.ToString());
+            PackageVersion = LoadPackageInfo().version;
         }
 
         private HybridclrVersionManifest GetHybridCLRVersionManifest()
         {
             string versionFile = $"{SettingsUtil.ProjectDir}/{SettingsUtil.HybridCLRDataPathInPackage}/hybridclr_version.json";
             return JsonUtility.FromJson<HybridclrVersionManifest>(File.ReadAllText(versionFile, Encoding.UTF8));
+        }
+
+        private PackageInfo LoadPackageInfo()
+        {
+            string packageJson = $"{SettingsUtil.ProjectDir}/Packages/{SettingsUtil.PackageName}/package.json";
+            return JsonUtility.FromJson<PackageInfo>(File.ReadAllText(packageJson, Encoding.UTF8));
+        }
+
+
+        [Serializable]
+        class PackageInfo
+        {
+            public string name;
+
+            public string version;
         }
 
         [Serializable]

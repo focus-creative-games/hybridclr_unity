@@ -44,7 +44,10 @@ namespace HybridCLR.Editor.Installer
             EditorGUILayout.LabelField($"安装状态：{(hasInstall ? "已安装" : "未安装")}", EditorStyles.boldLabel);
             GUILayout.Space(10f);
 
-            EditorGUILayout.LabelField($"HybridCLR 版本:    {_controller.HybridclrLocalVersion}");
+
+            EditorGUILayout.LabelField($"{SettingsUtil.PackageName} 版本:     v{_controller.PackageVersion}");
+            GUILayout.Space(5f);
+            EditorGUILayout.LabelField($"bybridclr 版本:    {_controller.HybridclrLocalVersion}");
             GUILayout.Space(5f);
             EditorGUILayout.LabelField($"il2cpp_plus 版本:    {_controller.Il2cppPlusLocalVersion}");
             GUILayout.Space(5f);

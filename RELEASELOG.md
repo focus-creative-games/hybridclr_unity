@@ -1,5 +1,14 @@
 # 发布日志
 
+## 3.2.1
+
+- [new] Installer界面新增显示package版本
+- [new] CompileDll新增MacOS、Linux、WebGL目标
+- [fix] 修复il2cpp TypeNameParser未将类型名中转义字符'\'去掉，导致找不到嵌套子类型的bug
+- [fix] 修复完全泛型共享生成的代码与2021.3.x中低版本代码不兼容，有编译错误的bug
+- [fix] 修复重构文档站后的帮助文档的链接错误
+- [change] 为Anaylizer加上using 限定，解决某些情况下与项目的类型同名而产生编译冲突的问题
+
 ## 3.2.0
 
 - [new] 支持直接从源码打包iOS，不再需要单独编译libil2cpp.a

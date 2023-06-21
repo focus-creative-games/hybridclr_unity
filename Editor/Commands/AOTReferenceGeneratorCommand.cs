@@ -10,6 +10,7 @@ using UnityEngine;
 
 namespace HybridCLR.Editor.Commands
 {
+    using Analyzer = HybridCLR.Editor.AOT.Analyzer;
     public static class AOTReferenceGeneratorCommand
     {
 

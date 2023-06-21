@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace HybridCLR.Editor.Commands
 {
+    using Analyzer = HybridCLR.Editor.Link.Analyzer;
 
     public static class LinkGeneratorCommand
     {

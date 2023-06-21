@@ -14,6 +14,7 @@ using UnityEngine;
 
 namespace HybridCLR.Editor.Commands
 {
+    using Analyzer = HybridCLR.Editor.MethodBridge.Analyzer;
     public class MethodBridgeGeneratorCommand
     {
 

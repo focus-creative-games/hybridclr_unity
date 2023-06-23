@@ -62,6 +62,11 @@ namespace HybridCLR.Editor
             ModifyPBXProject(pathToBuiltProject, pbxprojFile, lumpFiles, extraSources, cflags);
         }
 
+        private static string GetRelativePathFromProj(string path)
+        {
+            return path.Substring(path.IndexOf("Libraries"));
+        }
+
         private static void ModifyPBXProject(string pathToBuiltProject, string pbxprojFile, List<LumpFile> lumpFiles, List<string> extraFiles, List<string> cflags)
         {
             var proj = new PBXProject();
@@ -80,14 +85,16 @@ namespace HybridCLR.Editor
 
             foreach (var lumpFile in lumpFiles)
             {
-                string projPathOfFile = $"Classes/Lumps/{Path.GetFileName(lumpFile.lumpFile)}";
+                string lumpFileName = Path.GetFileName(lumpFile.lumpFile);
+                string projPathOfFile = $"Classes/Lumps/{lumpFileName}";
+                string relativePathOfFile = GetRelativePathFromProj(lumpFile.lumpFile);
                 string lumpGuid = proj.FindFileGuidByProjectPath(projPathOfFile);
                 if (!string.IsNullOrEmpty(lumpGuid))
                 {
                     proj.RemoveFileFromBuild(targetGUID, lumpGuid);
                     proj.RemoveFile(lumpGuid);
                 }
-                lumpGuid = proj.AddFile(lumpFile.lumpFile, projPathOfFile, PBXSourceTree.Source);
+                lumpGuid = proj.AddFile(relativePathOfFile, projPathOfFile, PBXSourceTree.Source);
                 proj.AddFileToBuild(targetGUID, lumpGuid);
             }
 
@@ -101,7 +108,7 @@ namespace HybridCLR.Editor
                     proj.RemoveFile(extraFileGuid);
                     //Debug.LogWarning($"remove exist extra file:{projPathOfFile} guid:{extraFileGuid}");
                 }
-                var lumpGuid = proj.AddFile(extraFile, projPathOfFile, PBXSourceTree.Source);
+                var lumpGuid = proj.AddFile(GetRelativePathFromProj(extraFile), projPathOfFile, PBXSourceTree.Source);
                 proj.AddFileToBuild(targetGUID, lumpGuid);
             }
 
@@ -182,7 +189,7 @@ namespace HybridCLR.Editor
                 var lumpFileContent = new List<string>();
                 foreach (var file in cppFiles)
                 {
-                    lumpFileContent.Add($"#include \"{file}\"");
+                    lumpFileContent.Add($"#include \"{GetRelativePathFromProj(file)}\"");
                 }
                 File.WriteAllLines(lumpFile, lumpFileContent, Encoding.UTF8);
                 Debug.Log($"create lump file:{lumpFile}");

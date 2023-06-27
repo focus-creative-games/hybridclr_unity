@@ -35,9 +35,9 @@ namespace HybridCLR.Editor.MethodBridge
 
         private PlatformABI _platformABI;
 
-        private readonly IReadOnlyList<MethodDef> _notGenericMethods;
+        private readonly List<MethodDef> _notGenericMethods;
 
-        private readonly IReadOnlyCollection<GenericMethod> _genericMethods;
+        private readonly List<GenericMethod> _genericMethods;
 
         private readonly HashSet<GenericMethod> _preservedMethods;
 
@@ -51,21 +51,22 @@ namespace HybridCLR.Editor.MethodBridge
 
         private readonly HashSet<MethodDesc> _managed2nativeMethodSet = new HashSet<MethodDesc>();
 
-        private List<MethodDesc> _managed2nativeMethodList;
-
         private readonly HashSet<MethodDesc> _native2managedMethodSet = new HashSet<MethodDesc>();
 
-        private List<MethodDesc> _native2managedMethodList;
-
         private readonly HashSet<MethodDesc> _adjustThunkMethodSet = new HashSet<MethodDesc>();
-
-        private List<MethodDesc> _adjustThunkMethodList;
 
         public Generator(Options options)
         {
             _platformABI = options.PlatformABI;
-            _notGenericMethods = options.NotGenericMethods;
-            _genericMethods = options.GenericMethods;
+            
+            List<(MethodDef, string)> notGenericMethodInfo = options.NotGenericMethods.Select(m => (m, m.FullName)).ToList();
+            notGenericMethodInfo.Sort((a, b) => string.Compare(a.Item2, b.Item2, StringComparison.Ordinal));
+            _notGenericMethods = notGenericMethodInfo.Select(m => m.Item1).ToList();
+            
+            List<(GenericMethod, string)> genericMethodInfo = options.GenericMethods.Select(m => (m, m.ToString())).ToList();
+            genericMethodInfo.Sort((a, b) => string.CompareOrdinal(a.Item2, b.Item2));
+            _genericMethods = genericMethodInfo.Select(m => m.Item1).ToList();
+            
             _preservedMethods = options.SpeicalPreserveMethods;
             _templateCode = options.TemplateCode;
             _outputFile = options.OutputFile;
@@ -182,31 +183,6 @@ namespace HybridCLR.Editor.MethodBridge
             {
                 ProcessMethod(method.Method, method.KlassInst, method.MethodInst);
             }
-            
-            {
-                var sortedMethods = new SortedDictionary<string, MethodDesc>();
-                foreach (var method in _managed2nativeMethodSet)
-                {
-                    sortedMethods.Add(method.CreateCallSigName(), method);
-                }
-                _managed2nativeMethodList = sortedMethods.Values.ToList();
-            }
-            {
-                var sortedMethods = new SortedDictionary<string, MethodDesc>();
-                foreach (var method in _native2managedMethodSet)
-                {
-                    sortedMethods.Add(method.CreateCallSigName(), method);
-                }
-                _native2managedMethodList = sortedMethods.Values.ToList();
-            }
-            {
-                var sortedMethods = new SortedDictionary<string, MethodDesc>();
-                foreach (var method in _adjustThunkMethodSet)
-                {
-                    sortedMethods.Add(method.CreateCallSigName(), method);
-                }
-                _adjustThunkMethodList = sortedMethods.Values.ToList();
-            }
         }
 
         public void Generate()
@@ -215,29 +191,38 @@ namespace HybridCLR.Editor.MethodBridge
 
             List<string> lines = new List<string>(20_0000);
 
-            Debug.LogFormat("== managed2native:{0} native2managed:{1} adjustThunk:{2}",
-                _managed2nativeMethodList.Count, _native2managedMethodList.Count, _adjustThunkMethodList.Count);
+            List<MethodDesc> managed2NativeMethodList = _managed2nativeMethodSet.ToList();
+            managed2NativeMethodList.Sort((a, b) => string.CompareOrdinal(a.Sig, b.Sig));
 
-            foreach(var method in _managed2nativeMethodList)
+            List<MethodDesc> native2ManagedMethodList = _native2managedMethodSet.ToList();
+            native2ManagedMethodList.Sort((a, b) => string.CompareOrdinal(a.Sig, b.Sig));
+
+            List<MethodDesc> adjustThunkMethodList = _adjustThunkMethodSet.ToList();
+            adjustThunkMethodList.Sort((a, b) => string.CompareOrdinal(a.Sig, b.Sig));
+            
+            Debug.LogFormat("== managed2native:{0} native2managed:{1} adjustThunk:{2}",
+                managed2NativeMethodList.Count, native2ManagedMethodList.Count, adjustThunkMethodList.Count);
+
+            foreach(var method in managed2NativeMethodList)
             {
                 _platformAdaptor.GenerateManaged2NativeMethod(method, lines);
             }
 
-            _platformAdaptor.GenerateManaged2NativeStub(_managed2nativeMethodList, lines);
+            _platformAdaptor.GenerateManaged2NativeStub(managed2NativeMethodList, lines);
 
-            foreach (var method in _native2managedMethodList)
+            foreach (var method in native2ManagedMethodList)
             {
                 _platformAdaptor.GenerateNative2ManagedMethod(method, lines);
             }
 
-            _platformAdaptor.GenerateNative2ManagedStub(_native2managedMethodList, lines);
+            _platformAdaptor.GenerateNative2ManagedStub(native2ManagedMethodList, lines);
 
-            foreach (var method in _adjustThunkMethodList)
+            foreach (var method in adjustThunkMethodList)
             {
                 _platformAdaptor.GenerateAdjustThunkMethod(method, lines);
             }
 
-            _platformAdaptor.GenerateAdjustThunkStub(_adjustThunkMethodList, lines);
+            _platformAdaptor.GenerateAdjustThunkStub(adjustThunkMethodList, lines);
 
             frr.Replace("CODE", string.Join("\n", lines));
 

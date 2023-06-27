@@ -90,11 +90,12 @@ namespace HybridCLR.Editor.AOT
 
             codes.Add("");
             codes.Add("\t// {{ AOT generic types");
-
-            types.Sort((a, b) => a.Type.FullName.CompareTo(b.Type.FullName));
-            foreach(var type in types)
+            
+            List<string> typeNames = types.Select(t => PrettifyTypeSig(t.ToTypeSig().ToString())).ToList();
+            typeNames.Sort(string.CompareOrdinal);
+            foreach(var typeName in typeNames)
             {
-                codes.Add($"\t// {PrettifyTypeSig(type.ToTypeSig().ToString())}");
+                codes.Add($"\t// {typeName}");
             }
 
             codes.Add("\t// }}");
@@ -102,27 +103,36 @@ namespace HybridCLR.Editor.AOT
             codes.Add("");
             codes.Add("\tpublic void RefMethods()");
             codes.Add("\t{");
-            methods.Sort((a, b) =>
+            
+            List<(string, string, string)> methodTypeAndNames = methods.Select(m =>
+                (PrettifyTypeSig(m.Method.DeclaringType.ToString()), PrettifyMethodSig(m.Method.Name), PrettifyMethodSig(m.ToMethodSpec().ToString())))
+                .ToList();
+            methodTypeAndNames.Sort((a, b) =>
             {
-                int c = a.Method.DeclaringType.FullName.CompareTo(b.Method.DeclaringType.FullName);
+                int c = String.Compare(a.Item1, b.Item1, StringComparison.Ordinal);
                 if (c != 0)
                 {
                     return c;
                 }
-                c = a.Method.Name.CompareTo(b.Method.Name);
-                return c;
+
+                c = String.Compare(a.Item2, b.Item2, StringComparison.Ordinal);
+                if (c != 0)
+                {
+                    return c;
+                }
+                return String.Compare(a.Item3, b.Item3, StringComparison.Ordinal);
             });
-            foreach(var method in methods)
+            foreach(var method in methodTypeAndNames)
             {
-                codes.Add($"\t\t// {PrettifyMethodSig(method.ToMethodSpec().ToString())}");
+                codes.Add($"\t\t// {PrettifyMethodSig(method.Item3)}");
             }
             codes.Add("\t}");
 
             codes.Add("}");
 
 
-            var utf8WithoutBOM = new System.Text.UTF8Encoding(false);
-            File.WriteAllText(outputFile, string.Join("\n", codes), utf8WithoutBOM);
+            var utf8WithoutBom = new System.Text.UTF8Encoding(false);
+            File.WriteAllText(outputFile, string.Join("\n", codes), utf8WithoutBom);
             Debug.Log($"[GenericReferenceWriter] write {outputFile}");
         }
     }

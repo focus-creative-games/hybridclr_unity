@@ -19,10 +19,7 @@ namespace HybridCLR.Editor.Commands
             ScriptCompilationSettings scriptCompilationSettings = new ScriptCompilationSettings();
             scriptCompilationSettings.group = group;
             scriptCompilationSettings.target = target;
-            if (developmentBuild)
-            {
-                scriptCompilationSettings.options |= ScriptCompilationOptions.DevelopmentBuild;
-            }
+            scriptCompilationSettings.options = developmentBuild ? ScriptCompilationOptions.DevelopmentBuild : ScriptCompilationOptions.None;
             Directory.CreateDirectory(buildDir);
             ScriptCompilationResult scriptCompilationResult = PlayerBuildInterface.CompilePlayerScripts(scriptCompilationSettings, buildDir);
 #if UNITY_2022

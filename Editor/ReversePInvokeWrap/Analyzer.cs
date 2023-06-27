@@ -97,7 +97,7 @@ namespace HybridCLR.Editor.ReversePInvokeWrap
                 arm.Count += preserveCount;
             }
             var methods = methodsBySig.Values.ToList();
-            methods.Sort((a, b) => a.Method.Sig.CompareTo(b.Method.Sig));
+            methods.Sort((a, b) => String.CompareOrdinal(a.Method.Sig, b.Method.Sig));
             return methods;
         }
 

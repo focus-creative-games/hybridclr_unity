@@ -22,18 +22,18 @@ namespace HybridCLR.Editor.Link
             writer.WriteStartElement("linker");
 
             var typesByAssembly = refTypes.GroupBy(t => t.DefinitionAssembly.Name.String).ToList();
-            typesByAssembly.Sort((a, b) => a.Key.CompareTo(b.Key));
+            typesByAssembly.Sort((a, b) => String.Compare(a.Key, b.Key, StringComparison.Ordinal));
 
             foreach(var assembly in typesByAssembly)
             {
                 writer.WriteStartElement("assembly");
                 writer.WriteAttributeString("fullname", assembly.Key);
-                List<TypeRef> assTypes = assembly.ToList();
-                assTypes.Sort((a, b) => a.FullName.CompareTo(b.FullName));
-                foreach(var type in assTypes)
+                List<string> assTypeNames = assembly.Select(t => t.FullName).ToList();
+                assTypeNames.Sort(string.CompareOrdinal);
+                foreach(var typeName in assTypeNames)
                 {
                     writer.WriteStartElement("type");
-                    writer.WriteAttributeString("fullname", type.FullName);
+                    writer.WriteAttributeString("fullname", typeName);
                     writer.WriteAttributeString("preserve", "all");
                     writer.WriteEndElement();
                 }

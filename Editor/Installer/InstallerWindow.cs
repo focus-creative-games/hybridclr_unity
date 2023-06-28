@@ -47,7 +47,7 @@ namespace HybridCLR.Editor.Installer
 
             EditorGUILayout.LabelField($"{SettingsUtil.PackageName} 版本:     v{_controller.PackageVersion}");
             GUILayout.Space(5f);
-            EditorGUILayout.LabelField($"bybridclr 版本:    {_controller.HybridclrLocalVersion}");
+            EditorGUILayout.LabelField($"hybridclr 版本:    {_controller.HybridclrLocalVersion}");
             GUILayout.Space(5f);
             EditorGUILayout.LabelField($"il2cpp_plus 版本:    {_controller.Il2cppPlusLocalVersion}");
             GUILayout.Space(5f);

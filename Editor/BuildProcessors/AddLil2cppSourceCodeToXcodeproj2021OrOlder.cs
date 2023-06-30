@@ -54,7 +54,7 @@ namespace HybridCLR.Editor
             CopyLibil2cppToXcodeProj(srcLibil2cppDir, dstLibil2cppDir);
             CopyExternalToXcodeProj(srcExternalDir, dstExternalDir);
             var lumpFiles = CreateLumps(dstLibil2cppDir, lumpDir);
-            var extraSources = GetExtraSourceFiles(dstExternalDir);
+            var extraSources = GetExtraSourceFiles(dstExternalDir, dstLibil2cppDir);
             var cflags = new List<string>()
             {
                 "-DIL2CPP_MONO_DEBUGGER_DISABLED",
@@ -233,11 +233,22 @@ namespace HybridCLR.Editor
             return lumpFiles;
         }
 
-        private static List<string> GetExtraSourceFiles(string externalDir)
+        private static List<string> GetExtraSourceFiles(string externalDir, string libil2cppDir)
         {
             var files = new List<string>();
-            files.AddRange(Directory.GetFiles($"{externalDir}/zlib", "*.c"));
-            files.Add($"{externalDir}/xxHash/xxhash.c");
+            foreach (string extraDir in new string[]
+            {
+                $"{externalDir}/zlib",
+                $"{externalDir}/xxHash",
+                $"{libil2cppDir}/os/ClassLibraryPAL/brotli",
+            })
+            {
+                if (!Directory.Exists(extraDir))
+                {
+                    continue;
+                }
+                files.AddRange(Directory.GetFiles(extraDir, "*.c", SearchOption.AllDirectories));
+            }
             return files;
         }
     }

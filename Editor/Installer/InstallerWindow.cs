@@ -54,13 +54,13 @@ namespace HybridCLR.Editor.Installer
             
             GUILayout.Space(10f);
 
-            if (_controller.IsComaptibleVersion())
+            if (_controller.IsCompatibleVersion())
             {
                 GUIInstallButton("安装hybridclr+il2cpp_plus代码到本地目录", "安装");
             }
             else
             {
-                EditorGUILayout.HelpBox("与当前版本不兼容", MessageType.Error);
+                EditorGUILayout.HelpBox($"与当前版本不兼容，最小兼容版本:{_controller.GetCurrentUnityVersionMinCompatibleVersionStr()}", MessageType.Error);
             }
 
             EditorGUILayout.EndVertical();

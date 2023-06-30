@@ -122,13 +122,14 @@ namespace HybridCLR.Editor.Installer
         {
             switch(majorVersion)
             {
+                case 2020: return $"2020.3.{min2020_3_CompatibleMinorVersion}";
                 case 2021: return $"2021.3.{min2021_3_CompatibleMinorVersion}";
                 case 2022: return $"2022.3.{min2022_3_CompatibleMinorVersion}";
-                default: throw new Exception($"not support version:{majorVersion}");
+                default: return $"2020.3.{min2020_3_CompatibleMinorVersion}";
             }
         }
 
-        public bool IsComaptibleVersion()
+        public bool IsCompatibleVersion()
         {
             UnityVersion version = _curVersion;
             if (version == null)
@@ -157,9 +158,9 @@ namespace HybridCLR.Editor.Installer
             }
         }
 
-        public string HybridclrLocalVersion => _curDefaultVersion.hybridclr.branch;
+        public string HybridclrLocalVersion => _curDefaultVersion?.hybridclr?.branch;
 
-        public string Il2cppPlusLocalVersion => _curDefaultVersion.il2cpp_plus.branch;
+        public string Il2cppPlusLocalVersion => _curDefaultVersion?.il2cpp_plus?.branch;
 
 
         private string GetIl2CppPathByContentPath(string contentPath)
@@ -222,7 +223,7 @@ namespace HybridCLR.Editor.Installer
 
         private void RunInitLocalIl2CppData(string editorIl2cppPath, string libil2cppWithHybridclrSourceDir, UnityVersion version)
         {
-            if (!IsComaptibleVersion())
+            if (!IsCompatibleVersion())
             {
                 Debug.LogError($"il2cpp 版本不兼容，最小版本为 {GetCurrentUnityVersionMinCompatibleVersionStr()}");
                 return;

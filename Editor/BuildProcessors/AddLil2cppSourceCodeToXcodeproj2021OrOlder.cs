@@ -29,9 +29,8 @@ namespace HybridCLR.Editor
         [PostProcessBuild]
         public static void OnPostProcessBuild(BuildTarget target, string pathToBuiltProject)
         {
-            if (target != BuildTarget.iOS)
+            if (target != BuildTarget.iOS || !HybridCLRSettings.Instance.enable)
                 return;
-
             /*
              *  1. 生成lump，并且添加到工程
                 3. 将libil2cpp目录复制到 Library/. 删除旧的. search paths里修改 libil2cpp/include为libil2cpp

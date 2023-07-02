@@ -21,7 +21,7 @@ namespace HybridCLR.Editor
         [PostProcessBuild]
         public static void OnPostProcessBuild(BuildTarget target, string pathToBuiltProject)
         {
-            if (target != BuildTarget.iOS)
+            if (target != BuildTarget.iOS || !HybridCLRSettings.Instance.enable)
                 return;
 
             string pbxprojFile = $"{pathToBuiltProject}/Unity-iPhone.xcodeproj/project.pbxproj";

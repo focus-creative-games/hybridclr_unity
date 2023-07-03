@@ -1,5 +1,24 @@
 # 发布日志
 
+## 3.3.0 
+
+发布日期 2023.07.03。
+
+### Runtime
+
+- [fix] 修复localloc分配的内存未释放的bug
+- [change] MachineState改用RegisterRoot的方式注册执行栈，避免GC时扫描整个堆栈
+- [opt] 优化Managed2NativeCallByReflectionInvoke性能，提前计算好传参方式
+- [refactor] 重构ConvertInvokeArgs
+
+### Editor
+
+- [fix] 修复2020-2021编译libil2cpp.a未包含brotli相关代码文件导致出现编译错误的bug
+- [fix] 修复从导出xcode项目包含绝对路径导致传送到其他机器上编译时找不到路径的bug
+- [fix] 解决Generate LinkXml、 MethodBridge、AOTGenericReference、ReversePInvokeWrap 生成不稳定的问题
+- [fix] 修复使用不兼容版本打开Installer时出现异常的bug
+- [change] 禁用hybridclr后打包ios时不再修改导出的xcode工程
+
 ## 3.2.1
 
 - [new] Installer界面新增显示package版本

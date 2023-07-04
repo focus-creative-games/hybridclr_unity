@@ -39,10 +39,10 @@ namespace HybridCLR.Editor
         public string[] patchAOTAssemblies;
 
         [Header("生成的link.xml路径")]
-        public string outputLinkFile = "HybridCLRData/Generated/link.xml";
+        public string outputLinkFile = "HybridCLRGenerate/link.xml";
 
         [Header("自动扫描生成的AOTGenericReferences.cs路径")]
-        public string outputAOTGenericReferenceFile = "HybridCLRData/Generated/AOTGenericReferences.cs";
+        public string outputAOTGenericReferenceFile = "HybridCLRGenerate/AOTGenericReferences.cs";
 
         [Header("AOT泛型实例化搜索迭代次数")]
         public int maxGenericReferenceIteration = 10;

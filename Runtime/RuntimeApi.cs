@@ -76,7 +76,7 @@ namespace HybridCLR
         {
             
         }
-        #else
+#else
         [DllImport(dllName, EntryPoint = "RuntimeApi_SetInterpreterThreadObjectStackSize")]
         public static extern void SetInterpreterThreadObjectStackSize(int size);
 #endif
@@ -103,7 +103,7 @@ namespace HybridCLR
         {
                 
         }
-        #else
+#else
         [DllImport(dllName, EntryPoint = "RuntimeApi_SetInterpreterThreadFrameStackSize")]
         public static extern void SetInterpreterThreadFrameStackSize(int size);
 #endif

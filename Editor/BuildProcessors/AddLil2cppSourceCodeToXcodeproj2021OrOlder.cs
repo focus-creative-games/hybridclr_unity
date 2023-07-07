@@ -1,3 +1,4 @@
+using System;
 using HybridCLR.Editor.Installer;
 using System.Collections.Generic;
 using System.IO;
@@ -63,7 +64,7 @@ namespace HybridCLR.Editor
 
         private static string GetRelativePathFromProj(string path)
         {
-            return path.Substring(path.IndexOf("Libraries"));
+            return path.Substring(path.IndexOf("Libraries", StringComparison.Ordinal)).Replace('\\', '/');
         }
 
         private static void ModifyPBXProject(string pathToBuiltProject, string pbxprojFile, List<LumpFile> lumpFiles, List<string> extraFiles, List<string> cflags)

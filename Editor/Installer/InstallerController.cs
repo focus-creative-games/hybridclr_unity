@@ -93,10 +93,6 @@ namespace HybridCLR.Editor.Installer
 
         private static readonly Regex s_unityVersionPat = new Regex(@"(\d+)\.(\d+)\.(\d+)");
 
-        public const int min2020_3_CompatibleMinorVersion = 26;
-        public const int min2021_3_CompatibleMinorVersion = 0;
-        public const int min2022_3_CompatibleMinorVersion = 0;
-
         private UnityVersion ParseUnityVersion(string versionStr)
         {
             var matches = s_unityVersionPat.Matches(versionStr);
@@ -104,9 +100,7 @@ namespace HybridCLR.Editor.Installer
             {
                 return null;
             }
-            // 找最后一个匹配的
             Match match = matches[matches.Count - 1];
-            // Debug.Log($"capture count:{match.Groups.Count} {match.Groups[1].Value} {match.Groups[2].Value}");
             int major = int.Parse(match.Groups[1].Value);
             int minor1 = int.Parse(match.Groups[2].Value);
             int minor2 = int.Parse(match.Groups[3].Value);
@@ -122,10 +116,10 @@ namespace HybridCLR.Editor.Installer
         {
             switch(majorVersion)
             {
-                case 2020: return $"2020.3.{min2020_3_CompatibleMinorVersion}";
-                case 2021: return $"2021.3.{min2021_3_CompatibleMinorVersion}";
-                case 2022: return $"2022.3.{min2022_3_CompatibleMinorVersion}";
-                default: return $"2020.3.{min2020_3_CompatibleMinorVersion}";
+                case 2020: return $"2020.3.0";
+                case 2021: return $"2021.3.0";
+                case 2022: return $"2022.3.0";
+                default: return $"2020.3.0";
             }
         }
 
@@ -140,22 +134,7 @@ namespace HybridCLR.Editor.Installer
             {
                 return false;
             }
-            switch (version.major)
-            {
-                case 2020:
-                    {
-                        return version.minor2 >= min2021_3_CompatibleMinorVersion;
-                    }
-                case 2021:
-                    { 
-                        return version.minor2 >= min2021_3_CompatibleMinorVersion;
-                    }
-                case 2022:
-                    {
-                        return version.minor2 >= min2022_3_CompatibleMinorVersion;
-                    }
-                default: throw new Exception($"not support il2cpp_plus branch:{version.major}");
-            }
+            return true;
         }
 
         public string HybridclrLocalVersion => _curDefaultVersion?.hybridclr?.branch;
@@ -225,7 +204,7 @@ namespace HybridCLR.Editor.Installer
         {
             if (!IsCompatibleVersion())
             {
-                Debug.LogError($"il2cpp 版本不兼容，最小版本为 {GetCurrentUnityVersionMinCompatibleVersionStr()}");
+                Debug.LogError($"Incompatible with current version, minimum compatible version: {GetCurrentUnityVersionMinCompatibleVersionStr()}");
                 return;
             }
             string workDir = SettingsUtil.HybridCLRDataDir;
@@ -250,11 +229,11 @@ namespace HybridCLR.Editor.Installer
 
             if (HasInstalledHybridCLR())
             {
-                Debug.Log("安装成功");
+                Debug.Log("Install Sucessfully");
             }
             else
             {
-                Debug.LogError("安装失败");
+                Debug.LogError("Installation failed!");
             }
         }
     }

@@ -30,7 +30,7 @@ namespace HybridCLR.Editor.Installer
                 height = 24
             };
             var content = EditorGUIUtility.IconContent("Settings");
-            content.tooltip = "点击打开HybridCLR Settings";
+            content.tooltip = "HybridCLR Settings";
             if (GUI.Button(rect, content, GUI.skin.GetStyle("IconButton")))
             {
                 SettingsService.OpenProjectSettings("Project/HybridCLR Settings");
@@ -41,53 +41,43 @@ namespace HybridCLR.Editor.Installer
             GUILayout.Space(10f);
 
             EditorGUILayout.BeginVertical("box");
-            EditorGUILayout.LabelField($"安装状态：{(hasInstall ? "已安装" : "未安装")}", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField($"Installed: {hasInstall}", EditorStyles.boldLabel);
             GUILayout.Space(10f);
 
-
-            EditorGUILayout.LabelField($"{SettingsUtil.PackageName} 版本:     v{_controller.PackageVersion}");
-            GUILayout.Space(5f);
-            EditorGUILayout.LabelField($"hybridclr 版本:    {_controller.HybridclrLocalVersion}");
-            GUILayout.Space(5f);
-            EditorGUILayout.LabelField($"il2cpp_plus 版本:    {_controller.Il2cppPlusLocalVersion}");
+            EditorGUILayout.LabelField($"Package Version:     v{_controller.PackageVersion}");
             GUILayout.Space(5f);
             
             GUILayout.Space(10f);
 
             if (_controller.IsCompatibleVersion())
             {
-                GUIInstallButton("安装hybridclr+il2cpp_plus代码到本地目录", "安装");
+                EditorGUILayout.BeginHorizontal();
+                _installFromDir = EditorGUILayout.Toggle("Copy libil2cpp from local", _installFromDir, GUILayout.MinWidth(100));
+                EditorGUI.BeginDisabledGroup(!_installFromDir);
+                EditorGUILayout.TextField(_installLibil2cppWithHybridclrSourceDir, GUILayout.Width(400));
+                if (GUILayout.Button("Choose", GUILayout.Width(100)))
+                {
+                    _installLibil2cppWithHybridclrSourceDir = EditorUtility.OpenFolderPanel("Select libil2cpp", Application.dataPath, "libil2cpp");
+                }
+                EditorGUI.EndDisabledGroup();
+                EditorGUILayout.EndHorizontal();
+
+                GUILayout.Space(20f);
+
+                EditorGUILayout.BeginHorizontal();
+                if (GUILayout.Button("Install", GUILayout.Width(100)))
+                {
+                    InstallLocalHybridCLR();
+                    GUIUtility.ExitGUI();
+                }
+                EditorGUILayout.EndHorizontal();
             }
             else
             {
-                EditorGUILayout.HelpBox($"与当前版本不兼容，最小兼容版本:{_controller.GetCurrentUnityVersionMinCompatibleVersionStr()}", MessageType.Error);
+                EditorGUILayout.HelpBox($"Incompatible with current version, minimum compatible version:{_controller.GetCurrentUnityVersionMinCompatibleVersionStr()}", MessageType.Error);
             }
 
             EditorGUILayout.EndVertical();
-        }
-
-        private void GUIInstallButton(string content, string button)
-        {
-            EditorGUILayout.BeginHorizontal();
-            _installFromDir = EditorGUILayout.Toggle("从本地复制libil2cpp", _installFromDir);
-            EditorGUI.BeginDisabledGroup(!_installFromDir);
-            EditorGUILayout.TextField(_installLibil2cppWithHybridclrSourceDir, GUILayout.Width(400));
-            if (GUILayout.Button("选择目录", GUILayout.Width(100)))
-            {
-                _installLibil2cppWithHybridclrSourceDir = EditorUtility.OpenFolderPanel("选择libil2cpp目录", Application.dataPath, "libil2cpp");
-            }
-            EditorGUI.EndDisabledGroup();
-            EditorGUILayout.EndHorizontal();
-            
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(content);
-            if (GUILayout.Button(button, GUILayout.Width(100)))
-            {
-                InstallLocalHybridCLR();
-                GUIUtility.ExitGUI();
-            }
-            EditorGUILayout.EndHorizontal();
-
         }
 
         private void InstallLocalHybridCLR()
@@ -96,12 +86,12 @@ namespace HybridCLR.Editor.Installer
             {
                 if (!Directory.Exists(_installLibil2cppWithHybridclrSourceDir))
                 {
-                    Debug.LogError($"本地libil2cpp复制目录不存在. '{_installLibil2cppWithHybridclrSourceDir}'");
+                    Debug.LogError($"Source libil2cpp:'{_installLibil2cppWithHybridclrSourceDir}' doesn't exist.");
                     return;
                 }
                 if (!File.Exists($"{_installLibil2cppWithHybridclrSourceDir}/il2cpp-config.h") || !File.Exists($"{_installLibil2cppWithHybridclrSourceDir}/hybridclr/RuntimeApi.cpp"))
                 {
-                    Debug.LogError($"本地libil2cpp不是合法有效的源码目录. '{_installLibil2cppWithHybridclrSourceDir}'");
+                    Debug.LogError($"Source libil2cpp:' {_installLibil2cppWithHybridclrSourceDir} ' is invalid");
                     return;
                 }
                 _controller.InstallFromLocal(_installLibil2cppWithHybridclrSourceDir);

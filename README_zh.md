@@ -24,6 +24,7 @@ HybridCLR不仅支持传统的全解释执行模式，还开创性地实现了 [
 
 - [官方文档](https://hybridclr.doc.code-philosophy.com/docs/intro)
 - [快速上手](https://hybridclr.doc.code-philosophy.com/docs/beginner/quickstart)
+- [发布日志](./RELEASELOG.md)
 
 ## 特性
 

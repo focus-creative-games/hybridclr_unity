@@ -28,6 +28,7 @@ Welcome to embrace modern native C# hot update technology! ! !
 
 - [Official Documentation](https://hybridclr.doc.code-philosophy.com/en/docs/intro)
 - [Quickstart](https://hybridclr.doc.code-philosophy.com/en/docs/beginner/quickstart)
+- [Release Log](./RELEASELOG.md)
 
 ## Features
 

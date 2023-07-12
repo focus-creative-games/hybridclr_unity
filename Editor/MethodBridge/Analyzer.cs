@@ -149,23 +149,16 @@ namespace HybridCLR.Editor.MethodBridge
                 for (uint rid = 1, n = ass.Metadata.TablesStream.TypeSpecTable.Rows; rid <= n; rid++)
                 {
                     var ts = ass.ResolveTypeSpec(rid);
-                    if (!ts.ContainsGenericParameter)
+                    var cs = GenericClass.ResolveClass(ts, null)?.ToGenericShare();
+                    if (cs != null)
                     {
-                        var cs = GenericClass.ResolveClass(ts, null)?.ToGenericShare();
-                        if (cs != null)
-                        {
-                            TryAddAndWalkGenericType(cs);
-                        }
+                        TryAddAndWalkGenericType(cs);
                     }
                 }
 
                 for (uint rid = 1, n = ass.Metadata.TablesStream.MethodSpecTable.Rows; rid <= n; rid++)
                 {
                     var ms = ass.ResolveMethodSpec(rid);
-                    if(ms.DeclaringType.ContainsGenericParameter || ms.GenericInstMethodSig.ContainsGenericParameter)
-                    {
-                        continue;
-                    }
                     var gm = GenericMethod.ResolveMethod(ms, null)?.ToGenericShare();
                     if (gm == null)
                     {
@@ -176,10 +169,6 @@ namespace HybridCLR.Editor.MethodBridge
                     {
                         _newMethods.Add(gm);
                     }
-                    //if (gm.KlassInst != null)
-                    //{
-                    //    TryAddAndWalkGenericType(new GenericClass(gm.Method.DeclaringType, gm.KlassInst));
-                    //}
                 }
             }
             Debug.Log($"PostPrepare allMethods:{_notGenericMethods.Count} newMethods:{_newMethods.Count}");

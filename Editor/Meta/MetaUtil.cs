@@ -93,6 +93,8 @@ namespace HybridCLR.Editor.Meta
 				case ElementType.SZArray: return corTypes.Object;
 				case ElementType.Array: return corTypes.Object;
 				case ElementType.ValueType: return typeSig;
+				case ElementType.Var:
+				case ElementType.MVar:
 				case ElementType.Class: return corTypes.Object;
 				case ElementType.GenericInst:
                 {

@@ -22,15 +22,6 @@ namespace HybridCLR.Editor.Meta
 
         public void WalkMethod(MethodDef method, List<TypeSig> klassGenericInst, List<TypeSig> methodGenericInst)
         {
-            if (klassGenericInst != null || methodGenericInst != null)
-            {
-                //var typeSig = klassGenericInst != null ? new GenericInstSig(method.DeclaringType.ToTypeSig().ToClassOrValueTypeSig(), klassGenericInst) : method.DeclaringType?.ToTypeSig();
-                //Debug.Log($"== walk generic method {typeSig}::{method.Name} {method.MethodSig}");
-            }
-            else
-            {
-                //Debug.Log($"== walk not geneeric method:{method}");
-            }
             var ctx = new GenericArgumentContext(klassGenericInst, methodGenericInst);
 
             if (_methodEffectInsts.TryGetValue(method, out var effectInsts))

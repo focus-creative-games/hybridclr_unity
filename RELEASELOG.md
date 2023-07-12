@@ -1,5 +1,27 @@
 # 发布日志
 
+## 3.3.1
+
+发布日志 2023.07.17。
+
+### Runtime
+
+- [version] 支持2021.3.28和2022.3.4版本
+- [opt] 删除MachineState::InitEvalStack分配_StackBase后不必要的memset
+- [fix] 修复Exception机制的bug
+- [fix] 修复CustomAttribute不支持Type[]类型参数的bug
+- [fix] 修复不支持new string(xxx)用法的问题
+- [refactor] 重构VTableSetup实现
+- [fix] 修复未计算子interface中显式实现父interface的函数的bug
+
+### Editor
+
+- [fix] 修复计算桥接函数未考虑到泛型类的成员函数中可能包含的Native2Managed调用
+- [change] link.xml及AOTGenericReferences.cs默认输出路径改为HybridCLRGenerate，避免与顶层HybridCLRData混淆
+- [fix] 修复Win下生成的Lump文件中include路径以\为目录分隔符导致同步到Mac后找不到路径的bug
+- [refactor] 重构Installer
+
+
 ## 3.3.0 
 
 发布日期 2023.07.03。

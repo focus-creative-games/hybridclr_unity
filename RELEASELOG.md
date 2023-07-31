@@ -1,8 +1,23 @@
 # 发布日志
 
+## 3.4.1
+
+发布日期 2023.07.31。
+
+### Runtime
+
+- [fix] 修复 InitializeRuntimeMetadata的内存可见性问题
+- [fix] 修复CustomAttribute未正确处理父类NamedArg导致崩溃的bug
+- [opt] 优化Transfrom Instinct指令的代码，从HashMap中快速查找而不是挨个匹配
+
+### Editor
+
+- [fix] 修复FilterHotFixAssemblies只对比程序集名尾部，导致有AOT的尾部与某个热更新程序集匹配时意外被过滤的bug
+- [change] 检查Settings中热更新程序集列表配置中程序集名不能为空
+
 ## 3.4.0
 
-发布日志 2023.07.17。
+发布日期 2023.07.17。
 
 ### Runtime
 

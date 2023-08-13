@@ -1,5 +1,19 @@
 # 发布日志
 
+## 3.4.2
+
+发布日期 2023.08.14。
+
+### Runtime
+
+- [fix] 修复RawImage::LoadTables读取_4byteGUIDIndex的bug
+- [version] 支持2022.3.7版本
+- [version] 支持2021.3.29版本
+
+### Editor
+
+- [fix] 修复计算AOTGenericReference未考虑到泛型调用泛型的情况，导致少计算了泛型及补充元数据
+
 ## 3.4.1
 
 发布日期 2023.07.31。

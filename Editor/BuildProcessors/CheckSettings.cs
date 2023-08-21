@@ -39,11 +39,6 @@ namespace HybridCLR.Editor.BuildProcessors
             {
                 return;
             }
-            if (PlayerSettings.gcIncremental)
-            {
-                Debug.LogError($"[CheckSettings] HybridCLR不支持增量式GC，已经自动将该选项关闭");
-                PlayerSettings.gcIncremental = false;
-            }
             BuildTargetGroup buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
             ScriptingImplementation curScriptingImplementation = PlayerSettings.GetScriptingBackend(buildTargetGroup);
             ScriptingImplementation targetScriptingImplementation = ScriptingImplementation.IL2CPP;

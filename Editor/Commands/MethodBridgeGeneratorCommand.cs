@@ -29,16 +29,13 @@ namespace HybridCLR.Editor.Commands
             Directory.Delete(il2cppBuildCachePath, true);
         }
 
-        private static void GenerateMethodBridgeCppFile(Analyzer analyzer, PlatformABI platform, string templateCode, string outputFile)
+        private static void GenerateMethodBridgeCppFile(Analyzer analyzer, string templateCode, string outputFile)
         {
             var g = new Generator(new Generator.Options()
             {
-                PlatformABI = platform,
                 TemplateCode = templateCode,
                 OutputFile = outputFile,
                 GenericMethods = analyzer.GenericMethods,
-                NotGenericMethods = analyzer.NotGenericMethods,
-                SpeicalPreserveMethods = analyzer.SpeicalPreserveMethods,
             });
 
             g.PrepareMethods();
@@ -66,18 +63,9 @@ namespace HybridCLR.Editor.Commands
                 });
 
                 analyzer.Run();
-
-                var tasks = new List<Task>();
                 string templateCode = File.ReadAllText($"{SettingsUtil.TemplatePathInPackage}/MethodBridgeStub.cpp");
-                foreach (PlatformABI platform in Enum.GetValues(typeof(PlatformABI)))
-                {
-                    string outputFile = $"{SettingsUtil.GeneratedCppDir}/MethodBridge_{platform}.cpp";
-                    tasks.Add(Task.Run(() =>
-                    {
-                        GenerateMethodBridgeCppFile(analyzer, platform, templateCode, outputFile);
-                    }));
-                }
-                Task.WaitAll(tasks.ToArray());
+                string outputFile = $"{SettingsUtil.GeneratedCppDir}/MethodBridge.cpp";
+                GenerateMethodBridgeCppFile(analyzer, templateCode, outputFile);
             }
 
             CleanIl2CppBuildCache();

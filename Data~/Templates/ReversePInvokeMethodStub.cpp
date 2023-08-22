@@ -5,7 +5,6 @@ namespace hybridclr
 {
 namespace metadata
 {
-#if {PLATFORM_ABI}
 
 	//!!!{{CODE
 
@@ -27,6 +26,5 @@ namespace metadata
 	};
 
 	//!!!}}CODE
-#endif
 }
 }

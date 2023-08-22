@@ -22,7 +22,7 @@ namespace HybridCLR.Editor.Meta
 
         public GenericClass ToGenericShare()
         {
-            return new GenericClass(Type, MetaUtil.ToShareTypeSigs(KlassInst));
+            return new GenericClass(Type, MetaUtil.ToShareTypeSigs(Type.Module.CorLibTypes, KlassInst));
         }
 
         public override bool Equals(object obj)

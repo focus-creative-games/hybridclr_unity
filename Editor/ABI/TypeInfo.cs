@@ -1,4 +1,5 @@
 ﻿using dnlib.DotNet;
+using HybridCLR.Editor.Meta;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -20,37 +21,32 @@ namespace HybridCLR.Editor.ABI
         public static readonly TypeInfo s_u8 = new TypeInfo(ParamOrReturnType.U8);
         public static readonly TypeInfo s_r4 = new TypeInfo(ParamOrReturnType.R4);
         public static readonly TypeInfo s_r8 = new TypeInfo(ParamOrReturnType.R8);
-        public static readonly TypeInfo s_i16 = new TypeInfo(ParamOrReturnType.I16);
-        public static readonly TypeInfo s_ref = new TypeInfo(ParamOrReturnType.STRUCTURE_AS_REF_PARAM);
+        public static readonly TypeInfo s_i = new TypeInfo(ParamOrReturnType.I);
+        public static readonly TypeInfo s_u = new TypeInfo(ParamOrReturnType.U);
+        public static readonly TypeInfo s_typedByRef = new TypeInfo(ParamOrReturnType.TYPEDBYREF);
 
-        public static readonly TypeInfo s_vf2 = new TypeInfo(ParamOrReturnType.ARM64_HFA_FLOAT_2);
-        public static readonly TypeInfo s_vf3 = new TypeInfo(ParamOrReturnType.ARM64_HFA_FLOAT_3);
-        public static readonly TypeInfo s_vf4 = new TypeInfo(ParamOrReturnType.ARM64_HFA_FLOAT_4);
-        public static readonly TypeInfo s_vd2 = new TypeInfo(ParamOrReturnType.ARM64_HFA_DOUBLE_2);
-        public static readonly TypeInfo s_vd3 = new TypeInfo(ParamOrReturnType.ARM64_HFA_DOUBLE_3);
-        public static readonly TypeInfo s_vd4 = new TypeInfo(ParamOrReturnType.ARM64_HFA_DOUBLE_4);
+        public const string strTypedByRef = "typedbyref";
 
-        public TypeInfo(ParamOrReturnType portype)
+        public TypeInfo(ParamOrReturnType portype, TypeSig klass = null, int typeId = 0)
         {
             PorType = portype;
-            Size = 0;
-        }
-
-        public TypeInfo(ParamOrReturnType portype, int size)
-        {
-            PorType = portype;
-            Size = size;
+            Klass = klass;
+            _typeId = typeId;
         }
 
         public ParamOrReturnType PorType { get; }
 
-        public bool IsGeneralValueType => PorType >= ParamOrReturnType.STRUCTURE_ALIGN1 && PorType <= ParamOrReturnType.STRUCTURE_ALIGN8;
+        public TypeSig Klass { get; }
 
-        public int Size { get; }
+        public bool IsStruct => PorType == ParamOrReturnType.STRUCT;
+
+        private readonly int _typeId;
+
+        public int TypeId => _typeId;
 
         public bool Equals(TypeInfo other)
         {
-            return PorType == other.PorType && Size == other.Size;
+            return PorType == other.PorType && object.Equals(Klass, other.Klass);
         }
 
         public override bool Equals(object obj)
@@ -60,7 +56,12 @@ namespace HybridCLR.Editor.ABI
 
         public override int GetHashCode()
         {
-            return (int)PorType * 23 + Size;
+            return (int)PorType * 23 + (Klass?.GetHashCode() ?? 0);
+        }
+
+        public bool NeedExpandValue()
+        {
+            return PorType >= ParamOrReturnType.I1 && PorType <= ParamOrReturnType.U2;
         }
 
         public string CreateSigName()
@@ -78,22 +79,10 @@ namespace HybridCLR.Editor.ABI
                 case ParamOrReturnType.U8: return "u8";
                 case ParamOrReturnType.R4: return "r4";
                 case ParamOrReturnType.R8: return "r8";
-                case ParamOrReturnType.I16: return "i16";
-                case ParamOrReturnType.STRUCTURE_AS_REF_PARAM: return "sr";
-                case ParamOrReturnType.ARM64_HFA_FLOAT_2: return "vf2";
-                case ParamOrReturnType.ARM64_HFA_FLOAT_3: return "vf3";
-                case ParamOrReturnType.ARM64_HFA_FLOAT_4: return "vf4";
-                case ParamOrReturnType.ARM64_HFA_DOUBLE_2: return "vd2";
-                case ParamOrReturnType.ARM64_HFA_DOUBLE_3: return "vd3";
-                case ParamOrReturnType.ARM64_HFA_DOUBLE_4: return "vd4";
-                case ParamOrReturnType.STRUCTURE_ALIGN1: return "S" + Size;
-                case ParamOrReturnType.STRUCTURE_ALIGN2: return "A" + Size;
-                case ParamOrReturnType.STRUCTURE_ALIGN4: return "B" + Size;
-                case ParamOrReturnType.STRUCTURE_ALIGN8: return "C" + Size;
-                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN1: return "X" + Size;
-                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN2: return "Y" + Size;
-                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN4: return "Z" + Size;
-                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN8: return "W" + Size;
+                case ParamOrReturnType.I: return "i";
+                case ParamOrReturnType.U: return "u";
+                case ParamOrReturnType.TYPEDBYREF: return strTypedByRef;
+                case ParamOrReturnType.STRUCT: return $"s{_typeId}";
                 default: throw new NotSupportedException(PorType.ToString());
             };
         }
@@ -113,55 +102,13 @@ namespace HybridCLR.Editor.ABI
                 case ParamOrReturnType.U8: return "uint64_t";
                 case ParamOrReturnType.R4: return "float";
                 case ParamOrReturnType.R8: return "double";
-                case ParamOrReturnType.I16: return "ValueTypeSize16";
-                case ParamOrReturnType.STRUCTURE_AS_REF_PARAM: return "uint64_t";
-                case ParamOrReturnType.ARM64_HFA_FLOAT_2: return "HtVector2f";
-                case ParamOrReturnType.ARM64_HFA_FLOAT_3: return "HtVector3f";
-                case ParamOrReturnType.ARM64_HFA_FLOAT_4: return "HtVector4f";
-                case ParamOrReturnType.ARM64_HFA_DOUBLE_2: return "HtVector2d";
-                case ParamOrReturnType.ARM64_HFA_DOUBLE_3: return "HtVector3d";
-                case ParamOrReturnType.ARM64_HFA_DOUBLE_4: return "HtVector4d";
-                case ParamOrReturnType.STRUCTURE_ALIGN1: return $"ValueTypeSize<{Size}>";
-                case ParamOrReturnType.STRUCTURE_ALIGN2: return $"ValueTypeSizeAlign2<{Size}>";
-                case ParamOrReturnType.STRUCTURE_ALIGN4: return $"ValueTypeSizeAlign4<{Size}>";
-                case ParamOrReturnType.STRUCTURE_ALIGN8: return $"ValueTypeSizeAlign8<{Size}>";
-                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN1: return $"WebGLSpeicalValueType<{Size}>";
-                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN2: return $"WebGLSpeicalValueTypeAlign2<{Size}>";
-                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN4: return $"WebGLSpeicalValueTypeAlign4<{Size}>";
-                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN8: return $"WebGLSpeicalValueTypeAlign8<{Size}>";
+                case ParamOrReturnType.I: return "intptr_t";
+                case ParamOrReturnType.U: return "uintptr_t";
+                case ParamOrReturnType.TYPEDBYREF: return "Il2CppTypedRef";
+                case ParamOrReturnType.STRUCT: return $"__struct_{_typeId}__";
                 default: throw new NotImplementedException(PorType.ToString());
             };
         }
-        public int GetParamSlotNum()
-        {
-            switch (PorType)
-            {
-                case ParamOrReturnType.VOID: return 0;
-                case ParamOrReturnType.I16: return 2;
-                case ParamOrReturnType.STRUCTURE_AS_REF_PARAM: return 1;
-                case ParamOrReturnType.ARM64_HFA_FLOAT_3: return 2;
-                case ParamOrReturnType.ARM64_HFA_FLOAT_4: return 2;
-                case ParamOrReturnType.ARM64_HFA_DOUBLE_2: return 2;
-                case ParamOrReturnType.ARM64_HFA_DOUBLE_3: return 3;
-                case ParamOrReturnType.ARM64_HFA_DOUBLE_4: return 4;
-                case ParamOrReturnType.ARM64_HVA_8:
-                case ParamOrReturnType.ARM64_HVA_16: throw new NotSupportedException();
-                case ParamOrReturnType.STRUCTURE_ALIGN1:
-                case ParamOrReturnType.STRUCTURE_ALIGN2:
-                case ParamOrReturnType.STRUCTURE_ALIGN4:
-                case ParamOrReturnType.STRUCTURE_ALIGN8:
-                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN1:
-                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN2:
-                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN4:
-                case ParamOrReturnType.SPECIAL_STRUCTURE_ALIGN8:
-                    return (Size + 7) / 8;
-                default:
-                    {
-                        Debug.Assert(PorType < ParamOrReturnType.STRUCT_NOT_PASS_AS_VALUE);
-                        Debug.Assert(Size <= 8);
-                        return 1;
-                    }
-            }
-        }
+        
     }
 }

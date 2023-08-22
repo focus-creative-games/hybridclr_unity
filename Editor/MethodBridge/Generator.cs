@@ -20,34 +20,20 @@ namespace HybridCLR.Editor.MethodBridge
     {
         public class Options
         {
-            public PlatformABI PlatformABI { get; set; }
-
             public string TemplateCode { get; set; }
 
             public string OutputFile { get; set; }
 
-            public IReadOnlyList<MethodDef> NotGenericMethods { get; set; }
-
             public IReadOnlyCollection<GenericMethod> GenericMethods { get; set; }
-
-            public HashSet<GenericMethod> SpeicalPreserveMethods { get; set; }
         }
 
-        private PlatformABI _platformABI;
-
-        private readonly List<MethodDef> _notGenericMethods;
-
         private readonly List<GenericMethod> _genericMethods;
-
-        private readonly HashSet<GenericMethod> _preservedMethods;
 
         private readonly string _templateCode;
 
         private readonly string _outputFile;
 
-        private readonly PlatformGeneratorBase _platformAdaptor;
-
-        private readonly TypeCreatorBase _typeCreator;
+        private readonly TypeCreator _typeCreator;
 
         private readonly HashSet<MethodDesc> _managed2nativeMethodSet = new HashSet<MethodDesc>();
 
@@ -57,34 +43,15 @@ namespace HybridCLR.Editor.MethodBridge
 
         public Generator(Options options)
         {
-            _platformABI = options.PlatformABI;
-            
-            List<(MethodDef, string)> notGenericMethodInfo = options.NotGenericMethods.Select(m => (m, m.FullName)).ToList();
-            notGenericMethodInfo.Sort((a, b) => string.Compare(a.Item2, b.Item2, StringComparison.Ordinal));
-            _notGenericMethods = notGenericMethodInfo.Select(m => m.Item1).ToList();
-            
             List<(GenericMethod, string)> genericMethodInfo = options.GenericMethods.Select(m => (m, m.ToString())).ToList();
             genericMethodInfo.Sort((a, b) => string.CompareOrdinal(a.Item2, b.Item2));
             _genericMethods = genericMethodInfo.Select(m => m.Item1).ToList();
             
-            _preservedMethods = options.SpeicalPreserveMethods;
             _templateCode = options.TemplateCode;
             _outputFile = options.OutputFile;
-            _platformAdaptor = CreatePlatformAdaptor(options.PlatformABI);
-            _typeCreator = TypeCreatorFactory.CreateTypeCreator(options.PlatformABI);
+            _typeCreator = new TypeCreator();
         }
 
-        private static PlatformGeneratorBase CreatePlatformAdaptor(PlatformABI type)
-        {
-            switch (type)
-            {
-                case PlatformABI.Universal32: return new PlatformGeneratorUniversal32();
-                case PlatformABI.Universal64: return new PlatformGeneratorUniversal64();
-                case PlatformABI.Arm64: return new PlatformGeneratorArm64();
-                case PlatformABI.WebGL32: return new PlatformGeneratorWebGL32();
-                default: throw new NotSupportedException();
-            }
-        }
 
         private MethodDesc CreateMethodDesc(MethodDef methodDef, bool forceRemoveThis, TypeSig returnType, List<TypeSig> parameters)
         {
@@ -93,8 +60,16 @@ namespace HybridCLR.Editor.MethodBridge
             {
                 parameters.RemoveAt(0);
             }
+            if (returnType.ContainsGenericParameter)
+            {
+                throw new Exception($"[PreservedMethod] method:{methodDef} has generic parameters");
+            }
             foreach (var paramInfo in parameters)
             {
+                if (paramInfo.ContainsGenericParameter)
+                {
+                    throw new Exception($"[PreservedMethod] method:{methodDef} has generic parameters");
+                }
                 paramInfos.Add(new ParamInfo() { Type = _typeCreator.CreateTypeInfo(paramInfo) });
             }
             var mbs = new MethodDesc()
@@ -103,7 +78,6 @@ namespace HybridCLR.Editor.MethodBridge
                 ReturnInfo = new ReturnInfo() { Type = returnType != null ? _typeCreator.CreateTypeInfo(returnType) : TypeInfo.s_void },
                 ParamInfos = paramInfos,
             };
-            _typeCreator.OptimizeMethod(mbs);
             return mbs;
         }
 
@@ -129,7 +103,7 @@ namespace HybridCLR.Editor.MethodBridge
         {
             if (method.IsPrivate || (method.IsAssembly && !method.IsPublic && !method.IsFamily))
             {
-                if (!_preservedMethods.Contains(new GenericMethod(method, klassInst, methodInst)))
+                if (klassInst == null && methodInst == null)
                 {
                     return;
                 }
@@ -138,19 +112,23 @@ namespace HybridCLR.Editor.MethodBridge
                     //Debug.Log($"[PreservedMethod] method:{method}");
                 }
             }
-
+            ICorLibTypes corLibTypes = method.Module.CorLibTypes;
             TypeSig returnType;
             List<TypeSig> parameters;
             if (klassInst == null && methodInst == null)
             {
-                returnType = method.ReturnType;
-                parameters = method.Parameters.Select(p => p.Type).ToList();
+                if (method.HasGenericParameters)
+                {
+                    throw new Exception($"[PreservedMethod] method:{method} has generic parameters");
+                }
+                returnType = MetaUtil.ToShareTypeSig(corLibTypes, method.ReturnType);
+                parameters = method.Parameters.Select(p => MetaUtil.ToShareTypeSig(corLibTypes, p.Type)).ToList();
             }
             else
             {
                 var gc = new GenericArgumentContext(klassInst, methodInst);
-                returnType = MetaUtil.Inflate(method.ReturnType, gc);
-                parameters = method.Parameters.Select(p => MetaUtil.Inflate(p.Type, gc)).ToList();
+                returnType = MetaUtil.ToShareTypeSig(corLibTypes, MetaUtil.Inflate(method.ReturnType, gc));
+                parameters = method.Parameters.Select(p => MetaUtil.ToShareTypeSig(corLibTypes, MetaUtil.Inflate(p.Type, gc))).ToList();
             }
 
             var m2nMethod = CreateMethodDesc(method, false, returnType, parameters);
@@ -174,11 +152,6 @@ namespace HybridCLR.Editor.MethodBridge
 
         public void PrepareMethods()
         {
-            foreach(var method in _notGenericMethods)
-            {
-                ProcessMethod(method, null, null);
-            }
-
             foreach(var method in _genericMethods)
             {
                 ProcessMethod(method.Method, method.KlassInst, method.MethodInst);
@@ -187,7 +160,7 @@ namespace HybridCLR.Editor.MethodBridge
 
         public void Generate()
         {
-            var frr = new FileRegionReplace(_templateCode.Replace("{PLATFORM_ABI}", ABIUtil.GetHybridCLRPlatformMacro(_platformABI)));
+            var frr = new FileRegionReplace(_templateCode);
 
             List<string> lines = new List<string>(20_0000);
 
@@ -203,26 +176,44 @@ namespace HybridCLR.Editor.MethodBridge
             Debug.LogFormat("== managed2native:{0} native2managed:{1} adjustThunk:{2}",
                 managed2NativeMethodList.Count, native2ManagedMethodList.Count, adjustThunkMethodList.Count);
 
-            foreach(var method in managed2NativeMethodList)
+
+            var structTypeSet = new HashSet<TypeInfo>();
+            CollectStructDefs(managed2NativeMethodList, structTypeSet);
+            CollectStructDefs(native2ManagedMethodList, structTypeSet);
+            CollectStructDefs(adjustThunkMethodList, structTypeSet);
+            List<TypeInfo> structTypes = structTypeSet.ToList();
+            structTypes.Sort((a, b) => a.TypeId - b.TypeId);
+
+            var classInfos = new List<ClassInfo>();
+            var classTypeSet = new HashSet<TypeInfo>();
+            foreach (var type in structTypes)
             {
-                _platformAdaptor.GenerateManaged2NativeMethod(method, lines);
+                GenerateClassInfo(type, classTypeSet, classInfos);
             }
 
-            _platformAdaptor.GenerateManaged2NativeStub(managed2NativeMethodList, lines);
+            GenerateStructDefines(classInfos, lines);
+            GenerateStructureSignatureStub(structTypes, lines);
+
+            foreach(var method in managed2NativeMethodList)
+            {
+                GenerateManaged2NativeMethod(method, lines);
+            }
+
+            GenerateManaged2NativeStub(managed2NativeMethodList, lines);
 
             foreach (var method in native2ManagedMethodList)
             {
-                _platformAdaptor.GenerateNative2ManagedMethod(method, lines);
+                GenerateNative2ManagedMethod(method, lines);
             }
 
-            _platformAdaptor.GenerateNative2ManagedStub(native2ManagedMethodList, lines);
+            GenerateNative2ManagedStub(native2ManagedMethodList, lines);
 
             foreach (var method in adjustThunkMethodList)
             {
-                _platformAdaptor.GenerateAdjustThunkMethod(method, lines);
+                GenerateAdjustThunkMethod(method, lines);
             }
 
-            _platformAdaptor.GenerateAdjustThunkStub(adjustThunkMethodList, lines);
+            GenerateAdjustThunkStub(adjustThunkMethodList, lines);
 
             frr.Replace("CODE", string.Join("\n", lines));
 
@@ -231,5 +222,348 @@ namespace HybridCLR.Editor.MethodBridge
             frr.Commit(_outputFile);
         }
 
+        private void CollectStructDefs(List<MethodDesc> methods, HashSet<TypeInfo> structTypes)
+        {
+            foreach (var method in methods)
+            {
+                foreach(var paramInfo in method.ParamInfos)
+                {
+                    if (paramInfo.Type.IsStruct)
+                    {
+                        structTypes.Add(paramInfo.Type);
+                        if (paramInfo.Type.Klass.ContainsGenericParameter)
+                        {
+                            throw new Exception($"[CollectStructDefs] method:{method.MethodDef} type:{paramInfo.Type.Klass} contains generic parameter");
+                        }
+                    }
+                    
+                }
+                if (method.ReturnInfo.Type.IsStruct)
+                {
+                    structTypes.Add(method.ReturnInfo.Type);
+                    if (method.ReturnInfo.Type.Klass.ContainsGenericParameter)
+                    {
+                        throw new Exception($"[CollectStructDefs] method:{method.MethodDef} type:{method.ReturnInfo.Type.Klass} contains generic parameter");
+                    }
+                }
+            }
+            
+        }
+
+        class FieldInfo
+        {
+            public FieldDef field;
+            public TypeInfo type;
+        }
+
+        class ClassInfo
+        {
+            public TypeInfo type;
+
+            public TypeDef typeDef;
+
+            public List<FieldInfo> fields = new List<FieldInfo>();
+
+            public ClassLayout layout;
+        }
+
+        private void GenerateClassInfo(TypeInfo type, HashSet<TypeInfo> typeSet, List<ClassInfo> classInfos)
+        {
+            if (!typeSet.Add(type))
+            {
+                return;
+            }
+            TypeSig typeSig = type.Klass;
+            var fields = new List<FieldInfo>();
+
+            TypeDef typeDef = typeSig.ToTypeDefOrRef().ResolveTypeDefThrow();
+
+            List<TypeSig> klassInst = typeSig.ToGenericInstSig()?.GenericArguments?.ToList();
+            GenericArgumentContext ctx = klassInst != null ? new GenericArgumentContext(klassInst, null) : null;
+
+            ClassLayout sa = typeDef.ClassLayout;
+           
+            ICorLibTypes corLibTypes = typeDef.Module.CorLibTypes;
+            foreach (FieldDef field in typeDef.Fields)
+            {
+                if (field.IsStatic)
+                {
+                    continue;
+                }
+                TypeSig fieldType = ctx != null ? MetaUtil.Inflate(field.FieldType, ctx) : field.FieldType;
+                fieldType = MetaUtil.ToShareTypeSig(corLibTypes, fieldType);
+                var fieldTypeInfo = _typeCreator.CreateTypeInfo(fieldType);
+                if (fieldTypeInfo.IsStruct)
+                {
+                    GenerateClassInfo(fieldTypeInfo, typeSet, classInfos);
+                }
+                fields.Add(new FieldInfo { field = field, type = fieldTypeInfo });
+            }
+            classInfos.Add(new ClassInfo() { type = type, typeDef = typeDef, fields = fields, layout = sa });
+        }
+
+        private void GenerateStructDefines(List<ClassInfo> classInfos, List<string> lines)
+        {
+            foreach (var ci in classInfos)
+            {
+                lines.Add($"// {ci.type.Klass}");
+                uint packingSize = ci.layout?.PackingSize ?? 0;
+                if (packingSize != 0)
+                {
+                    lines.Add($"#pragma pack(push, {packingSize})");
+                }
+                uint classSize = ci.layout?.ClassSize ?? 0;
+               
+                if (ci.typeDef.IsExplicitLayout)
+                {
+                    lines.Add($"union {ci.type.GetTypeName()} {{");
+                    if (classSize > 0)
+                    {
+                        lines.Add($"\tstruct {{ char __fieldSize_offsetPadding[{classSize}];}};");
+                    }
+                    int index = 0;
+                    foreach (var field in ci.fields)
+                    {
+                        uint offset = field.field.FieldOffset.Value;
+                        string fieldName = $"__{field.field.Name.Replace('<', '_').Replace('>', '_')}_{index}";
+                        lines.Add("\t#pragma pack(push, 1)");
+                        lines.Add($"\tstruct {{ {(offset > 0 ? $"char {fieldName}_offsetPadding[{offset}];" : "")}  {field.type.GetTypeName()} {fieldName};}};");
+                        lines.Add($"\t#pragma pack(pop)");
+                        lines.Add($"\tstruct {{ {field.type.GetTypeName()} {fieldName}_forAlignmentOnly;}};");
+                        ++index;
+                    }
+                }
+                else
+                {
+                    lines.Add($"{(classSize > 0 ? "union" : "struct")} {ci.type.GetTypeName()} {{");
+                    if (classSize > 0)
+                    {
+                        lines.Add($"\tstruct {{ char __fieldSize_offsetPadding[{classSize}];}};");
+                        lines.Add("\tstruct {");
+                    }
+                    int index = 0;
+                    foreach (var field in ci.fields)
+                    {
+                        string fieldName = $"__{field.field.Name.Replace('<', '_').Replace('>', '_')}_{index}";
+                        lines.Add($"\t{field.type.GetTypeName()} {fieldName};");
+                        ++index;
+                    }
+                    if (classSize > 0)
+                    {
+                        lines.Add("\t};");
+                    }
+                }
+                lines.Add("};");
+                if (packingSize != 0)
+                {
+                    lines.Add($"#pragma pack(pop)");
+                }
+            }
+        }
+
+        public static string ToFullName(TypeSig type)
+        {
+            type = type.RemovePinnedAndModifiers();
+            switch (type.ElementType)
+            {
+                case ElementType.Void: return "v";
+                case ElementType.Boolean: return "u1";
+                case ElementType.I1: return "i1";
+                case ElementType.U1: return "u1";
+                case ElementType.I2: return "i2";
+                case ElementType.Char:
+                case ElementType.U2: return "i2";
+                case ElementType.I4: return "i4";
+                case ElementType.U4: return "u4";
+                case ElementType.I8: return "i8";
+                case ElementType.U8: return "u8";
+                case ElementType.R4: return "r4";
+                case ElementType.R8: return "r8";
+                case ElementType.U: return "u";
+                case ElementType.I:
+                case ElementType.String:
+                case ElementType.Ptr:
+                case ElementType.ByRef:
+                case ElementType.Class:
+                case ElementType.Array:
+                case ElementType.SZArray:
+                case ElementType.FnPtr:
+                case ElementType.Object:
+                    return "i";
+                case ElementType.Module:
+                case ElementType.Var:
+                case ElementType.MVar:
+                    throw new NotSupportedException($"ToFullName type:{type}");
+                case ElementType.TypedByRef: return TypeInfo.strTypedByRef;
+                case ElementType.ValueType:
+                {
+                    TypeDef typeDef = type.ToTypeDefOrRef().ResolveTypeDef();
+                    if (typeDef == null)
+                    {
+                        throw new Exception($"type:{type} 未能找到定义。请尝试 `HybridCLR/Genergate/LinkXml`，然后Build一次生成AOT dll，再重新生成桥接函数");
+                    }
+                    if (typeDef.IsEnum)
+                    {
+                        return ToFullName(typeDef.GetEnumUnderlyingType());
+                    }
+                    return ToValueTypeFullName((ClassOrValueTypeSig)type);
+                }
+                case ElementType.GenericInst:
+                    {
+                        GenericInstSig gis = (GenericInstSig)type;
+                        if (!gis.GenericType.IsValueType)
+                        {
+                            return "i";
+                        }
+                        TypeDef typeDef = gis.GenericType.ToTypeDefOrRef().ResolveTypeDef();
+                        if (typeDef.IsEnum)
+                        {
+                            return ToFullName(typeDef.GetEnumUnderlyingType());
+                        }
+                        return $"{ToValueTypeFullName(gis.GenericType)}<{string.Join(",", gis.GenericArguments.Select(a => ToFullName(a)))}>";
+                    }
+                default: throw new NotSupportedException($"{type.ElementType}");
+            }
+        }
+
+        private static bool IsSystemOrUnityAssembly(ModuleDef module)
+        {
+            if (module.IsCoreLibraryModule == true)
+            {
+                return true;
+            }
+            string assName = module.Assembly.Name.String;
+            return assName.StartsWith("System.") || assName.StartsWith("UnityEngine.");
+        }
+
+        private static string ToValueTypeFullName(ClassOrValueTypeSig type)
+        {
+            TypeDef typeDef = type.ToTypeDefOrRef().ResolveTypeDef();
+            if (typeDef == null)
+            {
+                throw new Exception($"type:{type} resolve fail");
+            }
+
+            if (typeDef.DeclaringType != null)
+            {
+                return $"{ToValueTypeFullName((ClassOrValueTypeSig)typeDef.DeclaringType.ToTypeSig())}/{typeDef.Name}";
+            }
+
+            if (IsSystemOrUnityAssembly(typeDef.Module))
+            {
+                return type.FullName;
+            }
+            return $"{Path.GetFileNameWithoutExtension(typeDef.Module.Name)}:{typeDef.FullName}";
+        }
+
+        public void GenerateStructureSignatureStub(List<TypeInfo> types, List<string> lines)
+        {
+            lines.Add("FullName2Signature hybridclr::interpreter::g_fullName2SignatureStub[] = {");
+            foreach (var type in types)
+            {
+                lines.Add($"\t{{\"{ToFullName(type.Klass)}\", \"{type.CreateSigName()}\"}},");
+            }
+            lines.Add("\t{ nullptr, nullptr},");
+            lines.Add("};");
+        }
+
+        public void GenerateManaged2NativeStub(List<MethodDesc> methods, List<string> lines)
+        {
+            lines.Add($@"
+Managed2NativeMethodInfo hybridclr::interpreter::g_managed2nativeStub[] = 
+{{
+");
+
+            foreach (var method in methods)
+            {
+                lines.Add($"\t{{\"{method.CreateInvokeSigName()}\", __M2N_{method.CreateInvokeSigName()}}},");
+            }
+
+            lines.Add($"\t{{nullptr, nullptr}},");
+            lines.Add("};");
+        }
+
+        public void GenerateNative2ManagedStub(List<MethodDesc> methods, List<string> lines)
+        {
+            lines.Add($@"
+Native2ManagedMethodInfo hybridclr::interpreter::g_native2managedStub[] = 
+{{
+");
+
+            foreach (var method in methods)
+            {
+                lines.Add($"\t{{\"{method.CreateInvokeSigName()}\", (Il2CppMethodPointer)__N2M_{method.CreateInvokeSigName()}}},");
+            }
+
+            lines.Add($"\t{{nullptr, nullptr}},");
+            lines.Add("};");
+        }
+
+        public void GenerateAdjustThunkStub(List<MethodDesc> methods, List<string> lines)
+        {
+            lines.Add($@"
+NativeAdjustThunkMethodInfo hybridclr::interpreter::g_adjustThunkStub[] = 
+{{
+");
+
+            foreach (var method in methods)
+            {
+                lines.Add($"\t{{\"{method.CreateInvokeSigName()}\", (Il2CppMethodPointer)__N2M_AdjustorThunk_{method.CreateCallSigName()}}},");
+            }
+
+            lines.Add($"\t{{nullptr, nullptr}},");
+            lines.Add("};");
+        }
+
+        private string GetManaged2NativePassParam(TypeInfo type, string varName)
+        {
+            return $"M2NFromValueOrAddress<{type.GetTypeName()}>({varName})";
+        }
+
+        private string GetNative2ManagedPassParam(TypeInfo type, string varName)
+        {
+            return type.NeedExpandValue() ? $"(uint64_t)({varName})" : $"N2MAsUint64ValueOrAddress<{type.GetTypeName()}>({varName})";
+        }
+
+        public void GenerateManaged2NativeMethod(MethodDesc method, List<string> lines)
+        {
+            string paramListStr = string.Join(", ", method.ParamInfos.Select(p => $"{p.Type.GetTypeName()} __arg{p.Index}").Concat(new string[] { "const MethodInfo* method" }));
+            string paramNameListStr = string.Join(", ", method.ParamInfos.Select(p => GetManaged2NativePassParam(p.Type, $"localVarBase+argVarIndexs[{p.Index}]")).Concat(new string[] { "method" }));
+
+            lines.Add($@"
+static void __M2N_{method.CreateCallSigName()}(const MethodInfo* method, uint16_t* argVarIndexs, StackObject* localVarBase, void* ret)
+{{
+    typedef {method.ReturnInfo.Type.GetTypeName()} (*NativeMethod)({paramListStr});
+    {(!method.ReturnInfo.IsVoid ? $"*({method.ReturnInfo.Type.GetTypeName()}*)ret = " : "")}((NativeMethod)(method->methodPointerCallByInterp))({paramNameListStr});
+}}
+");
+        }
+
+        public void GenerateNative2ManagedMethod(MethodDesc method, List<string> lines)
+        {
+            string paramListStr = string.Join(", ", method.ParamInfos.Select(p => $"{p.Type.GetTypeName()} __arg{p.Index}").Concat(new string[] { "const MethodInfo* method" }));
+
+            lines.Add($@"
+static {method.ReturnInfo.Type.GetTypeName()} __N2M_{method.CreateCallSigName()}({paramListStr})
+{{
+    StackObject args[{Math.Max(1, method.ParamInfos.Count)}] = {{{string.Join(", ", method.ParamInfos.Select(p => GetNative2ManagedPassParam(p.Type, $"__arg{p.Index}")))} }};
+    {(method.ReturnInfo.IsVoid ? "Interpreter::Execute(method, args, nullptr);" : $"{method.ReturnInfo.Type.GetTypeName()} ret; Interpreter::Execute(method, args, &ret); return ret;")}
+}}
+");
+        }
+
+        public void GenerateAdjustThunkMethod(MethodDesc method, List<string> lines)
+        {
+            int totalQuadWordNum = method.ParamInfos.Count;
+            string paramListStr = string.Join(", ", method.ParamInfos.Select(p => $"{p.Type.GetTypeName()} __arg{p.Index}").Concat(new string[] { "const MethodInfo* method" }));
+
+            lines.Add($@"
+static {method.ReturnInfo.Type.GetTypeName()} __N2M_AdjustorThunk_{method.CreateCallSigName()}({paramListStr})
+{{
+    StackObject args[] = {{{string.Join(", ", method.ParamInfos.Select(p => (p.Index == 0 ? $"(uint64_t)(*(uint8_t**)&__arg{p.Index} + sizeof(Il2CppObject))" : GetNative2ManagedPassParam(p.Type, $"__arg{p.Index}"))))} }};
+    {(method.ReturnInfo.IsVoid ? "Interpreter::Execute(method, args, nullptr);" : $"{method.ReturnInfo.Type.GetTypeName()} ret; Interpreter::Execute(method, args, &ret); return ret;")}
+}}
+");
+        }
     }
 }

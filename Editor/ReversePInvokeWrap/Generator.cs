@@ -9,9 +9,8 @@ namespace HybridCLR.Editor.ReversePInvokeWrap
 {
     public class Generator
     {
-        public void Generate(string template, PlatformABI abi, List<ABIReversePInvokeMethodInfo> methods, string outputFile)
+        public void Generate(string template, List<ABIReversePInvokeMethodInfo> methods, string outputFile)
         {
-            template = template.Replace("{PLATFORM_ABI}", ABIUtil.GetHybridCLRPlatformMacro(abi));
             var frr = new FileRegionReplace(template);
             var codes = new List<string>();
 

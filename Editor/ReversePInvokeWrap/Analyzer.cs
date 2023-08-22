@@ -70,10 +70,10 @@ namespace HybridCLR.Editor.ReversePInvokeWrap
             }
         }
 
-        public List<ABIReversePInvokeMethodInfo> BuildABIMethods(PlatformABI abi)
+        public List<ABIReversePInvokeMethodInfo> BuildABIMethods()
         {
             var methodsBySig = new Dictionary<string, ABIReversePInvokeMethodInfo>();
-            var typeCreator = TypeCreatorFactory.CreateTypeCreator(abi);
+            var typeCreator = new TypeCreator();
             foreach(var method in _reversePInvokeMethods)
             {
                 MethodDesc desc = new MethodDesc
@@ -82,7 +82,6 @@ namespace HybridCLR.Editor.ReversePInvokeWrap
                     ReturnInfo = new ReturnInfo { Type = typeCreator.CreateTypeInfo(method.Method.ReturnType)},
                     ParamInfos = method.Method.Parameters.Select(p => new ParamInfo { Type = typeCreator.CreateTypeInfo(p.Type)}).ToList(),
                 };
-                typeCreator.OptimizeMethod(desc);
                 desc.Init();
                 if (!methodsBySig.TryGetValue(desc.Sig, out var arm))
                 {

@@ -13,8 +13,6 @@
 
 using namespace hybridclr::interpreter;
 
-#if {PLATFORM_ABI}
 //!!!{{CODE
 
 //!!!}}CODE
-#endif

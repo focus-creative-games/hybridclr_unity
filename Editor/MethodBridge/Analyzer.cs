@@ -25,21 +25,14 @@ namespace HybridCLR.Editor.MethodBridge
         private readonly object _lock = new object();
 
         private readonly List<TypeDef> _typeDefs = new List<TypeDef>();
-        private readonly List<MethodDef> _notGenericMethods = new List<MethodDef>();
 
         private readonly HashSet<GenericClass> _genericTypes = new HashSet<GenericClass>();
         private readonly HashSet<GenericMethod> _genericMethods = new HashSet<GenericMethod>();
-
-        private readonly HashSet<GenericMethod> _speicalPreserveMethods = new HashSet<GenericMethod>();
 
         private List<GenericMethod> _processingMethods = new List<GenericMethod>();
         private List<GenericMethod> _newMethods = new List<GenericMethod>();
 
         public IReadOnlyList<TypeDef> TypeDefs => _typeDefs;
-
-        public IReadOnlyList<MethodDef> NotGenericMethods => _notGenericMethods;
-
-        public HashSet<GenericMethod> SpeicalPreserveMethods => _speicalPreserveMethods;
 
         public IReadOnlyCollection<GenericClass> GenericTypes => _genericTypes;
 
@@ -63,7 +56,7 @@ namespace HybridCLR.Editor.MethodBridge
             }
             lock(_lock)
             {
-                gc = gc.ToGenericShare();
+                gc = StandardizeClass(gc);
                 if (_genericTypes.Add(gc))
                 {
                     WalkType(gc);
@@ -71,17 +64,31 @@ namespace HybridCLR.Editor.MethodBridge
             }
         }
 
+        private GenericClass StandardizeClass(GenericClass gc)
+        {
+            TypeDef typeDef = gc.Type;
+            ICorLibTypes corLibTypes = typeDef.Module.CorLibTypes;
+            List<TypeSig> klassGenericParams = gc.KlassInst != null ? MetaUtil.ToShareTypeSigs(corLibTypes, gc.KlassInst) : (typeDef.GenericParameters.Count > 0 ? MetaUtil.CreateDefaultGenericParams(typeDef.Module, typeDef.GenericParameters.Count) : null);
+            return new GenericClass(typeDef, klassGenericParams);
+        }
+
+        private GenericMethod StandardizeMethod(GenericMethod gm)
+        {
+            TypeDef typeDef = gm.Method.DeclaringType;
+            ICorLibTypes corLibTypes = typeDef.Module.CorLibTypes;
+            List<TypeSig> klassGenericParams = gm.KlassInst != null ? MetaUtil.ToShareTypeSigs(corLibTypes, gm.KlassInst) : (typeDef.GenericParameters.Count > 0 ? MetaUtil.CreateDefaultGenericParams(typeDef.Module, typeDef.GenericParameters.Count) : null);
+            List<TypeSig> methodGenericParams = gm.MethodInst != null ? MetaUtil.ToShareTypeSigs(corLibTypes, gm.MethodInst) : (gm.Method.GenericParameters.Count > 0 ? MetaUtil.CreateDefaultGenericParams(typeDef.Module, gm.Method.GenericParameters.Count) : null);
+            return new GenericMethod(gm.Method, klassGenericParams, methodGenericParams);
+        }
+
         private void OnNewMethod(MethodDef methodDef, List<TypeSig> klassGenericInst, List<TypeSig> methodGenericInst, GenericMethod method)
         {
             lock(_lock)
             {
+                method = StandardizeMethod(method);
                 if (_genericMethods.Add(method))
                 {
                     _newMethods.Add(method);
-                }
-                if (methodDef.HasGenericParameters)
-                {
-                    _speicalPreserveMethods.Add(method);
                 }
                 if (method.KlassInst != null)
                 {
@@ -102,11 +109,7 @@ namespace HybridCLR.Editor.MethodBridge
             }
             foreach (var method in gc.Type.Methods)
             {
-                if (method.HasGenericParameters)
-                {
-                    continue;
-                }
-                var gm = new GenericMethod(method, gc.KlassInst, null).ToGenericShare();
+                var gm = StandardizeMethod(new GenericMethod(method, gc.KlassInst, null));
                 //Debug.Log($"add method:{gm.Method} {gm.KlassInst}");
                 
                 if (_genericMethods.Add(gm))
@@ -131,7 +134,8 @@ namespace HybridCLR.Editor.MethodBridge
             foreach (var method in typeDef.Methods)
             {
                 // 对于带泛型的参数，统一泛型共享为object
-                _notGenericMethods.Add(method);
+                var gm = StandardizeMethod(new GenericMethod(method, null, null));
+                _genericMethods.Add(gm);
             }
         }
 
@@ -149,7 +153,7 @@ namespace HybridCLR.Editor.MethodBridge
                 for (uint rid = 1, n = ass.Metadata.TablesStream.TypeSpecTable.Rows; rid <= n; rid++)
                 {
                     var ts = ass.ResolveTypeSpec(rid);
-                    var cs = GenericClass.ResolveClass(ts, null)?.ToGenericShare();
+                    var cs = GenericClass.ResolveClass(ts, null);
                     if (cs != null)
                     {
                         TryAddAndWalkGenericType(cs);
@@ -164,14 +168,14 @@ namespace HybridCLR.Editor.MethodBridge
                     {
                         continue;
                     }
-
+                    gm = StandardizeMethod(gm);
                     if (_genericMethods.Add(gm))
                     {
                         _newMethods.Add(gm);
                     }
                 }
             }
-            Debug.Log($"PostPrepare allMethods:{_notGenericMethods.Count} newMethods:{_newMethods.Count}");
+            Debug.Log($"PostPrepare allMethods:{_genericMethods.Count} newMethods:{_newMethods.Count}");
         }
 
         private void RecursiveCollect()
@@ -187,7 +191,7 @@ namespace HybridCLR.Editor.MethodBridge
                 {
                     _methodReferenceAnalyzer.WalkMethod(method.Method, method.KlassInst, method.MethodInst);
                 })).ToArray());
-                Debug.Log($"iteration:[{i}] allMethods:{_notGenericMethods.Count} genericClass:{_genericTypes.Count} genericMethods:{_genericMethods.Count} newMethods:{_newMethods.Count}");
+                Debug.Log($"iteration:[{i}] genericClass:{_genericTypes.Count} genericMethods:{_genericMethods.Count} newMethods:{_newMethods.Count}");
             }
         }
 

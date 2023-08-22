@@ -26,7 +26,8 @@ namespace HybridCLR.Editor.Meta
 
         public GenericMethod ToGenericShare()
         {
-            return new GenericMethod(Method, MetaUtil.ToShareTypeSigs(KlassInst), MetaUtil.ToShareTypeSigs(MethodInst));
+            ICorLibTypes corLibTypes = Method.Module.CorLibTypes;
+            return new GenericMethod(Method, MetaUtil.ToShareTypeSigs(corLibTypes, KlassInst), MetaUtil.ToShareTypeSigs(corLibTypes, MethodInst));
         }
 
         public override bool Equals(object obj)

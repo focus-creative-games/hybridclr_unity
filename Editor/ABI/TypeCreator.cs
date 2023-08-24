@@ -31,7 +31,7 @@ namespace HybridCLR.Editor.ABI
             type = type.RemovePinnedAndModifiers();
             if (type.IsByRef)
             {
-                return TypeInfo.s_i;
+                return TypeInfo.s_u;
             }
             switch (type.ElementType)
             {
@@ -48,8 +48,8 @@ namespace HybridCLR.Editor.ABI
                 case ElementType.U8: return TypeInfo.s_u8;
                 case ElementType.R4: return TypeInfo.s_r4;
                 case ElementType.R8: return TypeInfo.s_r8;
-                case ElementType.U: return TypeInfo.s_u;
-                case ElementType.I:
+                case ElementType.I: return TypeInfo.s_i;
+                case ElementType.U:
                 case ElementType.String:
                 case ElementType.Ptr:
                 case ElementType.ByRef:
@@ -61,7 +61,7 @@ namespace HybridCLR.Editor.ABI
                 case ElementType.Module:
                 case ElementType.Var:
                 case ElementType.MVar:
-                    return TypeInfo.s_i;
+                    return TypeInfo.s_u;
                 case ElementType.TypedByRef: return TypeInfo.s_typedByRef;
                 case ElementType.ValueType:
                 {
@@ -81,7 +81,7 @@ namespace HybridCLR.Editor.ABI
                     GenericInstSig gis = (GenericInstSig)type;
                     if (!gis.GenericType.IsValueType)
                     {
-                        return TypeInfo.s_i;
+                        return TypeInfo.s_u;
                     }
                     TypeDef typeDef = gis.GenericType.ToTypeDefOrRef().ResolveTypeDef();
                     if (typeDef.IsEnum)

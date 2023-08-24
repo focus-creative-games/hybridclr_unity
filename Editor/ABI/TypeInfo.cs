@@ -40,6 +40,8 @@ namespace HybridCLR.Editor.ABI
 
         public bool IsStruct => PorType == ParamOrReturnType.STRUCT;
 
+        public bool IsPrimitiveType => PorType <= ParamOrReturnType.U;
+
         private readonly int _typeId;
 
         public int TypeId => _typeId;

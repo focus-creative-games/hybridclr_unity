@@ -539,14 +539,55 @@ static void __M2N_{method.CreateCallSigName()}(const MethodInfo* method, uint16_
 ");
         }
 
+        public string GenerateArgumentSizeAndOffset(List<ParamInfo> paramInfos)
+        {
+            StringBuilder s = new StringBuilder();
+            int index = 0;
+            foreach (var param in paramInfos)
+            {
+                s.AppendLine($"\tconstexpr int __ARG_OFFSET_{index}__ = {(index > 0 ? $"__ARG_OFFSET_{index - 1}__ + __ARG_SIZE_{index-1}__" : "0")};");
+                s.AppendLine($"\tconstexpr int __ARG_SIZE_{index}__ = (sizeof(__arg{index}) + 7)/8;");
+                index++;
+            }
+            s.AppendLine($"\tconstexpr int __TOTAL_ARG_SIZE__ = {(paramInfos.Count > 0 ? $"__ARG_OFFSET_{index-1}__ + __ARG_SIZE_{index-1}__" : "1")};");
+            return s.ToString();
+        }
+
+        public string GenerateCopyArgumentToInterpreterStack(List<ParamInfo> paramInfos, bool adjustorThunk)            
+        {
+            StringBuilder s = new StringBuilder();
+            int index = 0;
+            foreach (var param in paramInfos)
+            {
+                if (param.Type.IsPrimitiveType)
+                {
+                    if (param.Type.NeedExpandValue())
+                    {
+                        s.AppendLine($"\targs[__ARG_OFFSET_{index}__].u64 = {(index == 0 && adjustorThunk ? $"(uint64_t)((uintptr_t)__arg{index} + sizeof(Il2CppObject))" : $"__arg{index}")};");
+                    }
+                    else
+                    {
+                        s.AppendLine($"\t*({param.Type.GetTypeName()}*)(args + __ARG_OFFSET_{index}__) = {(index == 0 && adjustorThunk ? $"(uintptr_t)__arg{index} + sizeof(Il2CppObject)" : $"__arg{index}")};");
+                    }
+                }
+                else
+                {
+                    s.AppendLine($"\t*({param.Type.GetTypeName()}*)(args + __ARG_OFFSET_{index}__) = __arg{index};");
+                }
+                index++;
+            }
+            return s.ToString();
+        }
+
         public void GenerateNative2ManagedMethod(MethodDesc method, List<string> lines)
         {
             string paramListStr = string.Join(", ", method.ParamInfos.Select(p => $"{p.Type.GetTypeName()} __arg{p.Index}").Concat(new string[] { "const MethodInfo* method" }));
-
             lines.Add($@"
 static {method.ReturnInfo.Type.GetTypeName()} __N2M_{method.CreateCallSigName()}({paramListStr})
 {{
-    StackObject args[{Math.Max(1, method.ParamInfos.Count)}] = {{{string.Join(", ", method.ParamInfos.Select(p => GetNative2ManagedPassParam(p.Type, $"__arg{p.Index}")))} }};
+{GenerateArgumentSizeAndOffset(method.ParamInfos)}
+    StackObject args[__TOTAL_ARG_SIZE__];
+{GenerateCopyArgumentToInterpreterStack(method.ParamInfos, false)}
     {(method.ReturnInfo.IsVoid ? "Interpreter::Execute(method, args, nullptr);" : $"{method.ReturnInfo.Type.GetTypeName()} ret; Interpreter::Execute(method, args, &ret); return ret;")}
 }}
 ");
@@ -554,13 +595,14 @@ static {method.ReturnInfo.Type.GetTypeName()} __N2M_{method.CreateCallSigName()}
 
         public void GenerateAdjustThunkMethod(MethodDesc method, List<string> lines)
         {
-            int totalQuadWordNum = method.ParamInfos.Count;
             string paramListStr = string.Join(", ", method.ParamInfos.Select(p => $"{p.Type.GetTypeName()} __arg{p.Index}").Concat(new string[] { "const MethodInfo* method" }));
 
             lines.Add($@"
 static {method.ReturnInfo.Type.GetTypeName()} __N2M_AdjustorThunk_{method.CreateCallSigName()}({paramListStr})
 {{
-    StackObject args[] = {{{string.Join(", ", method.ParamInfos.Select(p => (p.Index == 0 ? $"(uint64_t)(*(uint8_t**)&__arg{p.Index} + sizeof(Il2CppObject))" : GetNative2ManagedPassParam(p.Type, $"__arg{p.Index}"))))} }};
+{GenerateArgumentSizeAndOffset(method.ParamInfos)}
+    StackObject args[__TOTAL_ARG_SIZE__];
+{GenerateCopyArgumentToInterpreterStack(method.ParamInfos, true)}
     {(method.ReturnInfo.IsVoid ? "Interpreter::Execute(method, args, nullptr);" : $"{method.ReturnInfo.Type.GetTypeName()} ret; Interpreter::Execute(method, args, &ret); return ret;")}
 }}
 ");

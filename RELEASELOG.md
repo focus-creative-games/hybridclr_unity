@@ -1,5 +1,16 @@
 # 发布日志
 
+
+## 4.0.2
+
+发布日期 2023.08.29。
+
+### Runtime
+
+- [fix][严重] 修复LdobjVarVar_ref指令的bug。此bug由增量式GC代码引入
+- [fix] 修复未处理ResolveField获得的Field为nullptr时情形导致崩溃的bug
+- [fix] 修复未正确处理AOT及interpreter interface中显式实现父接口函数的bug
+
 ## 4.0.1
 
 发布日期 2023.08.28。

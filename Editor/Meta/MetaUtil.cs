@@ -92,7 +92,7 @@ namespace HybridCLR.Editor.Meta
                     TypeDef typeDef = a.ToTypeDefOrRef().ResolveTypeDef();
 					if (typeDef == null)
 					{
-						throw new Exception($"type:{a} 未能找到定义");
+						throw new Exception($"type:{a} definition could not be found");
 					}
 					if (typeDef.IsEnum)
 					{
@@ -109,7 +109,7 @@ namespace HybridCLR.Editor.Meta
                         TypeDef typeDef = gia.GenericType.ToTypeDefOrRef().ResolveTypeDef();
                         if (typeDef == null)
                         {
-                            throw new Exception($"type:{a} 未能找到定义");
+                            throw new Exception($"type:{a} definition could not be found");
                         }
 						if (typeDef.IsEnum)
 						{

@@ -23,7 +23,7 @@ namespace HybridCLR.Editor.BuildProcessors
                 if (!string.IsNullOrEmpty(oldIl2cppPath))
                 {
                     Environment.SetEnvironmentVariable("UNITY_IL2CPP_PATH", "");
-                    Debug.Log($"[CheckSettings] 清除 UNITY_IL2CPP_PATH, 旧值为:'{oldIl2cppPath}'");
+                    Debug.Log($"[CheckSettings] clean process environment variable: UNITY_IL2CPP_PATH, old vlaue:'{oldIl2cppPath}'");
                 }
             }
             else
@@ -32,7 +32,7 @@ namespace HybridCLR.Editor.BuildProcessors
                 if (curIl2cppPath != SettingsUtil.LocalIl2CppDir)
                 {
                     Environment.SetEnvironmentVariable("UNITY_IL2CPP_PATH", SettingsUtil.LocalIl2CppDir);
-                    Debug.Log($"[CheckSettings] UNITY_IL2CPP_PATH 当前值为:'{curIl2cppPath}'，更新为:'{SettingsUtil.LocalIl2CppDir}'");
+                    Debug.Log($"[CheckSettings] UNITY_IL2CPP_PATH old value:'{curIl2cppPath}'， new value:'{SettingsUtil.LocalIl2CppDir}'");
                 }
             }
             if (!globalSettings.enable)
@@ -44,20 +44,20 @@ namespace HybridCLR.Editor.BuildProcessors
             ScriptingImplementation targetScriptingImplementation = ScriptingImplementation.IL2CPP;
             if (curScriptingImplementation != targetScriptingImplementation)
             {
-                Debug.LogError($"[CheckSettings] 当前ScriptingBackend是:{curScriptingImplementation}，已经自动切换为:{targetScriptingImplementation}");
+                Debug.LogError($"[CheckSettings] current ScriptingBackend:{curScriptingImplementation}，have been switched to:{targetScriptingImplementation} automatically");
                 PlayerSettings.SetScriptingBackend(buildTargetGroup, targetScriptingImplementation);
             }
 
             var installer = new Installer.InstallerController();
             if (!installer.HasInstalledHybridCLR())
             {
-                throw new BuildFailedException($"你没有初始化HybridCLR，请通过菜单'HybridCLR/Installer'安装");
+                throw new BuildFailedException($"You have not initialized HybridCLR, please install it via menu 'HybridCLR/Installer'");
             }
 
             HybridCLRSettings gs = SettingsUtil.HybridCLRSettings;
             if (((gs.hotUpdateAssemblies?.Length + gs.hotUpdateAssemblyDefinitions?.Length) ?? 0) == 0)
             {
-                Debug.LogWarning("[CheckSettings] HybridCLRSettings中未配置任何热更新模块");
+                Debug.LogWarning("[CheckSettings] No hot update modules configured in HybridCLRSettings");
             }
 
         }

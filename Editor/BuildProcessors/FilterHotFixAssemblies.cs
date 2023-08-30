@@ -33,11 +33,11 @@ namespace HybridCLR.Editor.BuildProcessors
             {
                 if (string.IsNullOrWhiteSpace(hotUpdateDll))
                 {
-                    throw new BuildFailedException($"热更新 assembly 名不能为空");
+                    throw new BuildFailedException($"hot update assembly name cann't be empty");
                 }
                 if (!hotUpdateDllSet.Add(hotUpdateDll))
                 {
-                    throw new BuildFailedException($"热更新 assembly:{hotUpdateDll} 在列表中重复，请除去重复条目");
+                    throw new BuildFailedException($"hot update assembly:{hotUpdateDll} is duplicated");
                 }
             }
 
@@ -48,7 +48,7 @@ namespace HybridCLR.Editor.BuildProcessors
                 if (assemblies.Select(Path.GetFileNameWithoutExtension).All(ass => ass != hotUpdateDllName) 
                     && string.IsNullOrEmpty(assResolver.ResolveAssembly(hotUpdateDllName, false)))
                 {
-                    throw new BuildFailedException($"热更新 assembly:{hotUpdateDllName} 不存在，请检查拼写错误");
+                    throw new BuildFailedException($"hot update assembly:{hotUpdateDllName} doesn't exist");
                 }
             }
 
@@ -59,7 +59,7 @@ namespace HybridCLR.Editor.BuildProcessors
                 bool reserved = allHotUpdateDllNames.All(dll => !assName.Equals(dll, StringComparison.Ordinal));
                 if (!reserved)
                 {
-                    Debug.Log($"[FilterHotFixAssemblies] 过滤热更新assembly:{assName}");
+                    Debug.Log($"[FilterHotFixAssemblies] filter assembly:{assName}");
                 }
                 return reserved;
             }).ToArray();

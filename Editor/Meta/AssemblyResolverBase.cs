@@ -18,11 +18,11 @@ namespace HybridCLR.Editor.Meta
             {
                 if (SettingsUtil.HotUpdateAssemblyNamesIncludePreserved.Contains(assemblyName))
                 {
-                    throw new Exception($"resolve 热更新 dll:{assemblyName} 失败！请确保已经编译了热更新dll或者外部热更新路径中配置了正确的值。更多请参阅常见错误文档");
+                    throw new Exception($"resolve Hot update dll:{assemblyName} failed! Please make sure that this hot update dll exists or the search path is configured in the external hot update path.");
                 }
                 else
                 {
-                    throw new Exception($"resolve AOT dll:{assemblyName} 失败! 请确保主工程已经引用了该dll并且正确生成了裁剪后的AOT dll。更多请参阅常见错误文档");
+                    throw new Exception($"resolve AOT dll:{assemblyName} failed! Please make sure that the AOT project has referenced the dll and generated the trimmed AOT dll correctly.");
                 }
             }
             return null;

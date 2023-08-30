@@ -400,7 +400,7 @@ namespace HybridCLR.Editor.MethodBridge
                     TypeDef typeDef = type.ToTypeDefOrRef().ResolveTypeDef();
                     if (typeDef == null)
                     {
-                        throw new Exception($"type:{type} 未能找到定义。请尝试 `HybridCLR/Genergate/LinkXml`，然后Build一次生成AOT dll，再重新生成桥接函数");
+                        throw new Exception($"type:{type} definition could not be found. Please try `HybridCLR/Genergate/LinkXml`, then Build once to generate the AOT dll, and then regenerate the bridge function");
                     }
                     if (typeDef.IsEnum)
                     {

@@ -361,6 +361,8 @@ namespace HybridCLR.Editor.MethodBridge
             }
         }
 
+        public const string SigOfObj = "u";
+
         public static string ToFullName(TypeSig type)
         {
             type = type.RemovePinnedAndModifiers();
@@ -372,15 +374,15 @@ namespace HybridCLR.Editor.MethodBridge
                 case ElementType.U1: return "u1";
                 case ElementType.I2: return "i2";
                 case ElementType.Char:
-                case ElementType.U2: return "i2";
+                case ElementType.U2: return "u2";
                 case ElementType.I4: return "i4";
                 case ElementType.U4: return "u4";
                 case ElementType.I8: return "i8";
                 case ElementType.U8: return "u8";
                 case ElementType.R4: return "r4";
                 case ElementType.R8: return "r8";
-                case ElementType.U: return "u";
-                case ElementType.I:
+                case ElementType.I: return "i";
+                case ElementType.U:
                 case ElementType.String:
                 case ElementType.Ptr:
                 case ElementType.ByRef:
@@ -389,7 +391,7 @@ namespace HybridCLR.Editor.MethodBridge
                 case ElementType.SZArray:
                 case ElementType.FnPtr:
                 case ElementType.Object:
-                    return "i";
+                    return SigOfObj;
                 case ElementType.Module:
                 case ElementType.Var:
                 case ElementType.MVar:
@@ -413,7 +415,7 @@ namespace HybridCLR.Editor.MethodBridge
                         GenericInstSig gis = (GenericInstSig)type;
                         if (!gis.GenericType.IsValueType)
                         {
-                            return "i";
+                            return SigOfObj;
                         }
                         TypeDef typeDef = gis.GenericType.ToTypeDefOrRef().ResolveTypeDef();
                         if (typeDef.IsEnum)

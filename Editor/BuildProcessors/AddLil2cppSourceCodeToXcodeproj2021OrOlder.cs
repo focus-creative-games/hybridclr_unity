@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEditor;
+using System.Reflection;
 #if (UNITY_2020 || UNITY_2021) && UNITY_IOS
 using UnityEditor.Build;
 using UnityEditor.Callbacks;
@@ -199,24 +200,20 @@ namespace HybridCLR.Editor
         private static List<LumpFile> CreateLumps(string libil2cppDir, string outputDir)
         {
             BashUtil.RecreateDir(outputDir);
-            var cppFiles = Directory.GetFiles(libil2cppDir, "*.cpp", SearchOption.AllDirectories);
-            int maxCppFilePerLump = 50;
+
             string il2cppConfigFile = $"{libil2cppDir}/il2cpp-config.h";
             var lumpFiles = new List<LumpFile>();
-            for (int i = 0; i < (cppFiles.Length + maxCppFilePerLump - 1) / maxCppFilePerLump; i++)
+            int lumpFileIndex = 0;
+            foreach (var cppDir in Directory.GetDirectories(libil2cppDir, "*", SearchOption.AllDirectories).Concat(new string[] {libil2cppDir}))
             {
-                var lumpFile = new LumpFile($"{outputDir}/lump_{i}.cpp", il2cppConfigFile);
-                for (int j = 0; j < maxCppFilePerLump; j++)
+                var lumpFile = new LumpFile($"{outputDir}/lump_{Path.GetFileName(cppDir)}_{lumpFileIndex}.cpp", il2cppConfigFile);
+                foreach (var file in Directory.GetFiles(cppDir, "*.cpp", SearchOption.TopDirectoryOnly))
                 {
-                    int index = i * maxCppFilePerLump + j;
-                    if (index >= cppFiles.Length)
-                    {
-                        break;
-                    }
-                    lumpFile.cppFiles.Add(cppFiles[index]);
+                    lumpFile.cppFiles.Add(file);
                 }
                 lumpFile.SaveFile();
                 lumpFiles.Add(lumpFile);
+                ++lumpFileIndex;
             }
 
             var mmFiles = Directory.GetFiles(libil2cppDir, "*.mm", SearchOption.AllDirectories);

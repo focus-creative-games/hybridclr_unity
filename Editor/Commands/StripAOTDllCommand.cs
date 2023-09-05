@@ -15,7 +15,7 @@ namespace HybridCLR.Editor.Commands
         [MenuItem("HybridCLR/Generate/AOTDlls", priority = 105)]
         public static void GenerateStripedAOTDlls()
         {
-            GenerateStripedAOTDlls(EditorUserBuildSettings.activeBuildTarget, EditorUserBuildSettings.selectedBuildTargetGroup);
+            GenerateStripedAOTDlls(EditorUserBuildSettings.activeBuildTarget);
         }
 
         private static string GetLocationPathName(string buildDir, BuildTarget target)
@@ -32,7 +32,7 @@ namespace HybridCLR.Editor.Commands
             }
         }
 
-        public static void GenerateStripedAOTDlls(BuildTarget target, BuildTargetGroup group)
+        public static void GenerateStripedAOTDlls(BuildTarget target)
         {
             string outputPath = $"{SettingsUtil.HybridCLRDataDir}/StrippedAOTDllsTempProj/{target}";
             BashUtil.RemoveDir(outputPath);
@@ -81,7 +81,7 @@ namespace HybridCLR.Editor.Commands
                 locationPathName = GetLocationPathName(outputPath, target),
                 options = buildOptions,
                 target = target,
-                targetGroup = group,
+                targetGroup = BuildPipeline.GetBuildTargetGroup(target),
             };
 
             var report = BuildPipeline.BuildPlayer(buildPlayerOptions);
@@ -115,7 +115,7 @@ namespace HybridCLR.Editor.Commands
             {
                 throw new Exception("GenerateStripedAOTDlls failed");
             }
-            Debug.Log($"GenerateStripedAOTDlls target:{target} group:{group} path:{outputPath}");
+            Debug.Log($"GenerateStripedAOTDlls target:{target} path:{outputPath}");
         }
     }
 }

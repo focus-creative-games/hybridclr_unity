@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace HybridCLR.Editor.BuildProcessors
 {
@@ -39,7 +40,7 @@ namespace HybridCLR.Editor.BuildProcessors
             {
                 return;
             }
-            BuildTargetGroup buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+            BuildTargetGroup buildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
             ScriptingImplementation curScriptingImplementation = PlayerSettings.GetScriptingBackend(buildTargetGroup);
             ScriptingImplementation targetScriptingImplementation = ScriptingImplementation.IL2CPP;
             if (curScriptingImplementation != targetScriptingImplementation)

@@ -35,6 +35,8 @@ namespace HybridCLR.Editor.BuildProcessors
             return $"{projectDir}/Library/Bee/artifacts/WebGL/ManagedStripped";
 #elif UNITY_EDITOR_OSX
             return $"{projectDir}/Library/Bee/artifacts/MacStandalonePlayerBuildProgram/ManagedStripped";
+#elif UNITY_PS5
+            return $"{projectDir}/Library/Bee/artifacts/PS5PlayerBuildProgram/ManagedStripped";
 #else
             throw new NotSupportedException("GetOriginBuildStripAssembliesDir");
 #endif

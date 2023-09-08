@@ -12,7 +12,7 @@ namespace HybridCLR
     {
 #if UNITY_STANDALONE_WIN
         private const string dllName = "GameAssembly";
-#elif UNITY_IOS || UNITY_STANDALONE_OSX || UNITY_WEBGL
+#elif UNITY_IOS || UNITY_STANDALONE_OSX || UNITY_WEBGL || UNITY_PS5
     private const string dllName = "__Internal";
 #else
     private const string dllName = "il2cpp";

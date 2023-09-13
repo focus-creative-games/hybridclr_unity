@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -30,6 +30,8 @@ namespace HybridCLR.Editor.BuildProcessors
                 case BuildTarget.StandaloneWindows:
                     case BuildTarget.StandaloneWindows64:
                     return $"{projectDir}/Library/Bee/artifacts/WinPlayerBuildProgram/ManagedStripped";
+                case BuildTarget.StandaloneLinux64:
+                    return $"{projectDir}/Library/Bee/artifacts/LinuxPlayerBuildProgram/ManagedStripped";
                 case BuildTarget.Android:
                     return $"{projectDir}/Library/Bee/artifacts/Android/ManagedStripped";
                 case BuildTarget.iOS:

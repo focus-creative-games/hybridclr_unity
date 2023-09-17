@@ -49,8 +49,14 @@ namespace HybridCLR.Editor.Installer
             
             GUILayout.Space(10f);
 
-            if (_controller.IsCompatibleVersion())
+            InstallerController.CompatibleType compatibleType = _controller.GetCompatibleType();
+            if (compatibleType != InstallerController.CompatibleType.Incompatible)
             {
+                if (compatibleType == InstallerController.CompatibleType.MaybeIncompatible)
+                {
+                    EditorGUILayout.HelpBox($"Maybe incompatible with current version, recommend minimum compatible version:{_controller.GetCurrentUnityVersionMinCompatibleVersionStr()}", MessageType.Warning);
+                }
+
                 EditorGUILayout.BeginHorizontal();
                 _installFromDir = EditorGUILayout.Toggle("Copy libil2cpp from local", _installFromDir, GUILayout.MinWidth(100));
                 EditorGUI.BeginDisabledGroup(!_installFromDir);

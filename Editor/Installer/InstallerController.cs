@@ -123,18 +123,25 @@ namespace HybridCLR.Editor.Installer
             }
         }
 
-        public bool IsCompatibleVersion()
+        public enum CompatibleType
+        {
+            Compatible,
+            MaybeIncompatible,
+            Incompatible,
+        }
+
+        public CompatibleType GetCompatibleType()
         {
             UnityVersion version = _curVersion;
             if (version == null)
             {
-                return false;
+                return CompatibleType.Incompatible;
             }
             if (version.minor1 != 3)
             {
-                return false;
+                return CompatibleType.MaybeIncompatible;
             }
-            return true;
+            return CompatibleType.Compatible;
         }
 
         public string HybridclrLocalVersion => _curDefaultVersion?.hybridclr?.branch;
@@ -202,7 +209,7 @@ namespace HybridCLR.Editor.Installer
 
         private void RunInitLocalIl2CppData(string editorIl2cppPath, string libil2cppWithHybridclrSourceDir, UnityVersion version)
         {
-            if (!IsCompatibleVersion())
+            if (GetCompatibleType() == CompatibleType.Incompatible)
             {
                 Debug.LogError($"Incompatible with current version, minimum compatible version: {GetCurrentUnityVersionMinCompatibleVersionStr()}");
                 return;

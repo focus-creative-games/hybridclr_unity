@@ -20,8 +20,13 @@ namespace HybridCLR.Editor.BuildProcessors
 #endif
         IPostprocessBuildWithReport
 #if !UNITY_2021_1_OR_NEWER && UNITY_WEBGL
-     , IIl2CppProcessor
+        , IIl2CppProcessor
 #endif
+
+#if UNITY_PS5
+        , IUnityLinkerProcessor
+#endif
+
     {
         public int callbackOrder => 0;
 
@@ -45,11 +50,22 @@ namespace HybridCLR.Editor.BuildProcessors
             // 如果target为Android,由于已经在OnPostGenerateGradelAndroidProject中处理过，
             // 这里不再重复处理
 #if !UNITY_ANDROID && !UNITY_WEBGL
-
             PathScriptingAssembilesFile(report.summary.outputPath);
 #endif
         }
 
+#if UNITY_PS5
+        /// <summary>
+        /// 打包模式如果是 Package 需要在这个阶段提前处理 .json , PC Hosted 和 GP5 模式不受影响
+        /// </summary>
+
+        public string GenerateAdditionalLinkXmlFile(UnityEditor.Build.Reporting.BuildReport report, UnityEditor.UnityLinker.UnityLinkerBuildPipelineData data)
+        {
+            string path = $"{SettingsUtil.ProjectDir}/Library/PlayerDataCache/PS5/Data"; 
+            PathScriptingAssembilesFile(path);
+            return null;
+        }
+#endif
         public void PathScriptingAssembilesFile(string path)
         {
             if (!SettingsUtil.Enable)
@@ -78,7 +94,7 @@ namespace HybridCLR.Editor.BuildProcessors
 
             if (jsonFiles.Length == 0)
             {
-                //Debug.LogError($"can not find file {SettingsUtil.ScriptingAssembliesJsonFile}");
+                Debug.LogWarning($"can not find file {SettingsUtil.ScriptingAssembliesJsonFile}");
                 return;
             }
 

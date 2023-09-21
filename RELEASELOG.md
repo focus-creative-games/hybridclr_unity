@@ -1,8 +1,29 @@
 # 发布日志
 
+## 4.0.4
+
+发布日期 2023.09.11。
+
+### Runtime
+
+- [new][platform] 彻底支持所有平台，包括UWP和PS5
+- [fix][严重] 修复计算interpreter部分enum类型的桥接函数签名的bug
+- [fix] 修复在某些平台下有编译错误的问题
+- [fix] 修复转换STOBJ指令未正确处理增量式GC的bug
+- [fix] [fix] 修复 StindVarVar_ref指令未正确设置WriteBarrier的bug
+- [fix] 修复2020 GenericMethod::CreateMethodLocked调用vm::MetadataAllocGenericMethod()未持有s_GenericMethodMutex锁的线程安全问题
+
+### Editor
+
+- [fix] 修复AddLil2cppSourceCodeToXcodeproj2021OrOlder在Unity 2020下偶然同时包含了不同目录的两个ThreadPool.cpp文件导致出现编译错误的问题
+- [fix] 修复不正确地从EditorUserBuildSettings.selectedBuildTargetGroup获得BuildGroupTarget的bug
+- [fix] StripAOTDllCommand生成AOT dll时的BuildOption采用当前Player的设置，避免当打包开启development时，StripAOTDllCommand生成Release aot dll，而打包生成debug aot dll，产生补充元数据及桥接函数生成不匹配的严重错误
+- [change] 为了更好地支持全平台，调整了RuntimeApi.cs中dllName的实现，默认取 __Internal
+- [change] 为了更好地支持全平台，自2021起裁剪AOT dll全都通过MonoHook复制
+
 ## 4.0.3
 
-发布日期 2023.08.31
+发布日期 2023.08.31。
 
 ### Editor
 

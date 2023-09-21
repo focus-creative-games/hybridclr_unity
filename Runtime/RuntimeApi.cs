@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -10,12 +10,12 @@ namespace HybridCLR
 {
     public static class RuntimeApi
     {
-#if UNITY_STANDALONE_WIN
+#if UNITY_STANDALONE_WIN || UNITY_STANDALONE_LINUX
         private const string dllName = "GameAssembly";
-#elif UNITY_IOS || UNITY_STANDALONE_OSX || UNITY_WEBGL || UNITY_PS5
-    private const string dllName = "__Internal";
-#else
+#elif UNITY_ANDROID
     private const string dllName = "il2cpp";
+#else
+    private const string dllName = "__Internal";
 #endif
 
         /// <summary>

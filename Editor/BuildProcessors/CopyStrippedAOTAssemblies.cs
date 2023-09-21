@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,21 +25,27 @@ namespace HybridCLR.Editor.BuildProcessors
         public static string GetStripAssembliesDir2021(BuildTarget target)
         {
             string projectDir = SettingsUtil.ProjectDir;
-#if UNITY_STANDALONE_WIN
-            return $"{projectDir}/Library/Bee/artifacts/WinPlayerBuildProgram/ManagedStripped";
-#elif UNITY_ANDROID
-            return $"{projectDir}/Library/Bee/artifacts/Android/ManagedStripped";
-#elif UNITY_IOS
-            return $"{projectDir}/Library/Bee/artifacts/iOS/ManagedStripped";
-#elif UNITY_WEBGL
-            return $"{projectDir}/Library/Bee/artifacts/WebGL/ManagedStripped";
-#elif UNITY_EDITOR_OSX
-            return $"{projectDir}/Library/Bee/artifacts/MacStandalonePlayerBuildProgram/ManagedStripped";
-#elif UNITY_PS5
-            return $"{projectDir}/Library/Bee/artifacts/PS5PlayerBuildProgram/ManagedStripped";
-#else
-            throw new NotSupportedException("GetOriginBuildStripAssembliesDir");
-#endif
+            switch (target)
+            {
+                case BuildTarget.StandaloneWindows:
+                    case BuildTarget.StandaloneWindows64:
+                    return $"{projectDir}/Library/Bee/artifacts/WinPlayerBuildProgram/ManagedStripped";
+                case BuildTarget.StandaloneLinux64:
+                    return $"{projectDir}/Library/Bee/artifacts/LinuxPlayerBuildProgram/ManagedStripped";
+                case BuildTarget.Android:
+                    return $"{projectDir}/Library/Bee/artifacts/Android/ManagedStripped";
+                case BuildTarget.iOS:
+                    return $"{projectDir}/Library/Bee/artifacts/iOS/ManagedStripped";
+                    case BuildTarget.WebGL:
+                    return $"{projectDir}/Library/Bee/artifacts/WebGL/ManagedStripped";
+                case BuildTarget.StandaloneOSX:
+                    return $"{projectDir}/Library/Bee/artifacts/MacStandalonePlayerBuildProgram/ManagedStripped";
+                case BuildTarget.PS4:
+                    return $"{projectDir}/Library/Bee/artifacts/PS4PlayerBuildProgram/ManagedStripped";
+                case BuildTarget.PS5:
+                    return $"{projectDir}/Library/Bee/artifacts/PS5PlayerBuildProgram/ManagedStripped";
+                default: return "";
+            }
         }
 #else
         private string GetStripAssembliesDir2020(BuildTarget target)
@@ -80,9 +86,13 @@ namespace HybridCLR.Editor.BuildProcessors
 
         public void OnPostprocessBuild(BuildReport report)
         {
-#if (UNITY_2021 && !UNITY_IOS) || UNITY_2022_1_OR_NEWER
+#if UNITY_2021_1_OR_NEWER
             BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
-            CopyStripDlls(GetStripAssembliesDir2021(target), target);
+            string srcStripDllPath = GetStripAssembliesDir2021(target);
+            if (!string.IsNullOrEmpty(srcStripDllPath) && Directory.Exists(srcStripDllPath))
+            {
+                CopyStripDlls(srcStripDllPath, target);
+            }
 #endif
         }
     }

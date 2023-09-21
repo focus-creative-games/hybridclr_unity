@@ -555,7 +555,7 @@ static void __M2N_{method.CreateCallSigName()}(const MethodInfo* method, uint16_
             return s.ToString();
         }
 
-        public string GenerateCopyArgumentToInterpreterStack(List<ParamInfo> paramInfos, bool adjustorThunk)            
+        public string GenerateCopyArgumentToInterpreterStack(List<ParamInfo> paramInfos)            
         {
             StringBuilder s = new StringBuilder();
             int index = 0;
@@ -565,11 +565,11 @@ static void __M2N_{method.CreateCallSigName()}(const MethodInfo* method, uint16_
                 {
                     if (param.Type.NeedExpandValue())
                     {
-                        s.AppendLine($"\targs[__ARG_OFFSET_{index}__].u64 = {(index == 0 && adjustorThunk ? $"(uint64_t)((uintptr_t)__arg{index} + sizeof(Il2CppObject))" : $"__arg{index}")};");
+                        s.AppendLine($"\targs[__ARG_OFFSET_{index}__].u64 = __arg{index};");
                     }
                     else
                     {
-                        s.AppendLine($"\t*({param.Type.GetTypeName()}*)(args + __ARG_OFFSET_{index}__) = {(index == 0 && adjustorThunk ? $"(uintptr_t)__arg{index} + sizeof(Il2CppObject)" : $"__arg{index}")};");
+                        s.AppendLine($"\t*({param.Type.GetTypeName()}*)(args + __ARG_OFFSET_{index}__) = __arg{index};");
                     }
                 }
                 else
@@ -581,33 +581,29 @@ static void __M2N_{method.CreateCallSigName()}(const MethodInfo* method, uint16_
             return s.ToString();
         }
 
-        public void GenerateNative2ManagedMethod(MethodDesc method, List<string> lines)
+        private void GenerateNative2ManagedMethod0(MethodDesc method, bool adjustorThunk, List<string> lines)
         {
             string paramListStr = string.Join(", ", method.ParamInfos.Select(p => $"{p.Type.GetTypeName()} __arg{p.Index}").Concat(new string[] { "const MethodInfo* method" }));
             lines.Add($@"
-static {method.ReturnInfo.Type.GetTypeName()} __N2M_{method.CreateCallSigName()}({paramListStr})
+static {method.ReturnInfo.Type.GetTypeName()} __N2M_{(adjustorThunk ? "AdjustorThunk_" : "")}{method.CreateCallSigName()}({paramListStr})
 {{
+    {(adjustorThunk ? "__arg0 += sizeof(Il2CppObject);" : "")}
 {GenerateArgumentSizeAndOffset(method.ParamInfos)}
     StackObject args[__TOTAL_ARG_SIZE__];
-{GenerateCopyArgumentToInterpreterStack(method.ParamInfos, false)}
+{GenerateCopyArgumentToInterpreterStack(method.ParamInfos)}
     {(method.ReturnInfo.IsVoid ? "Interpreter::Execute(method, args, nullptr);" : $"{method.ReturnInfo.Type.GetTypeName()} ret; Interpreter::Execute(method, args, &ret); return ret;")}
 }}
 ");
         }
 
+        public void GenerateNative2ManagedMethod(MethodDesc method, List<string> lines)
+        {
+            GenerateNative2ManagedMethod0(method, false, lines);
+        }
+
         public void GenerateAdjustThunkMethod(MethodDesc method, List<string> lines)
         {
-            string paramListStr = string.Join(", ", method.ParamInfos.Select(p => $"{p.Type.GetTypeName()} __arg{p.Index}").Concat(new string[] { "const MethodInfo* method" }));
-
-            lines.Add($@"
-static {method.ReturnInfo.Type.GetTypeName()} __N2M_AdjustorThunk_{method.CreateCallSigName()}({paramListStr})
-{{
-{GenerateArgumentSizeAndOffset(method.ParamInfos)}
-    StackObject args[__TOTAL_ARG_SIZE__];
-{GenerateCopyArgumentToInterpreterStack(method.ParamInfos, true)}
-    {(method.ReturnInfo.IsVoid ? "Interpreter::Execute(method, args, nullptr);" : $"{method.ReturnInfo.Type.GetTypeName()} ret; Interpreter::Execute(method, args, &ret); return ret;")}
-}}
-");
+            GenerateNative2ManagedMethod0(method, true, lines);
         }
     }
 }

@@ -83,8 +83,8 @@ namespace HybridCLR.Editor.Meta
 				case ElementType.U: return corTypes.UIntPtr;
 				case ElementType.Object: return corTypes.Object;
 				case ElementType.Sentinel: return typeSig;
-				case ElementType.Ptr: return corTypes.IntPtr;
-				case ElementType.ByRef: return corTypes.IntPtr;
+				case ElementType.Ptr: return corTypes.UIntPtr;
+				case ElementType.ByRef: return corTypes.UIntPtr;
 				case ElementType.SZArray: return corTypes.Object;
 				case ElementType.Array: return corTypes.Object;
 				case ElementType.ValueType:

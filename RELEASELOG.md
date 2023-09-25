@@ -1,5 +1,29 @@
 # 发布日志
 
+## 4.0.5
+
+发布日期 2023.09.25.
+
+### Runtime
+
+- [fix] 修复Transform中未析构pendingFlows造成内存泄露的bug
+- [fix] 修复多维数组SetMdArrElement未区分带ref与不带ref结构的bug
+- [fix] 修复CpobjVarVAr_WriteBarrier_n_4未设置size的bug
+- [fix] 修复计算interface成员函数slot时未考虑到static之类函数的bug
+- [fix] 修复2022版本ExplicitLayout未设置layout.alignment，导致计算出size==0的bug
+- [fix] 修复InterpreterInvoke在完全泛型共享时，class类型的methodPointer与virtualMethodPointer有可能不一致，导致失误对this指针+1的bug
+- [fix] ldobj当T为byte之类size<4的类型时，未将数据展开为int的bug
+- [fix] 修复CopySize未考虑到内存对齐的问题
+- [opt] 优化stelem当元素为size较大的struct时统一当作含ref结构的问题
+- [opt] TemporaryMemoryArena默认内存块大小由1M调整8K
+- [opt] 将Image::Image中Assembly::GetAllAssemblies()换成Assembly::GetAllAssemblies(AssemblyVector&)，避免创建assembly快照而造成不必要的内存泄露
+
+### Editor
+
+- [fix] 修复StandaloneLinux平台DllImport的dllName和裁剪dll路径的错误
+- [change] 对于小版本不兼容的Unity版本，不再禁止安装，而是提示警告
+- [fix] 修复桥接函数计算中MetaUtil.ToShareTypeSig将Ptr和ByRef计算成IntPtr的bug，正确应该是UIntPtr
+
 ## 4.0.4
 
 发布日期 2023.09.11。

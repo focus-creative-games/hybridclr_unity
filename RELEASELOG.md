@@ -1,5 +1,14 @@
 # 发布日志
 
+## 4.0.6
+
+发布日期 2023.09.26.
+
+### Runtime
+
+- [fix] 修复2021和2022版本开启完全泛型共享后的bug
+- [fix] 修复加载PlaceHolder Assembly后未增加assemblyVersion导致Assembly::GetAssemblies()错误地获得了旧程序集列表的bug
+
 ## 4.0.5
 
 发布日期 2023.09.25.

@@ -1,5 +1,18 @@
 # 发布日志
 
+## 3.4.3
+
+### Runtime
+
+- [fix] 修复CalcClassNotStaticFields计算泛型类型的泛型父类时未inflate的bug
+- [fix] 修复未处理ResolveField获得的Field为nullptr时情形导致崩溃的bug
+- [fix] 修复Transform中未析构pendingFlows造成内存泄露的bug
+- [opt] TemporaryMemoryArena默认内存块大小由1M调整8K
+- [fix] 修复计算interface成员函数slot时未考虑到static之类函数的bug
+- [fix] 修复2022版本ExplicitLayout未设置layout.alignment，导致计算出size==0的bug
+- [fix] ldobj当T为byte之类size<4的类型时，未将数据展开为int的bug
+- [fix] 修复未正确处理AOT及interpreter interface中显式实现父接口函数的bug
+
 ## 3.4.2
 
 发布日期 2023.08.14。

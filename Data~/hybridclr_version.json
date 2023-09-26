@@ -2,18 +2,18 @@
     "versions": [
     {
         "unity_version":"2020",
-        "hybridclr" : { "branch":"v3.3.1"},
-        "il2cpp_plus": { "branch":"v2020-3.3.1"}
+        "hybridclr" : { "branch":"v3.3.3"},
+        "il2cpp_plus": { "branch":"v2020-3.3.2"}
     },
     {
         "unity_version":"2021",
-        "hybridclr" : { "branch":"v3.3.1"},
+        "hybridclr" : { "branch":"v3.3.3"},
         "il2cpp_plus": { "branch":"v2021-3.3.2"}
     },
     {
         "unity_version":"2022",
-        "hybridclr" : { "branch":"v3.3.1"},
-        "il2cpp_plus": { "branch":"v2022-3.3.2"}
+        "hybridclr" : { "branch":"v3.3.3"},
+        "il2cpp_plus": { "branch":"v2022-3.3.3"}
     }
     ]
 }

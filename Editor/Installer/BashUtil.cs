@@ -90,12 +90,16 @@ namespace HybridCLR.Editor.Installer
 
         private static void CopyWithCheckLongFile(string srcFile, string dstFile)
         {
-            if (srcFile.Length > 255)
+            var maxPathLength = 255;
+#if UNITY_EDITOR_OSX
+            maxPathLength = 1024;
+#endif
+            if (srcFile.Length > maxPathLength)
             {
                 UnityEngine.Debug.LogError($"srcFile:{srcFile} path is too long. copy ignore!");
                 return;
             }
-            if (dstFile.Length > 255)
+            if (dstFile.Length > maxPathLength)
             {
                 UnityEngine.Debug.LogError($"dstFile:{dstFile} path is too long. copy ignore!");
                 return;

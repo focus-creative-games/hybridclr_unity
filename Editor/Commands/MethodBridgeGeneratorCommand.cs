@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEditor;
+using UnityEditor.Build;
 using UnityEngine;
 
 namespace HybridCLR.Editor.Commands
@@ -47,14 +48,20 @@ namespace HybridCLR.Editor.Commands
         public static void CompileAndGenerateMethodBridge()
         {
             BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
-            CompileDllCommand.CompileDll(target);
             GenerateMethodBridge(target);
         }
 
         public static void GenerateMethodBridge(BuildTarget target)
         {
-            List<string> hotUpdateDllNames = SettingsUtil.HotUpdateAssemblyNamesExcludePreserved;
-            using (AssemblyReferenceDeepCollector collector = new AssemblyReferenceDeepCollector(MetaUtil.CreateHotUpdateAndAOTAssemblyResolver(target, hotUpdateDllNames), hotUpdateDllNames))
+            string aotDllDir = SettingsUtil.GetAssembliesPostIl2CppStripDir(target);
+            List<string> aotAssemblyNames = Directory.Exists(aotDllDir) ?
+                Directory.GetFiles(aotDllDir, "*.dll", SearchOption.TopDirectoryOnly).Select(Path.GetFileNameWithoutExtension).ToList()
+                : new List<string>();
+            if (aotAssemblyNames.Count == 0)
+            {
+                throw new Exception($"no aot assembly found. please run `HybridCLR/Generate/All` or `HybridCLR/Generate/AotDlls` to generate aot dlls before runing `HybridCLR/Generate/MethodBridge`");
+            }
+            using (AssemblyReferenceDeepCollector collector = new AssemblyReferenceDeepCollector(MetaUtil.CreateAOTAssemblyResolver(target), aotAssemblyNames))
             {
                 var analyzer = new Analyzer(new Analyzer.Options
                 {

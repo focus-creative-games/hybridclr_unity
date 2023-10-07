@@ -143,7 +143,7 @@ namespace HybridCLR.Editor.MethodBridge
         {
             // 将所有非泛型函数全部加入函数列表，同时立马walk这些method。
             // 后续迭代中将只遍历MethodSpec
-            foreach (var ass in _assemblyCollector.GetLoadedModulesExcludeRootAssemblies())
+            foreach (var ass in _assemblyCollector.GetLoadedModules())
             {
                 foreach (TypeDef typeDef in ass.GetTypes())
                 {

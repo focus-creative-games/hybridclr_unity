@@ -30,6 +30,11 @@ namespace HybridCLR.Editor.Meta
             return LoadedModules.Where(e => !_rootAssemblies.Contains(e.Key)).Select(e => e.Value).ToList();
         }
 
+        public List<ModuleDefMD> GetLoadedModules()
+        {
+            return LoadedModules.Select(e => e.Value).ToList();
+        }
+
         public List<ModuleDefMD> GetLoadedModulesOfRootAssemblies()
         {
             return _rootAssemblies.Select(ass => LoadedModules[ass]).ToList();

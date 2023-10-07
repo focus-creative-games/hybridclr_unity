@@ -1,3 +1,4 @@
+using HybridCLR.Editor.Installer;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +14,7 @@ using UnityEngine;
 
 namespace HybridCLR.Editor.BuildProcessors
 {
-    internal class CopyStrippedAOTAssemblies : IPostprocessBuildWithReport
+    internal class CopyStrippedAOTAssemblies : IPostprocessBuildWithReport, IPreprocessBuildWithReport
 #if !UNITY_2021_1_OR_NEWER
      , IIl2CppProcessor
 #endif
@@ -94,6 +95,13 @@ namespace HybridCLR.Editor.BuildProcessors
                 CopyStripDlls(srcStripDllPath, target);
             }
 #endif
+        }
+
+        public void OnPreprocessBuild(BuildReport report)
+        {
+            BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
+            var dstPath = SettingsUtil.GetAssembliesPostIl2CppStripDir(target);
+            BashUtil.RecreateDir(dstPath);
         }
     }
 }

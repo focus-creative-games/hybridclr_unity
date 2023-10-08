@@ -1,5 +1,24 @@
 # 发布日志
 
+## 4.0.7
+
+发布日期 2023.10.09.
+
+### Runtime
+
+- [fix] 修复initobj调用了CopyN，但CopyN未考虑对象的内存对齐的情况，在32位这种的平台可能发生未对齐访问异常的bug
+- [fix] 修复计算未完全实例化的泛型函数的桥接函数签名时崩溃的bug
+- [fix] 修复Il2cpp代码生成选项为faster(smaller)时，2021和2022版本GenericMethod::CreateMethodLocked的bug
+- [remove] 移除所有array相关指令中index为int64_t的指令，简化代码
+- [remove] 移除ldfld_xxx_ref系列指令
+
+### Editor
+
+- [fix] 修复生成桥接函数时，如果热更新程序集未包含任何代码直接引用了某个aot程序集，则没有为该aot程序集生成桥接函数，导致出现NotSupportNative2Managed异常的bug
+- [fix] 修复mac下面路径过长导致拷贝文件失败的bug
+- [fix] 修复发布PS5目标时未处理ScriptingAssemblies.json的bug
+- [change] 打包时清空裁减aot dll目录
+
 ## 4.0.6
 
 发布日期 2023.09.26.

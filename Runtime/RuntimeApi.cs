@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,12 +11,9 @@ namespace HybridCLR
 {
     public static class RuntimeApi
     {
-#if UNITY_STANDALONE_WIN || UNITY_STANDALONE_LINUX
-        private const string dllName = "GameAssembly";
-#elif UNITY_ANDROID
-    private const string dllName = "il2cpp";
-#else
-    private const string dllName = "__Internal";
+#if UNITY_EDITOR
+        private static int s_interpreterThreadObjectStackSize = 128 * 1024;
+        private static int s_interpreterThreadFrameStackSize = 2 * 1024;
 #endif
 
         /// <summary>
@@ -24,34 +22,15 @@ namespace HybridCLR
         /// <param name="dllBytes"></param>
         /// <returns></returns>
         /// <exception cref="NotSupportedException"></exception>
+#if UNITY_EDITOR
         public static unsafe LoadImageErrorCode LoadMetadataForAOTAssembly(byte[] dllBytes, HomologousImageMode mode)
         {
-#if UNITY_EDITOR
             return LoadImageErrorCode.OK;
-#else
-            fixed(byte* data = dllBytes)
-            {
-                return (LoadImageErrorCode)LoadMetadataForAOTAssembly(data, dllBytes.Length, (int)mode);
-            }
-#endif
-        }
-
-        /// <summary>
-        /// 加载补充元数据assembly
-        /// </summary>
-        /// <param name="dllBytes"></param>
-        /// <param name="dllSize"></param>
-        /// <returns></returns>
-#if UNITY_EDITOR
-        public static unsafe int LoadMetadataForAOTAssembly(byte* dllBytes, int dllSize, int mode)
-        {
-            return 0;
         }
 #else
-        [DllImport(dllName, EntryPoint = "RuntimeApi_LoadMetadataForAOTAssembly")]
-        public static extern unsafe int LoadMetadataForAOTAssembly(byte* dllBytes, int dllSize, int mode);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        public static extern LoadImageErrorCode LoadMetadataForAOTAssembly(byte[] dllBytes, HomologousImageMode mode);
 #endif
-
 
         /// <summary>
         /// 获取解释器线程栈的最大StackObject个数(size*8 为最终占用的内存大小)
@@ -60,13 +39,13 @@ namespace HybridCLR
 #if UNITY_EDITOR
         public static int GetInterpreterThreadObjectStackSize()
         {
-            return 0;
+            return s_interpreterThreadObjectStackSize;
         }
 #else
-        [DllImport(dllName, EntryPoint = "RuntimeApi_GetInterpreterThreadObjectStackSize")]
+        [MethodImpl(MethodImplOptions.InternalCall)]
         public static extern int GetInterpreterThreadObjectStackSize();
 #endif
-        
+
         /// <summary>
         /// 设置解释器线程栈的最大StackObject个数(size*8 为最终占用的内存大小)
         /// </summary>
@@ -74,10 +53,10 @@ namespace HybridCLR
 #if UNITY_EDITOR
         public static void SetInterpreterThreadObjectStackSize(int size)
         {
-            
+            s_interpreterThreadObjectStackSize = size;
         }
 #else
-        [DllImport(dllName, EntryPoint = "RuntimeApi_SetInterpreterThreadObjectStackSize")]
+        [MethodImpl(MethodImplOptions.InternalCall)]
         public static extern void SetInterpreterThreadObjectStackSize(int size);
 #endif
         /// <summary>
@@ -87,10 +66,10 @@ namespace HybridCLR
 #if UNITY_EDITOR
         public static int GetInterpreterThreadFrameStackSize()
         {
-            return 0;
+            return s_interpreterThreadFrameStackSize;
         }
 #else
-        [DllImport(dllName, EntryPoint = "RuntimeApi_GetInterpreterThreadFrameStackSize")]
+        [MethodImpl(MethodImplOptions.InternalCall)]
         public static extern int GetInterpreterThreadFrameStackSize();
 #endif
         
@@ -101,10 +80,10 @@ namespace HybridCLR
 #if UNITY_EDITOR
         public static void SetInterpreterThreadFrameStackSize(int size)
         {
-                
+            s_interpreterThreadFrameStackSize = size;
         }
 #else
-        [DllImport(dllName, EntryPoint = "RuntimeApi_SetInterpreterThreadFrameStackSize")]
+        [MethodImpl(MethodImplOptions.InternalCall)]
         public static extern void SetInterpreterThreadFrameStackSize(int size);
 #endif
     }

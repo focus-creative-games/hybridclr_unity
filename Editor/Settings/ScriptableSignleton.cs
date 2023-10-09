@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace HybridCLR.Editor
+namespace HybridCLR.Editor.Settings
 {
     public class ScriptableSingleton<T> : ScriptableObject where T : ScriptableObject
     {

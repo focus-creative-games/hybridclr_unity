@@ -4,7 +4,8 @@ using UnityEditor;
 using UnityEditor.Presets;
 using UnityEngine;
 using UnityEngine.UIElements;
-namespace HybridCLR.Editor
+
+namespace HybridCLR.Editor.Settings
 {
     public class HybridCLRSettingsProvider : SettingsProvider
     {

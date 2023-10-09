@@ -3,24 +3,28 @@ using System;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 
-public class MsvcStdextWorkaround : IPreprocessBuildWithReport
+namespace HybridCLR.Editor.BuildProcessors
 {
-    const string kWorkaroundFlag = "/D_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS";
 
-    public int callbackOrder => 0;
-
-    public void OnPreprocessBuild(BuildReport report)
+    public class MsvcStdextWorkaround : IPreprocessBuildWithReport
     {
-        var clEnv = Environment.GetEnvironmentVariable("_CL_");
+        const string kWorkaroundFlag = "/D_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS";
 
-        if (string.IsNullOrEmpty(clEnv))
+        public int callbackOrder => 0;
+
+        public void OnPreprocessBuild(BuildReport report)
         {
-            Environment.SetEnvironmentVariable("_CL_", kWorkaroundFlag);
-        }
-        else if (!clEnv.Contains(kWorkaroundFlag))
-        {
-            clEnv += " " + kWorkaroundFlag;
-            Environment.SetEnvironmentVariable("_CL_", clEnv);
+            var clEnv = Environment.GetEnvironmentVariable("_CL_");
+
+            if (string.IsNullOrEmpty(clEnv))
+            {
+                Environment.SetEnvironmentVariable("_CL_", kWorkaroundFlag);
+            }
+            else if (!clEnv.Contains(kWorkaroundFlag))
+            {
+                clEnv += " " + kWorkaroundFlag;
+                Environment.SetEnvironmentVariable("_CL_", clEnv);
+            }
         }
     }
 }

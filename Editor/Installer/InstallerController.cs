@@ -7,6 +7,7 @@ using UnityEngine;
 using Debug = UnityEngine.Debug;
 using System.Text.RegularExpressions;
 using System.Linq;
+using HybridCLR.Editor.Settings;
 
 namespace HybridCLR.Editor.Installer
 {

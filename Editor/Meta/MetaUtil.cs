@@ -1,5 +1,6 @@
 ﻿using dnlib.DotNet;
 using HybridCLR.Editor.Meta;
+using HybridCLR.Editor.Settings;
 using System;
 using System.Collections.Generic;
 using System.IO;

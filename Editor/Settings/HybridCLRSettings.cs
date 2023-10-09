@@ -1,6 +1,7 @@
 using UnityEditorInternal;
 using UnityEngine;
-namespace HybridCLR.Editor
+
+namespace HybridCLR.Editor.Settings
 {
     [FilePath("ProjectSettings/HybridCLRSettings.asset")]
     public class HybridCLRSettings : ScriptableSingleton<HybridCLRSettings>

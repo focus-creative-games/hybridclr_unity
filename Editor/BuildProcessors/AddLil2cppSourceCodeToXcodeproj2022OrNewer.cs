@@ -8,7 +8,7 @@ using UnityEngine;
 
 #if UNITY_2022_2_OR_NEWER && UNITY_IOS
 
-namespace HybridCLR.Editor
+namespace HybridCLR.Editor.BuildProcessors
 {
     public static class AddLil2cppSourceCodeToXcodeproj2022OrNewer
     {

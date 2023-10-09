@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEditor.Presets;
 using UnityEngine;
 
-namespace HybridCLR.Editor
+namespace HybridCLR.Editor.Settings
 {
     public class SettingsPresetReceiver : PresetSelectorReceiver
     {

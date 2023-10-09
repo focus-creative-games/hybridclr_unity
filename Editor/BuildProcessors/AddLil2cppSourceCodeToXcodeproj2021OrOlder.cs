@@ -6,13 +6,14 @@ using System.Linq;
 using System.Text;
 using UnityEditor;
 using System.Reflection;
+using HybridCLR.Editor.Settings;
 #if (UNITY_2020 || UNITY_2021) && UNITY_IOS
 using UnityEditor.Build;
 using UnityEditor.Callbacks;
 using UnityEditor.iOS.Xcode;
 using UnityEngine;
 
-namespace HybridCLR.Editor
+namespace HybridCLR.Editor.BuildProcessors
 {
     public static class AddLil2cppSourceCodeToXcodeproj2021OrOlder
     {

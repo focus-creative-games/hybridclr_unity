@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
+using HybridCLR.Editor.Settings;
 
 
 namespace HybridCLR.Editor

@@ -1,5 +1,19 @@
 # 发布日志
 
+## 4.0.8
+
+发布日期 2023.10.10.
+
+### Runtime
+
+- [fix] 修复计算值类型泛型桥接函数签名时，错误地将值类型泛型参数类型也换成签名，导致与Editor计算的签名不一致的bug
+- [fix][refactor] RuntimeApi相关函数由PInvoke改为InternalCall，解决Android平台调用RuntimeApi时触发重新加载libil2cpp.a的问题
+
+### Editor
+
+- [refactor] RuntimeApi相关函数由PInvoke改为InternalCall
+- [refactor] 调整HybridCLR.Editor模块一些不规范的命名空间
+
 ## 4.0.7
 
 发布日期 2023.10.09.

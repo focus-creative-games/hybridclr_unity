@@ -1,4 +1,5 @@
 using HybridCLR.Editor.Installer;
+using HybridCLR.Editor.Settings;
 using System.IO;
 using System.Text;
 using UnityEditor;

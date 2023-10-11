@@ -1,5 +1,18 @@
 # 发布日志
 
+## 4.0.9
+
+发布日期 2023.10.11.
+
+### Runtime
+
+- [merge][il2cpp][fix] 合并2021.3.29-2021.3.31f1的il2cpp改动，修复在2021.3.31版本的不兼容问题
+- [merge][il2cpp] 合并2022.3.7-2022.3.10f1的il2cpp改动
+
+### Editor
+
+- [fix] 修复2022版本iOS平台AddLil2cppSourceCodeToXcodeproj2022OrNewer的编译错误
+
 ## 4.0.8
 
 发布日期 2023.10.10.

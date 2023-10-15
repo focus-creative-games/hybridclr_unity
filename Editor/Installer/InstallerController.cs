@@ -27,12 +27,15 @@ namespace HybridCLR.Editor.Installer
 
         public string PackageVersion { get; private set; }
 
+        public string InstalledLibil2cppVersion { get; private set; }
+
         public InstallerController()
         {
             _curVersion = ParseUnityVersion(Application.unityVersion);
             _versionManifest = GetHybridCLRVersionManifest();
             _curDefaultVersion = _versionManifest.versions.FirstOrDefault(v => v.unity_version == _curVersion.major.ToString());
             PackageVersion = LoadPackageInfo().version;
+            InstalledLibil2cppVersion = ReadLocalVersion();
         }
 
         private HybridclrVersionManifest GetHybridCLRVersionManifest()
@@ -157,6 +160,23 @@ namespace HybridCLR.Editor.Installer
 
         public string ApplicationIl2cppPath => GetIl2CppPathByContentPath(EditorApplication.applicationContentsPath);
 
+        public string LocalVersionFile => $"{SettingsUtil.LocalIl2CppDir}/libil2cpp/hybridclr/generated/libil2cpp-version.txt";
+
+        private string ReadLocalVersion()
+        {
+            if (!File.Exists(LocalVersionFile))
+            {
+                return null;
+            }
+            return File.ReadAllText(LocalVersionFile, Encoding.UTF8);
+        }
+
+        public void WriteLocalVersion()
+        {
+            InstalledLibil2cppVersion = PackageVersion;
+            File.WriteAllText(LocalVersionFile, PackageVersion, Encoding.UTF8);
+        }
+
         public void InstallDefaultHybridCLR()
         {
             InstallFromLocal(PrepareLibil2cppWithHybridclrFromGitRepo());
@@ -237,6 +257,7 @@ namespace HybridCLR.Editor.Installer
 
             if (HasInstalledHybridCLR())
             {
+                WriteLocalVersion();
                 Debug.Log("Install Sucessfully");
             }
             else

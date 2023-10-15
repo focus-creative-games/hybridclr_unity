@@ -56,6 +56,11 @@ namespace HybridCLR.Editor.BuildProcessors
                 throw new BuildFailedException($"You have not initialized HybridCLR, please install it via menu 'HybridCLR/Installer'");
             }
 
+            if (installer.PackageVersion != installer.InstalledLibil2cppVersion)
+            {
+                throw new BuildFailedException($"You must run `HybridCLR/Installer` after upgrading package");
+            }
+
             HybridCLRSettings gs = SettingsUtil.HybridCLRSettings;
             if (((gs.hotUpdateAssemblies?.Length + gs.hotUpdateAssemblyDefinitions?.Length) ?? 0) == 0)
             {

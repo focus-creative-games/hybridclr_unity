@@ -170,7 +170,8 @@ namespace HybridCLR.Editor.Meta
         {
 			return new CombinedAssemblyResolver(
 				CreateHotUpdateAssemblyResolver(target, hotUpdateDlls),
-				CreateAOTAssemblyResolver(target)
+				CreateAOTAssemblyResolver(target),
+				new PathAssemblyResolver($"{SettingsUtil.HybridCLRDataPathInPackage}/NetStandard")
 				);
         }
 

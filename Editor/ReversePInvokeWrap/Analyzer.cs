@@ -33,9 +33,9 @@ namespace HybridCLR.Editor.ReversePInvokeWrap
 
         public Analyzer(AssemblyCache cache, List<string> assemblyNames)
         {
-            foreach(var assemblyName in assemblyNames)
+            foreach (var assemblyName in assemblyNames)
             {
-                _rootModules.Add(cache.LoadModule(assemblyName, false));
+                _rootModules.Add(cache.LoadModule(assemblyName));
             }
         }
 

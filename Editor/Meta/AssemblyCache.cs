@@ -15,6 +15,7 @@ namespace HybridCLR.Editor.Meta
         private readonly ModuleContext _modCtx;
         private readonly AssemblyResolver _asmResolver;
         private bool disposedValue;
+        private bool _loadedNetstandard;
 
         public Dictionary<string, ModuleDefMD> LoadedModules { get; } = new Dictionary<string, ModuleDefMD>();
 
@@ -34,6 +35,15 @@ namespace HybridCLR.Editor.Meta
             {
                 return mod;
             }
+            if (moduleName == "netstandard")
+            {
+                if (!_loadedNetstandard)
+                {
+                    LoadNetStandard();
+                    _loadedNetstandard = true;
+                }
+                return null;
+            }
             mod = DoLoadModule(_assemblyPathResolver.ResolveAssembly(moduleName, true));
             LoadedModules.Add(moduleName, mod);
 
@@ -46,6 +56,12 @@ namespace HybridCLR.Editor.Meta
             }
 
             return mod;
+        }
+
+        private void LoadNetStandard()
+        {
+            LoadModule("netstandard2.0", false);
+            LoadModule("netstandard2.1", false);
         }
 
         private ModuleDefMD DoLoadModule(string dllPath)

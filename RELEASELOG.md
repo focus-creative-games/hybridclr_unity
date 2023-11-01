@@ -1,5 +1,24 @@
 # 发布日志
 
+## 4.0.11
+
+发布日期 2023.11.02
+
+### Runtime
+
+- [fix] 修复开启完全泛型共享后, 对于某些MethodInfo，由于methodPointer与virtualMethodPointer使用补充元数据后的解释器函数，而invoker_method仍然为支持完全泛型共享的调用形式，导致invoker_method与methodPointer及virtualMethodPointer不匹配的bug
+- [fix] 修复Il2CppGenericContextCompare比较时仅仅对比inst指针的bug，造成热更新模块大量泛型函数重复
+- [fix] 修复完全泛型共享时未正确设置MethodInfo的bug
+
+### Editor
+
+- [new] 检查当前安装的libil2cpp版本是否与package版本匹配，避免升级package后未重新install的问题
+- [new] Generate支持 netstandard
+- [fix] 修复 ReversePInvokeWrap生成不必要地解析referenced dll，导致如果有aot dll引用了netstandard会出现解析错误的bug
+- [fix] 修复BashUtil.RemoveDir在偶然情况下出现删除目录失败的问题。新增多次重试
+- [fix] 修复桥接函数计算时未归结函数参数类型，导致出现多个同名签名的bug
+
+
 ## 4.0.10
 
 发布日期 2023.10.12.

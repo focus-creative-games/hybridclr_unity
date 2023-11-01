@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HybridCLR.Editor.Installer
@@ -67,16 +68,23 @@ namespace HybridCLR.Editor.Installer
             {
                 return;
             }
-            foreach (var file in Directory.GetFiles(dir))
+
+            int maxTryCount = 5;
+            for (int i = 0; i < maxTryCount; ++i)
             {
-                File.SetAttributes(file, FileAttributes.Normal);
-                File.Delete(file);
+                try
+                {
+                    if (Directory.Exists(dir))
+                    {
+                        Directory.Delete(dir, true);
+                    }
+                }
+                catch (Exception e)
+                {
+                    UnityEngine.Debug.LogError($"[BashUtil] RemoveDir:{dir} with exception:{e}. try count:{i}");
+                    Thread.Sleep(100);
+                }
             }
-            foreach (var subDir in Directory.GetDirectories(dir))
-            {
-                RemoveDir(subDir);
-            }
-            Directory.Delete(dir);
         }
 
         public static void RecreateDir(string dir)

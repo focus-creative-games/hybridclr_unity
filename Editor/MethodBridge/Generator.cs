@@ -52,6 +52,23 @@ namespace HybridCLR.Editor.MethodBridge
             _typeCreator = new TypeCreator();
         }
 
+        private readonly Dictionary<string, TypeInfo> _sig2Types = new Dictionary<string, TypeInfo>();
+
+        private TypeInfo GetSharedTypeInfo(TypeSig type)
+        {
+            var typeInfo = _typeCreator.CreateTypeInfo(type);
+            if (!typeInfo.IsStruct)
+            {
+                return typeInfo;
+            }
+            string sigName = ToFullName(typeInfo.Klass);
+            if (!_sig2Types.TryGetValue(sigName, out var sharedTypeInfo))
+            {
+                sharedTypeInfo = typeInfo;
+                _sig2Types.Add(sigName, sharedTypeInfo);
+            }
+            return sharedTypeInfo;
+        }
 
         private MethodDesc CreateMethodDesc(MethodDef methodDef, bool forceRemoveThis, TypeSig returnType, List<TypeSig> parameters)
         {
@@ -70,12 +87,12 @@ namespace HybridCLR.Editor.MethodBridge
                 {
                     throw new Exception($"[PreservedMethod] method:{methodDef} has generic parameters");
                 }
-                paramInfos.Add(new ParamInfo() { Type = _typeCreator.CreateTypeInfo(paramInfo) });
+                paramInfos.Add(new ParamInfo() { Type = GetSharedTypeInfo(paramInfo) });
             }
             var mbs = new MethodDesc()
             {
                 MethodDef = methodDef,
-                ReturnInfo = new ReturnInfo() { Type = returnType != null ? _typeCreator.CreateTypeInfo(returnType) : TypeInfo.s_void },
+                ReturnInfo = new ReturnInfo() { Type = returnType != null ? GetSharedTypeInfo(returnType) : TypeInfo.s_void },
                 ParamInfos = paramInfos,
             };
             return mbs;
@@ -158,6 +175,18 @@ namespace HybridCLR.Editor.MethodBridge
             }
         }
 
+        static void CheckUnique(IEnumerable<string> names)
+        {
+            var set = new HashSet<string>();
+            foreach (var name in names)
+            {
+                if (!set.Add(name))
+                {
+                    throw new Exception($"[CheckUnique] duplicate name:{name}");
+                }
+            }
+        }
+
         public void Generate()
         {
             var frr = new FileRegionReplace(_templateCode);
@@ -190,6 +219,9 @@ namespace HybridCLR.Editor.MethodBridge
             {
                 GenerateClassInfo(type, classTypeSet, classInfos);
             }
+
+            CheckUnique(structTypes.Select(t => ToFullName(t.Klass)));
+            CheckUnique(structTypes.Select(t => t.CreateSigName()));
 
             GenerateStructDefines(classInfos, lines);
             GenerateStructureSignatureStub(structTypes, lines);

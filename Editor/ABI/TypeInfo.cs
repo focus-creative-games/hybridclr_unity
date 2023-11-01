@@ -48,7 +48,7 @@ namespace HybridCLR.Editor.ABI
 
         public bool Equals(TypeInfo other)
         {
-            return PorType == other.PorType && object.Equals(Klass, other.Klass);
+            return PorType == other.PorType && TypeEqualityComparer.Instance.Equals(Klass, other.Klass);
         }
 
         public override bool Equals(object obj)
@@ -58,7 +58,7 @@ namespace HybridCLR.Editor.ABI
 
         public override int GetHashCode()
         {
-            return (int)PorType * 23 + (Klass?.GetHashCode() ?? 0);
+            return (int)PorType * 23 + (Klass != null ? TypeEqualityComparer.Instance.GetHashCode(Klass) : 0);
         }
 
         public bool NeedExpandValue()

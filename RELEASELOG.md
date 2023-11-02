@@ -1,8 +1,16 @@
 # 发布日志
 
+## 4.0.12
+
+发布日期 2023.11.02.
+
+### Editor
+
+- [fix] 修复BashUtil.RemoveDir的bug导致Installer安装失败的bug
+
 ## 4.0.11
 
-发布日期 2023.11.02
+发布日期 2023.11.02.
 
 ### Runtime
 

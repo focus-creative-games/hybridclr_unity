@@ -64,20 +64,27 @@ namespace HybridCLR.Editor.Installer
             {
                 UnityEngine.Debug.Log($"[BashUtil] RemoveDir dir:{dir}");
             }
-            if (!Directory.Exists(dir))
-            {
-                return;
-            }
 
             int maxTryCount = 5;
             for (int i = 0; i < maxTryCount; ++i)
             {
                 try
                 {
-                    if (Directory.Exists(dir))
+                    if (!Directory.Exists(dir))
                     {
-                        Directory.Delete(dir, true);
+                        return;
                     }
+                    foreach (var file in Directory.GetFiles(dir))
+                    {
+                        File.SetAttributes(file, FileAttributes.Normal);
+                        File.Delete(file);
+                    }
+                    foreach (var subDir in Directory.GetDirectories(dir))
+                    {
+                        RemoveDir(subDir);
+                    }
+                    Directory.Delete(dir);
+                    break;
                 }
                 catch (Exception e)
                 {

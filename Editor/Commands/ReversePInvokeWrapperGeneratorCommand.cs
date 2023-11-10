@@ -35,13 +35,13 @@ namespace HybridCLR.Editor.Commands
                 var analyzer = new ReversePInvokeWrap.Analyzer(cache, hotUpdateDlls);
                 analyzer.Run();
 
-                string templateCode = File.ReadAllText($"{SettingsUtil.TemplatePathInPackage}/ReversePInvokeMethodStub.cpp");
                 string outputFile = $"{SettingsUtil.GeneratedCppDir}/ReversePInvokeMethodStub.cpp";
 
                 List<ABIReversePInvokeMethodInfo> methods = analyzer.BuildABIMethods();
                 Debug.Log($"GenerateReversePInvokeWrapper. wraperCount:{methods.Sum(m => m.Count)} output:{outputFile}");
                 var generator = new Generator();
-                generator.Generate(templateCode, methods, outputFile);
+                generator.Generate(methods, outputFile);
+                Debug.LogFormat("[ReversePInvokeWrapperGeneratorCommand] output:{0}", outputFile);
             }
             MethodBridgeGeneratorCommand.CleanIl2CppBuildCache();
         }

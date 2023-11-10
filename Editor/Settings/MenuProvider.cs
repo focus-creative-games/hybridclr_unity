@@ -7,7 +7,7 @@ namespace HybridCLR.Editor.Settings
     public static class MenuProvider
     {
 
-        [MenuItem("HybridCLR/About HybridCLR", priority = 0)]
+        [MenuItem("HybridCLR/About", priority = 0)]
         public static void OpenAbout() => Application.OpenURL("https://hybridclr.doc.code-philosophy.com/docs/intro");
 
         [MenuItem("HybridCLR/Installer...", priority = 60)]

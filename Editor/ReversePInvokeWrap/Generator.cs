@@ -2,15 +2,18 @@
 using HybridCLR.Editor.Template;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace HybridCLR.Editor.ReversePInvokeWrap
 {
     public class Generator
     {
-        public void Generate(string template, List<ABIReversePInvokeMethodInfo> methods, string outputFile)
+        public void Generate(List<ABIReversePInvokeMethodInfo> methods, string outputFile)
         {
+            string template = File.ReadAllText(outputFile, Encoding.UTF8);
             var frr = new FileRegionReplace(template);
             var codes = new List<string>();
 

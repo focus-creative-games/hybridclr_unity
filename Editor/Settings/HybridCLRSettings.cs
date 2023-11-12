@@ -50,5 +50,20 @@ namespace HybridCLR.Editor.Settings
 
         [Header("MethodBridge泛型搜索迭代次数")]
         public int maxMethodBridgeGenericIteration = 10;
+        
+        [Header("AOT dlls 复制目标目录")]
+        public string copyAOTDllsTargetDir = "Assets/StreamingAssets/AOTDlls";
+
+        [Header("复制AOT dlls时对AOTGenericReferences.PatchedAOTAssemblyList的补充")]
+        public string[] copyAOTDllsAddition ={"System"};
+        
+        [Header("热更 dlls 复制目标目录")]
+        public string copyHotUpdateDllsTargetDir = "Assets/StreamingAssets/HotUpdateDlls";
+
+        [Header("复制热更dll时，忽略平台文件夹")]
+        public bool ignorePlatformWhenCopyHotUpdateDll = true;
+        
+        [Header("复制Dlls附加后缀名")] 
+        public string copyDllsExtension = ".bytes";
     }
 }

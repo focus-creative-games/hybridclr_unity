@@ -1,4 +1,5 @@
 using HybridCLR.Editor.Installer;
+using HybridCLR.Editor.Tool;
 using UnityEditor;
 using UnityEngine;
 
@@ -34,6 +35,11 @@ namespace HybridCLR.Editor.Settings
 
         [MenuItem("HybridCLR/Documents/Bug Report")]
         public static void OpenBugReport() => Application.OpenURL("https://hybridclr.doc.code-philosophy.com/docs/help/issue");
-    }
 
+        [MenuItem("HybridCLR/Tool/CopyDllsWithExtension/AOTDlls")]
+        public static void CopyAOTDlls() => CopyDlls.CopyAOTDlls();
+
+        [MenuItem("HybridCLR/Tool/CopyDllsWithExtension/HotUpdateDlls")]
+        public static void CopyHotUpdateDlls() => CopyDlls.CopyHotUpdateDlls();
+    }
 }

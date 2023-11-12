@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using UnityEditor;
+using UnityEditor.AnimatedValues;
 using UnityEditor.Presets;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -25,13 +26,24 @@ namespace HybridCLR.Editor.Settings
         private SerializedProperty _outputAOTGenericReferenceFile;
         private SerializedProperty _maxGenericReferenceIteration;
         private SerializedProperty _maxMethodBridgeGenericIteration;
+        private SerializedProperty _copyDllsExtension;
+        private SerializedProperty _copyAOTDllsTargetDir;
+        private SerializedProperty _copyAOTDllsAddition;
+        private SerializedProperty _ignorePlatformWhenCopyHotUpdateDll;
+        private SerializedProperty _copyHotUpdateDllsTargetDir;
         private GUIStyle buttonStyle;
-        public HybridCLRSettingsProvider() : base("Project/HybridCLR Settings", SettingsScope.Project) { }
+        private AnimBool _copyDllsAnimBool;
+
+        public HybridCLRSettingsProvider() : base("Project/HybridCLR Settings", SettingsScope.Project)
+        {
+        }
+
         public override void OnActivate(string searchContext, VisualElement rootElement)
         {
             EditorStatusWatcher.OnEditorFocused += OnEditorFocused;
             InitGUI();
         }
+
         private void InitGUI()
         {
             var setting = HybridCLRSettings.LoadOrCreate();
@@ -52,19 +64,29 @@ namespace HybridCLR.Editor.Settings
             _outputAOTGenericReferenceFile = _serializedObject.FindProperty("outputAOTGenericReferenceFile");
             _maxGenericReferenceIteration = _serializedObject.FindProperty("maxGenericReferenceIteration");
             _maxMethodBridgeGenericIteration = _serializedObject.FindProperty("maxMethodBridgeGenericIteration");
+            _copyAOTDllsTargetDir = _serializedObject.FindProperty("copyAOTDllsTargetDir");
+            _copyAOTDllsAddition = _serializedObject.FindProperty("copyAOTDllsAddition");
+            _copyHotUpdateDllsTargetDir = _serializedObject.FindProperty("copyHotUpdateDllsTargetDir");
+            _ignorePlatformWhenCopyHotUpdateDll = _serializedObject.FindProperty("ignorePlatformWhenCopyHotUpdateDll");
+            _copyDllsExtension = _serializedObject.FindProperty("copyDllsExtension");
+            _copyDllsAnimBool = new AnimBool();
+            _copyDllsAnimBool.valueChanged.AddListener(Repaint);
         }
+
         private void OnEditorFocused()
         {
             InitGUI();
             Repaint();
         }
+
         public override void OnTitleBarGUI()
         {
             base.OnTitleBarGUI();
             var rect = GUILayoutUtility.GetLastRect();
             buttonStyle = buttonStyle ?? GUI.skin.GetStyle("IconButton");
 
-            #region  绘制官方网站跳转按钮
+            #region 绘制官方网站跳转按钮
+
             var w = rect.x + rect.width;
             rect.x = w - 57;
             rect.y += 6;
@@ -140,6 +162,21 @@ namespace HybridCLR.Editor.Settings
                 EditorGUILayout.PropertyField(_outputAOTGenericReferenceFile);
                 EditorGUILayout.PropertyField(_maxGenericReferenceIteration);
                 EditorGUILayout.PropertyField(_maxMethodBridgeGenericIteration);
+
+                EditorGUILayout.Space(10);
+                _copyDllsAnimBool.target = EditorGUILayout.Foldout(_copyDllsAnimBool.target, "复制Dlls");
+                if (EditorGUILayout.BeginFadeGroup(_copyDllsAnimBool.faded))
+                {
+                    EditorGUILayout.PropertyField(_copyAOTDllsTargetDir);
+                    EditorGUILayout.PropertyField(_copyAOTDllsAddition);
+                    EditorGUILayout.PropertyField(_copyHotUpdateDllsTargetDir);
+                    EditorGUILayout.PropertyField(_ignorePlatformWhenCopyHotUpdateDll);
+                    EditorGUILayout.PropertyField(_copyDllsExtension);
+                }
+
+                EditorGUILayout.EndFadeGroup();
+
+
                 if (EditorGUI.EndChangeCheck())
                 {
                     _serializedObject.ApplyModifiedProperties();

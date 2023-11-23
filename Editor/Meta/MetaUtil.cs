@@ -170,11 +170,14 @@ namespace HybridCLR.Editor.Meta
         {
 			return new CombinedAssemblyResolver(
 				CreateHotUpdateAssemblyResolver(target, hotUpdateDlls),
-				CreateAOTAssemblyResolver(target),
-				new PathAssemblyResolver($"{SettingsUtil.HybridCLRDataPathInPackage}/NetStandard")
+				CreateAOTAssemblyResolver(target)
 				);
         }
 
+		public static string ResolveNetStandardAssemblyPath(string assemblyName)
+		{
+			return $"{SettingsUtil.HybridCLRDataPathInPackage}/NetStandard/{assemblyName}.dll";
+		}
 
 
         public static  List<TypeSig> CreateDefaultGenericParams(ModuleDef module, int genericParamCount)

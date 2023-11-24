@@ -357,11 +357,12 @@ namespace HybridCLR.Editor.MethodBridge
                     foreach (var field in ci.fields)
                     {
                         uint offset = field.field.FieldOffset.Value;
-                        string fieldName = $"__{field.field.Name.Replace('<', '_').Replace('>', '_')}_{index}";
+                        string fieldName = $"__{index}";
+                        string commentFieldName = $"{field.field.Name}";
                         lines.Add("\t#pragma pack(push, 1)");
-                        lines.Add($"\tstruct {{ {(offset > 0 ? $"char {fieldName}_offsetPadding[{offset}];" : "")}  {field.type.GetTypeName()} {fieldName};}};");
+                        lines.Add($"\tstruct {{ {(offset > 0 ? $"char {fieldName}_offsetPadding[{offset}];" : "")}  {field.type.GetTypeName()} {fieldName};}}; // {commentFieldName}");
                         lines.Add($"\t#pragma pack(pop)");
-                        lines.Add($"\tstruct {{ {field.type.GetTypeName()} {fieldName}_forAlignmentOnly;}};");
+                        lines.Add($"\tstruct {{ {field.type.GetTypeName()} {fieldName}_forAlignmentOnly;}}; // {commentFieldName}");
                         ++index;
                     }
                 }
@@ -376,8 +377,9 @@ namespace HybridCLR.Editor.MethodBridge
                     int index = 0;
                     foreach (var field in ci.fields)
                     {
-                        string fieldName = $"__{field.field.Name.Replace('<', '_').Replace('>', '_')}_{index}";
-                        lines.Add($"\t{field.type.GetTypeName()} {fieldName};");
+                        string fieldName = $"__{index}";
+                        string commentFieldName = $"{field.field.Name}";
+                        lines.Add($"\t{field.type.GetTypeName()} {fieldName}; // {commentFieldName}");
                         ++index;
                     }
                     if (classSize > 0)

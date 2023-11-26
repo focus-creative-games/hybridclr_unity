@@ -1,5 +1,25 @@
 # 发布日志
 
+## 4.0.13
+
+发布日期 2023.11.27.
+
+### Runtime
+
+- [fix] 修复ConvertInvokeArgs有可能传递了非对齐args，导致CopyStackObject在armv7这种要求内存对齐的平台发生崩溃的bug
+- [fix] 修复通过StructLayout指定size时，计算ClassFieldLayout的严重bug
+- [fix] 修复bgt之类指令未取双重取反进行判断，导致当浮点数与Nan比较时由于不满足对称性执行了错误的分支的bug
+- [fix] 修复Class::FromGenericParameter错误地设置了thread_static_fields_size=-1，导致为其分配ThreadStatic内存的严重bug
+- [opt] Il2CppGenericInst分配统一使用MetadataCache::GetGenericInst分配唯一池对象，优化内存分配
+- [opt] 由于Interpreter部分Il2CppGenericInst统一使用MetadataCache::GetGenericInst，比较 Il2CppGenericContext时直接比较 class_inst和method_inst指针
+
+### Editor
+
+- [fix] 修复裁剪aot dll中出现netstandard时，生成桥接函数异常的bug
+- [fix] 修复当出现非常规字段名时生成的桥接函数代码文件有编译错误的bug
+- [change] 删除不必要的Datas~/Templates目录，直接以原始文件为模板
+- [refactor] 重构 AssemblyCache和 AssemblyReferenceDeepCollector，消除冗余代码
+
 ## 4.0.12
 
 发布日期 2023.11.02.

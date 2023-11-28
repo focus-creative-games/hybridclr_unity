@@ -175,6 +175,7 @@ namespace HybridCLR.Editor.Installer
         {
             InstalledLibil2cppVersion = PackageVersion;
             File.WriteAllText(LocalVersionFile, PackageVersion, Encoding.UTF8);
+            Debug.Log($"Write installed version:'{PackageVersion}' to {LocalVersionFile}");
         }
 
         public void InstallDefaultHybridCLR()

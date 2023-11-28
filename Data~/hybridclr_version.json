@@ -1,6 +1,11 @@
 {
     "versions": [
     {
+        "unity_version":"2019",
+        "hybridclr" : { "branch":"pro-4.3.5"},
+        "il2cpp_plus": { "branch":"2019-pro-4.3.5"}
+    },
+    {
         "unity_version":"2020",
         "hybridclr" : { "branch":"v4.0.10"},
         "il2cpp_plus": { "branch":"v2020-4.0.8"}

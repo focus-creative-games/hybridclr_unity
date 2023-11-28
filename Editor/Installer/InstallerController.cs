@@ -120,6 +120,7 @@ namespace HybridCLR.Editor.Installer
         {
             switch(majorVersion)
             {
+                case 2019: return $"2019.4.0";
                 case 2020: return $"2020.3.0";
                 case 2021: return $"2021.3.0";
                 case 2022: return $"2022.3.0";
@@ -141,7 +142,7 @@ namespace HybridCLR.Editor.Installer
             {
                 return CompatibleType.Incompatible;
             }
-            if (version.minor1 != 3)
+            if ((version.major == 2019 && version.minor1 < 4) || (version.major >= 2020 &&  version.minor1 < 3))
             {
                 return CompatibleType.MaybeIncompatible;
             }
@@ -186,6 +187,30 @@ namespace HybridCLR.Editor.Installer
         public bool HasInstalledHybridCLR()
         {
             return Directory.Exists($"{SettingsUtil.LocalIl2CppDir}/libil2cpp/hybridclr");
+        }
+
+        private string GetUnityIl2CppDllInstallLocation()
+        {
+            string path1 = $"{SettingsUtil.LocalIl2CppDir}/build/deploy/net471/Unity.IL2CPP.dll";
+            if (File.Exists(path1))
+            {
+                return path1;
+            }
+            string path2 = $"{SettingsUtil.LocalIl2CppDir}/build/deploy/il2cppcore/Unity.IL2CPP.dll";
+            if (File.Exists(path2))
+            {
+                return path2;
+            }
+            throw new Exception($"Unity.IL2CPP.dll not found");
+        }
+
+        private string GetUnityIl2CppDllModifiedPath(string curVersionStr)
+        {
+#if UNITY_EDITOR_WIN
+            return $"{SettingsUtil.ProjectDir}/{SettingsUtil.HybridCLRDataPathInPackage}/ModifiedUnityAssemblies/{curVersionStr}/Unity.IL2CPP-Win.dll";
+#else
+            return $"{SettingsUtil.ProjectDir}/{SettingsUtil.HybridCLRDataPathInPackage}/ModifiedUnityAssemblies/{curVersionStr}/Unity.IL2CPP-Mac.dll";
+#endif
         }
 
         void CloneBranch(string workDir, string repoUrl, string branch, string repoDir)
@@ -255,7 +280,21 @@ namespace HybridCLR.Editor.Installer
 
             // clean Il2cppBuildCache
             BashUtil.RemoveDir($"{SettingsUtil.ProjectDir}/Library/Il2cppBuildCache", true);
-
+            if (version.major == 2019)
+            {
+                string curVersionStr = version.ToString();
+                string srcIl2CppDll = GetUnityIl2CppDllModifiedPath(curVersionStr);
+                if (File.Exists(srcIl2CppDll))
+                {
+                    string dstIl2CppDll = GetUnityIl2CppDllInstallLocation();
+                    File.Copy(srcIl2CppDll, dstIl2CppDll, true);
+                    Debug.Log($"copy {srcIl2CppDll} => {dstIl2CppDll}");
+                }
+                else
+                {
+                    throw new Exception($"the modified Unity.IL2CPP.dll of {curVersionStr} isn't found. please install hybridclr in 2019.4.40 first, then switch to your unity version");
+                }
+            }
             if (HasInstalledHybridCLR())
             {
                 WriteLocalVersion();

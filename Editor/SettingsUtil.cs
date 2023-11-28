@@ -46,6 +46,10 @@ namespace HybridCLR.Editor
 
         public static string Il2CppBuildCacheDir { get; } = $"{ProjectDir}/Library/Il2cppBuildCache";
 
+        public static string GlobalgamemanagersBinFile { get; } = "globalgamemanagers";
+
+        public static string Dataunity3dBinFile { get; } = "data.unity3d";
+
         public static string GetHotUpdateDllsOutputDirByTarget(BuildTarget target)
         {
             return $"{HotUpdateDllsRootOutputDir}/{target}";

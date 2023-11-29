@@ -125,6 +125,9 @@ namespace HybridCLR.Editor.BuildProcessors
         }
         private void AddHotFixAssembliesToBinFile(string path)
         {
+#if UNITY_STANDALONE_OSX
+            path = Path.GetDirectoryName(path);
+#endif
             if (AddHotFixAssembliesToGlobalgamemanagers(path))
             {
                 return;

@@ -7,7 +7,7 @@ using System.Text;
 using UnityEditor;
 using System.Reflection;
 using HybridCLR.Editor.Settings;
-#if (UNITY_2020 || UNITY_2021) && UNITY_IOS
+#if UNITY_2019 && UNITY_IOS
 using UnityEditor.Build;
 using UnityEditor.Callbacks;
 using UnityEditor.iOS.Xcode;
@@ -15,7 +15,7 @@ using UnityEngine;
 
 namespace HybridCLR.Editor.BuildProcessors
 {
-    public static class AddLil2cppSourceCodeToXcodeproj2021OrOlder
+    public static class AddLil2cppSourceCodeToXcodeproj2019
     {
         //[MenuItem("Test/GenProj")]
         //public static void Modify()
@@ -124,10 +124,10 @@ namespace HybridCLR.Editor.BuildProcessors
                 string newPro = hspProp.Replace("libil2cpp/include", "libil2cpp")
                     .Replace("Libraries/bdwgc", "Libraries/external/bdwgc");
 
-                if (!newPro.Contains("Libraries/libil2cpp/os/ClassLibraryPAL/brotli/include"))
-                {
-                    newPro += " $(SRCROOT)/Libraries/libil2cpp/os/ClassLibraryPAL/brotli/include";
-                }
+                //if (!newPro.Contains("Libraries/libil2cpp/os/ClassLibraryPAL/brotli/include"))
+                //{
+                //    newPro += " $(SRCROOT)/Libraries/libil2cpp/os/ClassLibraryPAL/brotli/include";
+                //}
                 if (!newPro.Contains("Libraries/external/xxHash"))
                 {
                     newPro += " $(SRCROOT)/Libraries/external/xxHash";
@@ -166,9 +166,9 @@ namespace HybridCLR.Editor.BuildProcessors
             BashUtil.RemoveDir(dstExternalDir);
             BashUtil.CopyDir(srcExternalDir, dstExternalDir, true);
 
-            string baselibPlatfromsDir = $"{dstExternalDir}/baselib/Platforms";
-            BashUtil.RemoveDir($"{baselibPlatfromsDir}/IOS");
-            BashUtil.CopyDir($"{baselibPlatfromsDir}/OSX", $"{baselibPlatfromsDir}/IOS", true);
+            //string baselibPlatfromsDir = $"{dstExternalDir}/baselib/Platforms";
+            //BashUtil.RemoveDir($"{baselibPlatfromsDir}/IOS");
+            //BashUtil.CopyDir($"{baselibPlatfromsDir}/OSX", $"{baselibPlatfromsDir}/IOS", true);
         }
 
         class LumpFile

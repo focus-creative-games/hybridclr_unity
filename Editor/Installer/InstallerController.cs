@@ -191,17 +191,11 @@ namespace HybridCLR.Editor.Installer
 
         private string GetUnityIl2CppDllInstallLocation()
         {
-            string path1 = $"{SettingsUtil.LocalIl2CppDir}/build/deploy/net471/Unity.IL2CPP.dll";
-            if (File.Exists(path1))
-            {
-                return path1;
-            }
-            string path2 = $"{SettingsUtil.LocalIl2CppDir}/build/deploy/il2cppcore/Unity.IL2CPP.dll";
-            if (File.Exists(path2))
-            {
-                return path2;
-            }
-            throw new Exception($"Unity.IL2CPP.dll not found");
+#if UNITY_EDITOR_WIN
+            return $"{SettingsUtil.LocalIl2CppDir}/build/deploy/net471/Unity.IL2CPP.dll";
+#else
+            return $"{SettingsUtil.LocalIl2CppDir}/build/deploy/il2cppcore/Unity.IL2CPP.dll";
+#endif
         }
 
         private string GetUnityIl2CppDllModifiedPath(string curVersionStr)

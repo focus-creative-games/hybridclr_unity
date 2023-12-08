@@ -1,5 +1,17 @@
 # 发布日志
 
+## 4.0.14
+
+发布日期 2023.12.11.
+
+### Runtime
+
+- [fix] 修复优化 box; brtrue|brfalse序列时，当类型为class或nullable类型时，无条件转换为无条件branch语句的bug
+- [fix] 修复 ClassFieldLayoutCalculator未释放 _classMap的每个key-value对中value对象，造成内存泄露的bug
+- [fix] 修复计算 ExplicitLayout的struct的native_size的bug
+- [fix] 修复当出现签名完全相同的虚函数与虚泛型函数时，计算override未考虑泛型签名，错误地返回了不匹配的函数，导致虚表错误的bug
+- [fix][2021] 修复开启faster(smaller) build选项后某些情况下完全泛型共享AOT函数未使用补充元数据来设置函数指针，导致调用时出错的bug
+
 ## 4.0.13
 
 发布日期 2023.11.27.

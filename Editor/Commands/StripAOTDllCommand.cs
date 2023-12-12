@@ -84,6 +84,10 @@ namespace HybridCLR.Editor.Commands
             bool oldBuildScriptsOnly = EditorUserBuildSettings.buildScriptsOnly;
             EditorUserBuildSettings.buildScriptsOnly = true;
 
+            string location = GetLocationPathName(outputPath, target);
+            string oldBuildLocation = EditorUserBuildSettings.GetBuildLocation(target);
+            EditorUserBuildSettings.SetBuildLocation(target, location);
+
             switch (target)
             {
                 case BuildTarget.StandaloneWindows:
@@ -113,7 +117,7 @@ namespace HybridCLR.Editor.Commands
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions()
             {
                 scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray(),
-                locationPathName = GetLocationPathName(outputPath, target),
+                locationPathName = location,
                 options = buildOptions,
                 target = target,
                 targetGroup = BuildPipeline.GetBuildTargetGroup(target),
@@ -122,6 +126,8 @@ namespace HybridCLR.Editor.Commands
             var report = BuildPipeline.BuildPlayer(buildPlayerOptions);
 
             EditorUserBuildSettings.buildScriptsOnly = oldBuildScriptsOnly;
+            EditorUserBuildSettings.SetBuildLocation(target, oldBuildLocation);
+
             switch (target)
             {
                 case BuildTarget.StandaloneWindows:

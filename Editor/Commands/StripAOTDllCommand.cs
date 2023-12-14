@@ -22,7 +22,7 @@ namespace HybridCLR.Editor.Commands
 
         static BuildOptions GetBuildPlayerOptions(BuildTarget buildTarget)
         {
-            BuildOptions options = BuildOptions.BuildScriptsOnly;
+            BuildOptions options = BuildOptions.None;
             bool development = EditorUserBuildSettings.development;
             if (development)
             {

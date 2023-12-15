@@ -46,7 +46,7 @@ namespace HybridCLR.Editor.Installer
 
             EditorGUILayout.LabelField($"Package Version:     v{_controller.PackageVersion}");
             GUILayout.Space(5f);
-            EditorGUILayout.LabelField($"Installed libil2cpp Version:     {_controller.InstalledLibil2cppVersion ?? "Unknown"}");
+            EditorGUILayout.LabelField($"Installed Version:     {_controller.InstalledLibil2cppVersion ?? "Unknown"}");
             GUILayout.Space(5f);
 
             GUILayout.Space(10f);

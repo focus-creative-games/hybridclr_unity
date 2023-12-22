@@ -59,9 +59,10 @@ namespace HybridCLR.Editor.Settings
         protected static string GetFilePath()
         {
             return typeof(T).GetCustomAttributes(inherit: true)
-                  .Cast<FilePathAttribute>()
-                  .FirstOrDefault(v => v != null)
-                  ?.filepath;
+                .Where(v => v is FilePathAttribute)
+                .Cast<FilePathAttribute>()
+                .FirstOrDefault()
+                ?.filepath;
         }
     }
     [AttributeUsage(AttributeTargets.Class)]

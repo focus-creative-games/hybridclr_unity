@@ -11,11 +11,6 @@ namespace HybridCLR
 {
     public static class RuntimeApi
     {
-#if UNITY_EDITOR
-        private static int s_interpreterThreadObjectStackSize = 128 * 1024;
-        private static int s_interpreterThreadFrameStackSize = 2 * 1024;
-#endif
-
         /// <summary>
         /// 加载补充元数据assembly
         /// </summary>
@@ -36,55 +31,65 @@ namespace HybridCLR
         /// 获取解释器线程栈的最大StackObject个数(size*8 为最终占用的内存大小)
         /// </summary>
         /// <returns></returns>
-#if UNITY_EDITOR
         public static int GetInterpreterThreadObjectStackSize()
         {
-            return s_interpreterThreadObjectStackSize;
+            return GetRuntimeOption(RuntimeOptionId.InterpreterThreadObjectStackSize);
         }
-#else
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        public static extern int GetInterpreterThreadObjectStackSize();
-#endif
 
         /// <summary>
         /// 设置解释器线程栈的最大StackObject个数(size*8 为最终占用的内存大小)
         /// </summary>
         /// <param name="size"></param>
-#if UNITY_EDITOR
         public static void SetInterpreterThreadObjectStackSize(int size)
         {
-            s_interpreterThreadObjectStackSize = size;
+            SetRuntimeOption(RuntimeOptionId.InterpreterThreadObjectStackSize, size);
         }
-#else
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        public static extern void SetInterpreterThreadObjectStackSize(int size);
-#endif
+        
+
         /// <summary>
         /// 获取解释器线程函数帧数量(sizeof(InterpreterFrame)*size 为最终占用的内存大小)
         /// </summary>
         /// <returns></returns>
-#if UNITY_EDITOR
         public static int GetInterpreterThreadFrameStackSize()
         {
-            return s_interpreterThreadFrameStackSize;
+            return GetRuntimeOption(RuntimeOptionId.InterpreterThreadFrameStackSize);
         }
-#else
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        public static extern int GetInterpreterThreadFrameStackSize();
-#endif
-        
+
         /// <summary>
         /// 设置解释器线程函数帧数量(sizeof(InterpreterFrame)*size 为最终占用的内存大小)
         /// </summary>
         /// <param name="size"></param>
-#if UNITY_EDITOR
         public static void SetInterpreterThreadFrameStackSize(int size)
         {
-            s_interpreterThreadFrameStackSize = size;
+            SetRuntimeOption(RuntimeOptionId.InterpreterThreadFrameStackSize, size);
+        }
+
+
+#if UNITY_EDITOR
+
+        private static readonly Dictionary<RuntimeOptionId, int> s_runtimeOptions = new Dictionary<RuntimeOptionId, int>();
+
+        public static void SetRuntimeOption(RuntimeOptionId optionId, int value)
+        {
+            s_runtimeOptions[optionId] = value;
         }
 #else
         [MethodImpl(MethodImplOptions.InternalCall)]
-        public static extern void SetInterpreterThreadFrameStackSize(int size);
+        public static extern void SetRuntimeOption(RuntimeOptionId optionId, int value);
+#endif
+
+#if UNITY_EDITOR
+        public static int GetRuntimeOption(RuntimeOptionId optionId)
+        {
+            if (s_runtimeOptions.TryGetValue(optionId, out var value))
+            {
+                return value;
+            }
+            return 0;
+        }
+#else
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        public static extern int GetRuntimeOption(RuntimeOptionId optionId);
 #endif
     }
 }

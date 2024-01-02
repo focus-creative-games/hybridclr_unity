@@ -1,5 +1,26 @@
 # 发布日志
 
+## 4.0.15
+
+发布日期 2024年1月2日.
+
+### Runtime
+
+- [fix] 修复计算未完全实例化的泛型类时将VAR和MVAR类型参数大小计算成sizeof(void*)，导致计算出无效且过大的instance，在执行LayoutFieldsLocked过程中调用UpdateInstanceSizeForGenericClass错误地使用泛型基类instance覆盖设置了实例类型的instance值的严重bug
+- [change] 支持打印热更新栈，虽然顺序不太正确
+- [change] 使用HYBRIDCLR_MALLOC之类分配函数替换IL2CPP_MALLOC
+- [refactor] 重构Config接口，统一通过GetRuntimeOption和SetRuntimeOption获取和设置选项
+- [opt] 删除NewValueTypeVar和NewValueTypeInterpVar指令不必要的对结构memset操作
+
+### Editor
+
+- [fix] 修复Additional Compiler Arguments中输入 -nullable:enable 之后，Editor抛出InvalidCastException的bug。来自报告 https://github.com/focus-creative-games/hybridclr/issues/116
+- [fix] 修复某些情况下报错：BuildFailedException: Build path contains a project previously built without the "Create Visual Studio Solution"
+- [opt] 优化桥接函数生成，将同构的struct映射到同一个结构，减少了30-35%的桥接函数数量
+- [change] StripAOTDllCommand导出时不再设置BuildScriptsOnly选项
+- [change] 调整Installer窗口的显示内容
+- [refactor] RuntimeApi中设置hybridclr参数的功能统一通过GetRuntimeOption和SetRuntimeOption函数
+
 ## 4.0.14
 
 发布日期 2023.12.11.

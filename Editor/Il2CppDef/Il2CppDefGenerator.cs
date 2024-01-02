@@ -39,6 +39,12 @@ namespace HybridCLR.Editor.Il2CppDef
             GeneratePlaceHolderAssemblies();
         }
 
+
+        private static bool IsTuanJie()
+        {
+            return Regex.IsMatch(Application.unityVersion, @".*t\d+$");
+        }
+
         private void GenerateIl2CppConfig()
         {
             var frr = new FileRegionReplace(File.ReadAllText(_options.OutputFile));
@@ -58,6 +64,11 @@ namespace HybridCLR.Editor.Il2CppDef
                 {
                     lines.Add($"#define HYBRIDCLR_UNITY_{ver}_OR_NEW 1");
                 }
+            }
+
+            if (IsTuanJie())
+            {
+                lines.Add($"#define UNITY_ENGINE_TUANJIE 1");
             }
 
             frr.Replace("UNITY_VERSION", string.Join("\n", lines));

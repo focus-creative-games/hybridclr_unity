@@ -81,6 +81,9 @@ namespace HybridCLR.Editor.Commands
 #elif UNITY_EDITOR_WIN
             bool oldCreateSolution = UnityEditor.WindowsStandalone.UserBuildSettings.createSolution;
 #endif
+#if TUANJIE_2022
+            bool oldOpenHarmonyProj = EditorUserBuildSettings.exportAsOpenHarmonyProject;
+#endif
             bool oldBuildScriptsOnly = EditorUserBuildSettings.buildScriptsOnly;
             EditorUserBuildSettings.buildScriptsOnly = true;
 
@@ -105,11 +108,21 @@ namespace HybridCLR.Editor.Commands
 #endif
                     break;
                 }
+#if TUANJIE_2022
+                case BuildTarget.HMIAndroid:
+#endif
                 case BuildTarget.Android:
                 {
                     EditorUserBuildSettings.exportAsGoogleAndroidProject = true;
                     break;
                 }
+#if TUANJIE_2022
+                case BuildTarget.OpenHarmony:
+                {
+                    EditorUserBuildSettings.exportAsOpenHarmonyProject = true;
+                    break;
+                }
+#endif
             }
 
             Debug.Log($"GenerateStripedAOTDlls build option:{buildOptions}");
@@ -145,11 +158,21 @@ namespace HybridCLR.Editor.Commands
 #endif
                         break;
                     }
+#if TUANJIE_2022
+                case BuildTarget.HMIAndroid:
+#endif
                 case BuildTarget.Android:
                 {
                     EditorUserBuildSettings.exportAsGoogleAndroidProject = oldExportAndroidProj;
                     break;
                 }
+#if TUANJIE_2022
+                case BuildTarget.OpenHarmony:
+                {
+                    EditorUserBuildSettings.exportAsOpenHarmonyProject = oldOpenHarmonyProj;
+                    break;
+                }
+#endif
             }
 
             if (report.summary.result != UnityEditor.Build.Reporting.BuildResult.Succeeded)

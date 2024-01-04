@@ -17,6 +17,8 @@ namespace HybridCLR.Editor.BuildProcessors
     public class PatchScriptingAssemblyList :
 #if UNITY_ANDROID
         IPostGenerateGradleAndroidProject,
+#elif UNITY_OPENHARMONY
+        UnityEditor.OpenHarmony.IPostGenerateOpenHarmonyProject,
 #endif
         IPostprocessBuildWithReport
 #if !UNITY_2021_1_OR_NEWER && UNITY_WEBGL
@@ -45,11 +47,20 @@ namespace HybridCLR.Editor.BuildProcessors
             }
         }
 
+#if UNITY_OPENHARMONY
+
+        public void OnPostGenerateOpenHarmonyProject(string path)
+        {
+            OnPostGenerateGradleAndroidProject(path);
+        }
+
+#endif
+
         public void OnPostprocessBuild(BuildReport report)
         {
             // 如果target为Android,由于已经在OnPostGenerateGradelAndroidProject中处理过，
             // 这里不再重复处理
-#if !UNITY_ANDROID && !UNITY_WEBGL
+#if !UNITY_ANDROID && !UNITY_WEBGL && !UNITY_OPENHARMONY
             PathScriptingAssembilesFile(report.summary.outputPath);
 #endif
         }

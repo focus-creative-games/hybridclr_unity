@@ -191,11 +191,29 @@ namespace HybridCLR.Editor.AOT
             }
         }
 
+        private bool IsNotShareableAOTGenericType(TypeDef typeDef)
+        {
+            if (!IsAotType(typeDef))
+            {
+                return false;
+            }
+            return typeDef.GenericParameters.Any(c => !c.HasReferenceTypeConstraint);
+        }
+
+        private bool IsNotShareableAOTGenericMethod(MethodDef method)
+        {
+            if (!IsAotGenericMethod(method))
+            {
+                return false;
+            }
+            return method.GenericParameters.Concat(method.DeclaringType.GenericParameters).Any(c => !c.HasReferenceTypeConstraint);
+        }
+
         private void FilterAOTGenericTypeAndMethods()
         {
             ConstraintContext cc = this.ConstraintContext;
-            AotGenericTypes.AddRange(_genericTypes.Where(type => IsAotType(type.Type)).Select(gc => cc.ApplyConstraints(gc)));
-            AotGenericMethods.AddRange(_genericMethods.Where(method => IsAotGenericMethod(method.Method)).Select(gm => cc.ApplyConstraints(gm)));
+            AotGenericTypes.AddRange(_genericTypes.Where(type => IsNotShareableAOTGenericType(type.Type)).Select(gc => cc.ApplyConstraints(gc)));
+            AotGenericMethods.AddRange(_genericMethods.Where(method => IsNotShareableAOTGenericMethod(method.Method)).Select(gm => cc.ApplyConstraints(gm)));
         }
 
         public void Run()

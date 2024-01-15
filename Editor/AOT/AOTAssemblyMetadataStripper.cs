@@ -1,4 +1,5 @@
 ﻿using dnlib.DotNet;
+using dnlib.DotNet.Writer;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,6 +30,8 @@ namespace HybridCLR.Editor.AOT
                 }
             }
             var writer = new System.IO.MemoryStream();
+            var options = new ModuleWriterOptions(mod);
+            options.MetadataOptions.Flags |= MetadataFlags.PreserveAll;
             mod.Write(writer);
             writer.Flush();
             return writer.ToArray();

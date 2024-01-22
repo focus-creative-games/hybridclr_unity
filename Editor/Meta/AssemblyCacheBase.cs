@@ -1,6 +1,7 @@
 ﻿using dnlib.DotNet;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,9 @@ namespace HybridCLR.Editor.Meta
         private bool disposedValue;
         private bool _loadedNetstandard;
 
+
+        public ModuleContext ModCtx => _modCtx;
+
         public Dictionary<string, ModuleDefMD> LoadedModules { get; } = new Dictionary<string, ModuleDefMD>();
 
         private readonly List<ModuleDefMD> _loadedModulesIncludeNetstandard = new List<ModuleDefMD>();
@@ -26,6 +30,17 @@ namespace HybridCLR.Editor.Meta
             _asmResolver = (AssemblyResolver)_modCtx.AssemblyResolver;
             _asmResolver.EnableTypeDefCache = true;
             _asmResolver.UseGAC = false;
+        }
+
+
+        public ModuleDefMD TryLoadModule(string moduleName, bool loadReferenceAssemblies = true)
+        {
+            string dllPath = _assemblyPathResolver.ResolveAssembly(moduleName, false);
+            if (string.IsNullOrEmpty(dllPath))
+            {
+                return null;
+            }
+            return LoadModule(moduleName, loadReferenceAssemblies);
         }
 
         public ModuleDefMD LoadModule(string moduleName, bool loadReferenceAssemblies = true)
@@ -75,7 +90,7 @@ namespace HybridCLR.Editor.Meta
         private ModuleDefMD DoLoadModule(string dllPath)
         {
             //Debug.Log($"do load module:{dllPath}");
-            ModuleDefMD mod = ModuleDefMD.Load(dllPath, _modCtx);
+            ModuleDefMD mod = ModuleDefMD.Load(File.ReadAllBytes(dllPath), _modCtx);
             _asmResolver.AddToCache(mod);
             _loadedModulesIncludeNetstandard.Add(mod);
             return mod;

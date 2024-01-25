@@ -44,6 +44,7 @@ namespace HybridCLR.Editor.BuildProcessors
                 7. 移除libil2cpp.a
                 8. Include path add libil2cpp/os/ClassLibraryPAL/brotli/include
                 9. add external/xxHash
+                10. add "#include <stdio.h>" to Classes/Prefix.pch
              */
 
             string pbxprojFile = $"{pathToBuiltProject}/Unity-iPhone.xcodeproj/project.pbxproj";
@@ -62,6 +63,20 @@ namespace HybridCLR.Editor.BuildProcessors
                 "-DIL2CPP_MONO_DEBUGGER_DISABLED",
             };
             ModifyPBXProject(pathToBuiltProject, pbxprojFile, lumpFiles, extraSources, cflags);
+            AddSystemHeaderToPrefixPch(pathToBuiltProject);
+        }
+
+        private static void AddSystemHeaderToPrefixPch(string pathToBuiltProject)
+        {
+            // 如果不将 stdio.h 添加到 Prefix.pch, zutil.c会有编译错误
+            string prefixPchFile = $"{pathToBuiltProject}/Classes/Prefix.pch";
+            string fileContent = File.ReadAllText(prefixPchFile, Encoding.UTF8);
+            if (!fileContent.Contains("stdio.h"))
+            {
+                string newFileContent = fileContent + "\n#include <stdio.h>\n";
+                File.WriteAllText(prefixPchFile, newFileContent, Encoding.UTF8);
+                UnityEngine.Debug.Log($"append header to {prefixPchFile}");
+            }
         }
 
         private static string GetRelativePathFromProj(string path)

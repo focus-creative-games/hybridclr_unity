@@ -1,8 +1,27 @@
 # 发布日志
 
+## 5.0.0
+
+发布日期 2024.1.26.
+
+### Runtime
+
+- [new] 恢复对2019支持
+- [fix] 修复未按依赖顺序加载dll，由于在创建Image时缓存了当时的程序集列表，如果被依赖的程序集在本程序集后加载，延迟访问时由于不在缓存程序集列表而出现TypeLoadedException的bug
+
+
+### Editor
+
+- [new] 恢复对2019支持
+- [new] 支持2019版本在iOS平台以源码形式构建
+- [new] 新增 AOTAssemblyMetadataStripper用于剔除AOT dll中非泛型函数元数据
+- [new] 新增 MissingMetadataChecker检查裁剪类型或者函数丢失的问题
+- [opt] 优化 AOTReference计算，如果泛型的所有泛型参数都是class约束，则不加入到需要补充元数据的集合
+- [change] 为了支持团结引擎而作了一些调整（注意，支持团结引擎的il2cpp_plus分支并未公开）
+
 ## 4.0.15
 
-发布日期 2024年1月2日.
+发布日期 2024.1.2.
 
 ### Runtime
 

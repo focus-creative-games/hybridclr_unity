@@ -6,9 +6,11 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine.Scripting;
 
 namespace HybridCLR
 {
+    [Preserve]
     public static class RuntimeApi
     {
         /// <summary>

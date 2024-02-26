@@ -1,5 +1,15 @@
 # 发布日志
 
+## 5.1.0
+
+发布日期 2024.2.26.
+
+### Runtime
+
+- [fix] 修复2021未实现System.ByReference`1的.ctor及get_Value函数引发的运行错误的问题，il2cpp通过特殊的instrinct函数实现了正常运行
+- [opt] 优化元数据加载，将部分元数据改为延迟加载，大约减少30%的Assembly::Load的执行时间
+- [change] tempRet由Interpreter::Execute的局部变量改为CallDelegateInvoke_xxx的局部变量，减少嵌套过深时栈溢出的可能性
+
 ## 5.0.0
 
 发布日期 2024.1.26.

@@ -33,7 +33,7 @@ namespace HybridCLR.Editor.Installer
         {
             _curVersion = ParseUnityVersion(Application.unityVersion);
             _versionManifest = GetHybridCLRVersionManifest();
-            _curDefaultVersion = _versionManifest.versions.FirstOrDefault(v => v.unity_version == _curVersion.major.ToString());
+            _curDefaultVersion = _versionManifest.versions.FirstOrDefault(v => _curVersion.isTuanjieEngine ? v.unity_version == $"{_curVersion.major}-tuanjie" : v.unity_version == _curVersion.major.ToString());
             PackageVersion = LoadPackageInfo().version;
             InstalledLibil2cppVersion = ReadLocalVersion();
         }
@@ -88,6 +88,7 @@ namespace HybridCLR.Editor.Installer
             public int major;
             public int minor1;
             public int minor2;
+            public bool isTuanjieEngine;
 
             public override string ToString()
             {
@@ -108,7 +109,8 @@ namespace HybridCLR.Editor.Installer
             int major = int.Parse(match.Groups[1].Value);
             int minor1 = int.Parse(match.Groups[2].Value);
             int minor2 = int.Parse(match.Groups[3].Value);
-            return new UnityVersion { major = major, minor1 = minor1, minor2 = minor2 };
+            bool isTuanjieEngine = versionStr.Contains("t");
+            return new UnityVersion { major = major, minor1 = minor1, minor2 = minor2, isTuanjieEngine = isTuanjieEngine };
         }
 
         public string GetCurrentUnityVersionMinCompatibleVersionStr()

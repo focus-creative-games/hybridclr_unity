@@ -19,6 +19,11 @@
         "unity_version":"2022",
         "hybridclr" : { "branch":"v5.1.0"},
         "il2cpp_plus": { "branch":"v2022-5.1.0"}
+    },
+    {
+        "unity_version":"2022-tuanjie",
+        "hybridclr" : { "branch":"v5.1.0"},
+        "il2cpp_plus": { "branch":"v2022-tuanjie-5.1.0"}
     }
     ]
 }

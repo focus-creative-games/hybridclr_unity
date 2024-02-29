@@ -79,7 +79,29 @@ namespace HybridCLR.Editor.Meta
 
 				case ElementType.FnPtr:
                 {
-                    throw new NotSupportedException(typeSig.ToString());
+                    var fptr = (FnPtrSig)typeSig;
+                    var cs = fptr.Signature;
+                    CallingConventionSig ccs;
+                    switch (cs)
+                    {
+                        case MethodSig ms:
+                        {
+                            ccs = new MethodSig(ms.GetCallingConvention(), ms.GenParamCount, Resolve(ms.RetType), ms.Params.Select(p => Resolve(p)).ToList());
+                            break;
+                        }
+                        case PropertySig ps:
+                        {
+                            ccs = new PropertySig(ps.HasThis, Resolve(ps.RetType));
+                            break;
+                        }
+                        case GenericInstMethodSig gims:
+                        {
+                            ccs = new GenericInstMethodSig(gims.GenericArguments.Select(ga => Resolve(ga)).ToArray());
+                            break;
+                        }
+                        default: throw new NotSupportedException(cs.ToString());
+                    }
+                    return new FnPtrSig(ccs);
                 }
 
 				case ElementType.ValueArray:

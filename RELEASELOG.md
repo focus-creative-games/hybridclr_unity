@@ -1,5 +1,25 @@
 # 发布日志
 
+## 5.2.0
+
+发布日期 2024.3.25.
+
+### Runtime
+
+- [new] 支持团结引擎
+- [new] 支持函数指针，支持IL2CPP_TYPE_FNPTR类型
+- [fix] 修复SetMdArrElementVarVar_ref指令未SetWriteBarrier的bug
+- [fix] InvokeSingleDelegate当调用一个未补充元数据的泛型函数时，发生崩溃的bug
+- [fix] 修复InterpreterDelegateInvoke调用delegate时，如果delegate指向未补充元数据的泛型函数，发生崩溃的bug
+- [fix] 修复当BlobStream为空时, RawImage::GetBlobFromRawIndex断言index < _streamBlobHeap.size失败的bug
+- [change] 重构metadata index设计，允许分配最多3个64M dll，16个16M dll，64个4M dll，255个1M dll
+
+### Editor
+
+- [new] 支持团结引擎
+- [fix] 修复GenericArgumentContext不支持ElementType.FnPtr的bug
+- [change] 为RuntimeApi添加[Preserve]特性，避免被裁剪
+
 ## 5.1.0
 
 发布日期 2024.2.26.

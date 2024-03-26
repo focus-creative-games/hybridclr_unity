@@ -24,8 +24,11 @@ namespace HybridCLR.Editor.BuildProcessors
         {
             if (target != BuildTarget.iOS || !HybridCLRSettings.Instance.enable)
                 return;
-
+#if TUANJIE_2022_3_OR_NEWER
+            string pbxprojFile = $"{pathToBuiltProject}/Tuanjie-iPhone.xcodeproj/project.pbxproj";
+#else
             string pbxprojFile = $"{pathToBuiltProject}/Unity-iPhone.xcodeproj/project.pbxproj";
+#endif
             RemoveExternalLibil2cppOption(pbxprojFile);
             CopyLibil2cppToXcodeProj(pathToBuiltProject);
         }

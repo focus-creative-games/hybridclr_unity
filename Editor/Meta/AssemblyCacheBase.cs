@@ -91,6 +91,7 @@ namespace HybridCLR.Editor.Meta
         {
             //Debug.Log($"do load module:{dllPath}");
             ModuleDefMD mod = ModuleDefMD.Load(File.ReadAllBytes(dllPath), _modCtx);
+            mod.EnableTypeDefFindCache = true;
             _asmResolver.AddToCache(mod);
             _loadedModulesIncludeNetstandard.Add(mod);
             return mod;

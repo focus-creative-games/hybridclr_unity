@@ -1,5 +1,19 @@
 # 发布日志
 
+## 5.2.1
+
+发布日期 2024.4.7.
+
+### Runtime
+
+- [fix] 修复WebGL平台不打印堆栈日志的bug
+- [fix] 修复RuntimeConfig::GetRuntimeOption获取InterpreterThreadExceptionFlowSize错误返回s_threadFrameStackSize的bug
+
+### Editor
+
+- [opt] LoadModule中设置 mod.EnableTypeDefFindCache = true，计算桥接函数的时间缩短为原来的1/3
+- [fix] 修复团结引擎导出iOS平台xcode工程文件名改名为Tuanjie-iPhone.xcodeproj导致构建xcode工程失败的bug
+
 ## 5.2.0
 
 发布日期 2024.3.25.

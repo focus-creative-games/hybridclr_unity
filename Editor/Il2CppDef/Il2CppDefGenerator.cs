@@ -60,6 +60,16 @@ namespace HybridCLR.Editor.Il2CppDef
                 }
             }
 
+#if TUANJIE_1_1_OR_NEWER
+            var tuanjieMatch = Regex.Matches(Application.tuanjieVersion, @"(\d+)\.(\d+)\.(\d+)");
+            int tuanjieMajorVer = int.Parse(tuanjieMatch[0].Groups[1].Value);
+            int tuanjieMinorVer1 = int.Parse(tuanjieMatch[0].Groups[2].Value);
+            int tuanjieMinorVer2 = int.Parse(tuanjieMatch[0].Groups[3].Value);
+            lines.Add($"#define HYBRIDCLR_TUANJIE_VERSION {tuanjieMajorVer}{tuanjieMinorVer1.ToString("D2")}{tuanjieMinorVer2.ToString("D2")}");
+#elif TUANJIE_2022_3_OR_NEWER
+            lines.Add($"#define HYBRIDCLR_TUANJIE_VERSION 10000");
+#endif
+
             frr.Replace("UNITY_VERSION", string.Join("\n", lines));
 
             frr.Commit(_options.OutputFile);

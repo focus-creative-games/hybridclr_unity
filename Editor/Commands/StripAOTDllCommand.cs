@@ -81,7 +81,7 @@ namespace HybridCLR.Editor.Commands
 #elif UNITY_EDITOR_WIN
             bool oldCreateSolution = UnityEditor.WindowsStandalone.UserBuildSettings.createSolution;
 #endif
-#if TUANJIE_2022
+#if TUANJIE_2022_3_OR_NEWER
             bool oldOpenHarmonyProj = EditorUserBuildSettings.exportAsOpenHarmonyProject;
 #endif
             bool oldBuildScriptsOnly = EditorUserBuildSettings.buildScriptsOnly;
@@ -108,7 +108,7 @@ namespace HybridCLR.Editor.Commands
 #endif
                     break;
                 }
-#if TUANJIE_2022
+#if TUANJIE_2022_3_OR_NEWER
                 case BuildTarget.HMIAndroid:
 #endif
                 case BuildTarget.Android:
@@ -116,7 +116,7 @@ namespace HybridCLR.Editor.Commands
                     EditorUserBuildSettings.exportAsGoogleAndroidProject = true;
                     break;
                 }
-#if TUANJIE_2022
+#if TUANJIE_2022_3_OR_NEWER
                 case BuildTarget.OpenHarmony:
                 {
                     EditorUserBuildSettings.exportAsOpenHarmonyProject = true;
@@ -158,7 +158,7 @@ namespace HybridCLR.Editor.Commands
 #endif
                         break;
                     }
-#if TUANJIE_2022
+#if TUANJIE_2022_3_OR_NEWER
                 case BuildTarget.HMIAndroid:
 #endif
                 case BuildTarget.Android:
@@ -166,7 +166,7 @@ namespace HybridCLR.Editor.Commands
                     EditorUserBuildSettings.exportAsGoogleAndroidProject = oldExportAndroidProj;
                     break;
                 }
-#if TUANJIE_2022
+#if TUANJIE_2022_3_OR_NEWER
                 case BuildTarget.OpenHarmony:
                 {
                     EditorUserBuildSettings.exportAsOpenHarmonyProject = oldOpenHarmonyProj;

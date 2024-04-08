@@ -45,7 +45,7 @@ namespace HybridCLR.Editor.BuildProcessors
                     return $"{projectDir}/Library/Bee/artifacts/PS4PlayerBuildProgram/ManagedStripped";
                 case BuildTarget.PS5:
                     return $"{projectDir}/Library/Bee/artifacts/PS5PlayerBuildProgram/ManagedStripped";
-#if TUANJIE_2022
+#if TUANJIE_2022_3_OR_NEWER
                 case BuildTarget.WeixinMiniGame:
                     return $"{projectDir}/Library/Bee/artifacts/WeixinMiniGame/ManagedStripped";
                 case BuildTarget.OpenHarmony:

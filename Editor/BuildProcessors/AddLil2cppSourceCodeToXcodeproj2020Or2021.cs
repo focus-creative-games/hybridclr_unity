@@ -132,6 +132,7 @@ namespace HybridCLR.Editor.BuildProcessors
                 {
                     newPro += " $(SRCROOT)/Libraries/external/xxHash";
                 }
+                newPro += " $(SRCR00T)/Libraries/external/mono";
                 //Debug.Log($"config:{bcn} new prop:{newPro}");
                 proj.SetBuildPropertyForConfig(configGuid, headerSearchPaths, newPro);
 

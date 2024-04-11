@@ -56,11 +56,11 @@ namespace HybridCLR.Editor.Commands
             switch(target)
             {
                 case BuildTarget.StandaloneWindows:
-                case BuildTarget.StandaloneWindows64: return $"{buildDir}/{target}";
+                case BuildTarget.StandaloneWindows64: return $"{buildDir}/{PlayerSettings.productName}.exe";
                 case BuildTarget.StandaloneOSX: return buildDir;
                 case BuildTarget.iOS: return buildDir;
                 case BuildTarget.Android: return buildDir;
-                case BuildTarget.StandaloneLinux64: return buildDir;
+                case BuildTarget.StandaloneLinux64: return $"{buildDir}/{PlayerSettings.productName}";
                 default: return buildDir;
             }
         }

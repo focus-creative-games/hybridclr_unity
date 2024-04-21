@@ -7,7 +7,7 @@ using UnityEditor.Build;
 using UnityEditor.Callbacks;
 using UnityEngine;
 
-#if UNITY_2022_2_OR_NEWER && UNITY_IOS
+#if UNITY_2022_2_OR_NEWER && (UNITY_IOS || UNITY_TVOS)
 
 namespace HybridCLR.Editor.BuildProcessors
 {
@@ -22,7 +22,7 @@ namespace HybridCLR.Editor.BuildProcessors
         [PostProcessBuild]
         public static void OnPostProcessBuild(BuildTarget target, string pathToBuiltProject)
         {
-            if (target != BuildTarget.iOS || !HybridCLRSettings.Instance.enable)
+            if (!HybridCLRSettings.Instance.enable)
                 return;
 #if TUANJIE_2022_3_OR_NEWER
             string pbxprojFile = $"{pathToBuiltProject}/Tuanjie-iPhone.xcodeproj/project.pbxproj";

@@ -7,7 +7,7 @@ using System.Text;
 using UnityEditor;
 using System.Reflection;
 using HybridCLR.Editor.Settings;
-#if (UNITY_2020 || UNITY_2021) && UNITY_IOS
+#if (UNITY_2020 || UNITY_2021) && (UNITY_IOS || UNITY_TVOS)
 using UnityEditor.Build;
 using UnityEditor.Callbacks;
 using UnityEditor.iOS.Xcode;
@@ -32,7 +32,7 @@ namespace HybridCLR.Editor.BuildProcessors
         [PostProcessBuild]
         public static void OnPostProcessBuild(BuildTarget target, string pathToBuiltProject)
         {
-            if (target != BuildTarget.iOS || !HybridCLRSettings.Instance.enable)
+            if (!HybridCLRSettings.Instance.enable)
                 return;
             /*
              *  1. 生成lump，并且添加到工程

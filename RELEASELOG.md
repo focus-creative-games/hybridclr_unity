@@ -1,5 +1,26 @@
 # 发布日志
 
+## 5.3.0
+
+发布日期 2024.4.22.
+
+### Runtime
+
+- [fix] 修复WebGL平台MachineState::CollectFramesWithoutDuplicates错误地使用hybridclr::metadata::IsInterpreterMethod移除热更新函数，导致补充元数据函数没有移除，StackFrames列表越来越长，打印Stack时死循环的bug。调整实现，统一使用il2cpp::vm::StackTrace::PushFrame及PopFrame实现完美的解释器栈打印。缺点是调用解释器函数增加了维护栈的开销
+- [fix] 修复StringUtils::Utf16ToUtf8未正确处理maxinumSize==0，导致InterpreterImage::ConvertConstValue中转换长度为0的string时巨幅溢出的严重bug
+- [fix] 修复__ReversePInvokeMethod_XXX函数未设置Il2CppThreadContext，导致从native线程回调时获取Thread变量崩溃的bug
+- [merge] 合并 2021.3.34-2021.3.37f1 il2cpp改动
+- [merge] 合并 2022.3.19-2022.3.23f1 il2cpp改动
+
+### Editor
+
+- [fix] 修复导出tvOS工程时未修改xcode工程设置，导致打包失败的bug
+- [fix] 修复构建tvOS目标时未复制裁剪AOT dll，导致生成桥接函数失败的bug
+- [fix] 解决StripAOTDllCommand生成的临时项目的locationPathName不规范导致与某些插件如Embeded Browser不兼容的问题
+- [fix] 修复团结引擎1.1.0起删除TUANJIE_2022宏导致没有复制裁剪后的AOT程序集的bug
+- [fix] 修复__ReversePInvokeMethod_XXX函数未设置Il2CppThreadContext，导致从native线程回调时获取Thread变量崩溃的bug
+- [fix] 修复iOS平台开启development build选项时出现mono相关头文件找不到的bug
+
 ## 5.2.1
 
 发布日期 2024.4.7.

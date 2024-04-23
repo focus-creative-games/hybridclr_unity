@@ -288,7 +288,7 @@ namespace HybridCLR.Editor.MethodBridge
             var sigBuf = new StringBuilder();
             foreach (var field in ati.fields)
             {
-                sigBuf.Append(GetOrCalculateTypeInfoSignature(ToIsomorphicType(field)));
+                sigBuf.Append("{" + GetOrCalculateTypeInfoSignature(ToIsomorphicType(field)) + "}");
             }
             return ati.signature = sigBuf.ToString();
         }

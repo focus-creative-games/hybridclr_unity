@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CallingConvention = System.Runtime.InteropServices.CallingConvention;
 using UnityEngine;
 
 namespace HybridCLR.Editor.ReversePInvokeWrap
@@ -21,7 +22,11 @@ namespace HybridCLR.Editor.ReversePInvokeWrap
     {
         public MethodDesc Method { get; set; }
 
+        public CallingConvention Callvention { get; set; }
+
         public int Count { get; set; }
+
+        public string Signature { get; set; }
     }
 
     public class Analyzer
@@ -70,6 +75,48 @@ namespace HybridCLR.Editor.ReversePInvokeWrap
             }
         }
 
+        private static string MakeSignature(MethodDesc desc, CallingConvention CallingConventionention)
+        {
+            string convStr = ((char)('A' + (int)CallingConventionention - 1)).ToString();
+            return $"{convStr}{desc.Sig}";
+        }
+
+        private static CallingConvention GetCallingConvention(MethodDef method)
+        {
+            var monoPInvokeCallbackAttr = method.CustomAttributes.FirstOrDefault(ca => ca.AttributeType.Name == "MonoPInvokeCallbackAttribute");
+            if (monoPInvokeCallbackAttr == null)
+            {
+                return CallingConvention.Winapi;
+            }
+            object delegateTypeSig = monoPInvokeCallbackAttr.ConstructorArguments[0].Value;
+
+            TypeDef delegateTypeDef;
+            if (delegateTypeSig is ClassSig classSig)
+            {
+                delegateTypeDef = classSig.TypeDef;
+            }
+            else if (delegateTypeSig is GenericInstSig genericInstSig)
+            {
+                delegateTypeDef = genericInstSig.GenericType.TypeDefOrRef.ResolveTypeDefThrow();
+            }
+            else
+            {
+                throw new NotSupportedException($"Unsupported delegate type {delegateTypeSig.GetType()}");
+            }
+
+            if (delegateTypeDef == null)
+            {
+                return CallingConvention.Winapi;
+            }
+            var attr = delegateTypeDef.CustomAttributes.FirstOrDefault(ca => ca.AttributeType.FullName == "System.Runtime.InteropServices.UnmanagedFunctionPointerAttribute");
+            if (attr == null)
+            {
+                return CallingConvention.Winapi;
+            }
+            var conv = attr.ConstructorArguments[0].Value;
+            return (CallingConvention)conv;
+        }
+
         public List<ABIReversePInvokeMethodInfo> BuildABIMethods()
         {
             var methodsBySig = new Dictionary<string, ABIReversePInvokeMethodInfo>();
@@ -83,20 +130,26 @@ namespace HybridCLR.Editor.ReversePInvokeWrap
                     ParamInfos = method.Method.Parameters.Select(p => new ParamInfo { Type = typeCreator.CreateTypeInfo(p.Type)}).ToList(),
                 };
                 desc.Init();
-                if (!methodsBySig.TryGetValue(desc.Sig, out var arm))
+
+                CallingConvention callingConv = GetCallingConvention(method.Method);
+                string signature = MakeSignature(desc, callingConv);
+
+                if (!methodsBySig.TryGetValue(signature, out var arm))
                 {
                     arm = new ABIReversePInvokeMethodInfo()
                     {
                         Method = desc,
+                        Signature = signature,
                         Count = 0,
+                        Callvention = callingConv,
                     };
-                    methodsBySig.Add(desc.Sig, arm);
+                    methodsBySig.Add(signature, arm);
                 }
                 int preserveCount = method.GenerationAttribute != null ? (int)method.GenerationAttribute.ConstructorArguments[0].Value : 1;
                 arm.Count += preserveCount;
             }
             var methods = methodsBySig.Values.ToList();
-            methods.Sort((a, b) => String.CompareOrdinal(a.Method.Sig, b.Method.Sig));
+            methods.Sort((a, b) => string.CompareOrdinal(a.Signature, b.Signature));
             return methods;
         }
 

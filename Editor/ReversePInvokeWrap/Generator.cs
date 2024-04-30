@@ -37,7 +37,7 @@ namespace HybridCLR.Editor.ReversePInvokeWrap
 		{(method.ReturnInfo.IsVoid ? "" : "return ")}((Callback)(method->methodPointerCallByInterp))({paramNameListWithoutMethodInfoStr});
 	}}
 ");
-                    stubCodes.Add($"\t\t{{\"{method.Sig}\", (Il2CppMethodPointer)__ReversePInvokeMethod_{methodIndex}}},\n");
+                    stubCodes.Add($"\t\t{{\"{methodInfo.Signature}\", (Il2CppMethodPointer)__ReversePInvokeMethod_{methodIndex}}},\n");
                 }
                 Debug.Log($"[ReversePInvokeWrap.Generator] method:{method.MethodDef} wrapperCount:{methodInfo.Count}");
             }

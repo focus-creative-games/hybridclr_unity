@@ -73,7 +73,7 @@ namespace HybridCLR.Editor.Settings
             content.tooltip = "点击访问 HybridCLR 官方文档";
             if (GUI.Button(rect, content, buttonStyle))
             {
-                Application.OpenURL("https://focus-creative-games.github.io/hybridclr/");
+                Application.OpenURL("https://hybridclr.doc.code-philosophy.com/");
             }
             #endregion
             #region 绘制 Preset

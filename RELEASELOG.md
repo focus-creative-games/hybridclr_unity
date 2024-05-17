@@ -1,5 +1,29 @@
 # 发布日志
 
+## 5.4.0
+
+发布日期 2024.5.20.
+
+### Runtime
+
+- [new] ReversePInvoke支持CallingConvention
+- [fix] 修复当参数个数为0时，由于argIdxs未赋值，calli的argBasePtr=argIdx[0]导致函数栈帧指向错误位置的bug
+- [fix] 修复MetadataModule::GetReversePInvokeWrappe中ComputeSignature可能死锁的bug
+- [fix] 修复AOT基类虚函数implements热更新interface函数时，虚函数调用使用CallInterpVirtual导致运行异常的bug
+- [fix] 修复Transform中 PREFIX1前缀指令的子指令有部分缺失并且未按指令号排序的问题
+- [fix] 修复no.{x} prefix指令长3字节，但Transform中错误当作2字节处理的bug
+- [fix] 修复unaligned.{x} prefix指令长3字节，但Transform中错误当作2字节处理的bug
+- [opt] 删除 Interpreter_Execute中不必要的INIT_CLASS操作，因为PREPARE_NEW_FRAME_FROM_NATIVE中一定会检查
+- [opt] 不再缓存非泛型函数的MethodBody，优化内存
+- [opt] **优化补充元数据内存**，大约节省了2.8倍元数据dll大小的内存
+- [refactor] Image::_rawImage字段的类型由RawImage改为RawImage*
+
+### Editor
+
+- [new] ReversePInvoke支持CallingConvention
+- [fix] 修复计算struct等价性时，将struct平铺展开计算等价，在某些平台并不适用的bug。例如 struct A { uint8_t x; A2 y; } struct A2 { uint8_t x; int32_t y;}; 跟 struct B {uint8_t x; uint8_t y; int32_t z;} 在x86_64 abi下并不等价
+- [fix] 修复当Append xcode项目到现存的xcode项目时，第1次会导致'Run Script'命令被重复追加，从第2次起将会找不到--external-lib-il2-cpp而打印错误日志的bug
+
 ## 5.3.0
 
 发布日期 2024.4.22.

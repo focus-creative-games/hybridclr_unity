@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using dnlib.DotNet;
 using HybridCLR.Editor.Meta;
 using UnityEditor;
+using UnityEngine;
 using IAssemblyResolver = HybridCLR.Editor.Meta.IAssemblyResolver;
 
 namespace HybridCLR.Editor.Link
@@ -32,6 +33,11 @@ namespace HybridCLR.Editor.Link
                     var dnAss = assCollector.LoadModule(rootAss, false);
                     foreach (var type in dnAss.GetTypeRefs())
                     {
+                        if (type.DefinitionAssembly == null)
+                        {
+                            Debug.LogWarning($"assembly:{dnAss.Name} TypeRef {type.FullName} has no DefinitionAssembly");
+                            continue;
+                        }
                         if (!rootAssemblyNames.Contains(type.DefinitionAssembly.Name.ToString()))
                         {
                             typeRefs.Add(type);

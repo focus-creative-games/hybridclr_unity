@@ -12,7 +12,7 @@ using System.IO;
 
 namespace HybridCLR.MonoHook
 {
-#if UNITY_2021_1_OR_NEWER
+#if UNITY_2021_1_OR_NEWER && !UNITY_6000_0_OR_NEWER
     [InitializeOnLoad]
     public class CopyStrippedAOTAssembliesHook
     {

@@ -12,7 +12,7 @@ using System.IO;
 
 namespace HybridCLR.MonoHook
 {
-#if UNITY_2022
+#if UNITY_2022 || UNITY_6000_0_OR_NEWER
     [InitializeOnLoad]
     public class GetIl2CppFolderHook
     {

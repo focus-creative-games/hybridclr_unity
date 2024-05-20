@@ -9,10 +9,12 @@ using UnityEditor;
 using UnityEditor.Android;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
-using UnityEditor.Il2Cpp;
 using UnityEditor.UnityLinker;
 using UnityEngine;
 using UnityFS;
+#if !UNITY_2021_1_OR_NEWER
+using UnityEditor.Il2Cpp;
+#endif
 
 namespace HybridCLR.Editor.BuildProcessors
 {

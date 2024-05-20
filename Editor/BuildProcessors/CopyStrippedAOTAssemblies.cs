@@ -8,9 +8,11 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
-using UnityEditor.Il2Cpp;
 using UnityEditor.UnityLinker;
 using UnityEngine;
+#if !UNITY_2021_1_OR_NEWER
+using UnityEditor.Il2Cpp;
+#endif
 
 namespace HybridCLR.Editor.BuildProcessors
 {

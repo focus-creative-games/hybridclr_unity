@@ -52,7 +52,14 @@ namespace HybridCLR.Editor.Il2CppDef
 
             lines.Add($"#define HYBRIDCLR_UNITY_VERSION {majorVer}{minorVer1.ToString("D2")}{minorVer2.ToString("D2")}");
             lines.Add($"#define HYBRIDCLR_UNITY_{majorVer} 1");
-            for (int ver = 2019; ver <= 2024; ver++)
+            for (int ver = 2019; ver <= 2023; ver++)
+            {
+                if (majorVer >= ver)
+                {
+                    lines.Add($"#define HYBRIDCLR_UNITY_{ver}_OR_NEW 1");
+                }
+            }
+            for (int ver = 6000; ver <= 6100; ver++)
             {
                 if (majorVer >= ver)
                 {

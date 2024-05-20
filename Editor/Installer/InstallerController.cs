@@ -122,10 +122,11 @@ namespace HybridCLR.Editor.Installer
         {
             switch(majorVersion)
             {
-                case 2019: return $"2019.4.0";
-                case 2020: return $"2020.3.0";
-                case 2021: return $"2021.3.0";
-                case 2022: return $"2022.3.0";
+                case 2019: return "2019.4.0";
+                case 2020: return "2020.3.0";
+                case 2021: return "2021.3.0";
+                case 2022: return "2022.3.0";
+                case 6000: return "6000.0.0";
                 default: return $"2020.3.0";
             }
         }
@@ -144,7 +145,7 @@ namespace HybridCLR.Editor.Installer
             {
                 return CompatibleType.Incompatible;
             }
-            if ((version.major == 2019 && version.minor1 < 4) || (version.major >= 2020 &&  version.minor1 < 3))
+            if ((version.major == 2019 && version.minor1 < 4) || (version.major >= 2020 &&  version.major < 6000 && version.minor1 < 3))
             {
                 return CompatibleType.MaybeIncompatible;
             }

@@ -38,6 +38,7 @@ namespace HybridCLR.Editor.Commands
                 TemplateCode = templateCode,
                 OutputFile = outputFile,
                 GenericMethods = analyzer.GenericMethods,
+                Development = EditorUserBuildSettings.development,
             });
 
             g.PrepareMethods();

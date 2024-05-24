@@ -25,6 +25,8 @@ namespace HybridCLR.Editor.MethodBridge
             public string OutputFile { get; set; }
 
             public IReadOnlyCollection<GenericMethod> GenericMethods { get; set; }
+
+            public bool Development { get; set; }
         }
 
         private readonly List<GenericMethod> _genericMethods;
@@ -32,6 +34,8 @@ namespace HybridCLR.Editor.MethodBridge
         private readonly string _templateCode;
 
         private readonly string _outputFile;
+
+        private readonly bool _development;
 
         private readonly TypeCreator _typeCreator;
 
@@ -50,6 +54,7 @@ namespace HybridCLR.Editor.MethodBridge
             _templateCode = options.TemplateCode;
             _outputFile = options.OutputFile;
             _typeCreator = new TypeCreator();
+            _development = options.Development;
         }
 
         private readonly Dictionary<string, TypeInfo> _sig2Types = new Dictionary<string, TypeInfo>();
@@ -390,6 +395,10 @@ namespace HybridCLR.Editor.MethodBridge
             var frr = new FileRegionReplace(_templateCode);
 
             List<string> lines = new List<string>(20_0000);
+
+            lines.Add("\n");
+            lines.Add($"// DEVELOPMENT={(_development ? 1 : 0)}");
+            lines.Add("\n");
 
             var classInfos = new List<ClassInfo>();
             var classTypeSet = new HashSet<TypeInfo>();

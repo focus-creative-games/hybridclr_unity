@@ -1,8 +1,10 @@
 ﻿using HybridCLR.Editor.Settings;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.Build;
@@ -15,6 +17,8 @@ namespace HybridCLR.Editor.BuildProcessors
     internal class CheckSettings : IPreprocessBuildWithReport
     {
         public int callbackOrder => 0;
+
+        public static bool DisableMethodBridgeDevelopmentFlagChecking { get; set; }
 
         public void OnPreprocessBuild(BuildReport report)
         {
@@ -67,6 +71,24 @@ namespace HybridCLR.Editor.BuildProcessors
                 Debug.LogWarning("[CheckSettings] No hot update modules configured in HybridCLRSettings");
             }
 
+            if (!DisableMethodBridgeDevelopmentFlagChecking)
+            {
+                string methodBridgeFile = $"{SettingsUtil.GeneratedCppDir}/MethodBridge.cpp";
+                var match = Regex.Match(File.ReadAllText(methodBridgeFile), @"// DEVELOPMENT=(\d)");
+                if (match.Success)
+                {
+                    int developmentFlagInMethodBridge = int.Parse(match.Groups[1].Value);
+                    int developmentFlagInEditorSettings = EditorUserBuildSettings.development ? 1 : 0;
+                    if (developmentFlagInMethodBridge != developmentFlagInEditorSettings)
+                    {
+                        Debug.LogError($"[CheckSettings] MethodBridge.cpp DEVELOPMENT flag:{developmentFlagInMethodBridge} is inconsistent with EditorUserBuildSettings.development:{developmentFlagInEditorSettings}. Please run 'HybridCLR/Generate/All' before building.");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("[CheckSettings] MethodBridge.cpp DEVELOPMENT flag not found. Please run 'HybridCLR/Generate/All' before building.");
+                }
+            }
         }
     }
 }

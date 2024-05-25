@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEditor;
+using UnityEditor.Build;
 
 namespace HybridCLR.Editor.Commands
 {
@@ -15,6 +16,11 @@ namespace HybridCLR.Editor.Commands
         [MenuItem("HybridCLR/Generate/All", priority = 200)]
         public static void GenerateAll()
         {
+            var installer = new Installer.InstallerController();
+            if (!installer.HasInstalledHybridCLR())
+            {
+                throw new BuildFailedException($"You have not initialized HybridCLR, please install it via menu 'HybridCLR/Installer'");
+            }
             BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
             CompileDllCommand.CompileDll(target);
             Il2CppDefGeneratorCommand.GenerateIl2CppDef();

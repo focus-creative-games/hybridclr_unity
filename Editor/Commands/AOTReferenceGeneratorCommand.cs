@@ -27,20 +27,18 @@ namespace HybridCLR.Editor.Commands
             var gs = SettingsUtil.HybridCLRSettings;
             List<string> hotUpdateDllNames = SettingsUtil.HotUpdateAssemblyNamesExcludePreserved;
 
-            using (AssemblyReferenceDeepCollector collector = new AssemblyReferenceDeepCollector(MetaUtil.CreateHotUpdateAndAOTAssemblyResolver(target, hotUpdateDllNames), hotUpdateDllNames))
+            AssemblyReferenceDeepCollector collector = new AssemblyReferenceDeepCollector(MetaUtil.CreateHotUpdateAndAOTAssemblyResolver(target, hotUpdateDllNames), hotUpdateDllNames);
+            var analyzer = new Analyzer(new Analyzer.Options
             {
-                var analyzer = new Analyzer(new Analyzer.Options
-                {
-                    MaxIterationCount = Math.Min(20, gs.maxGenericReferenceIteration),
-                    Collector = collector,
-                });
+                MaxIterationCount = Math.Min(20, gs.maxGenericReferenceIteration),
+                Collector = collector,
+            });
 
-                analyzer.Run();
+            analyzer.Run();
 
-                var writer = new GenericReferenceWriter();
-                writer.Write(analyzer.AotGenericTypes.ToList(), analyzer.AotGenericMethods.ToList(), $"{Application.dataPath}/{gs.outputAOTGenericReferenceFile}");
-                AssetDatabase.Refresh();
-            }
+            var writer = new GenericReferenceWriter();
+            writer.Write(analyzer.AotGenericTypes.ToList(), analyzer.AotGenericMethods.ToList(), $"{Application.dataPath}/{gs.outputAOTGenericReferenceFile}");
+            AssetDatabase.Refresh();
         }
     }
 }

@@ -23,31 +23,27 @@ namespace HybridCLR.Editor.Link
 
         public HashSet<TypeRef> CollectRefs(List<string> rootAssemblies)
         {
-            using (var assCollector = new AssemblyCache(_resolver))
-            {
-                var rootAssemblyNames = new HashSet<string>(rootAssemblies);
+            var assCollector = new AssemblyCache(_resolver);
+            var rootAssemblyNames = new HashSet<string>(rootAssemblies);
 
-                var typeRefs = new HashSet<TypeRef>(TypeEqualityComparer.Instance);
-                foreach (var rootAss in rootAssemblies)
+            var typeRefs = new HashSet<TypeRef>(TypeEqualityComparer.Instance);
+            foreach (var rootAss in rootAssemblies)
+            {
+                var dnAss = assCollector.LoadModule(rootAss, false);
+                foreach (var type in dnAss.GetTypeRefs())
                 {
-                    var dnAss = assCollector.LoadModule(rootAss, false);
-                    foreach (var type in dnAss.GetTypeRefs())
+                    if (type.DefinitionAssembly == null)
                     {
-                        if (type.DefinitionAssembly == null)
-                        {
-                            Debug.LogWarning($"assembly:{dnAss.Name} TypeRef {type.FullName} has no DefinitionAssembly");
-                            continue;
-                        }
-                        if (!rootAssemblyNames.Contains(type.DefinitionAssembly.Name.ToString()))
-                        {
-                            typeRefs.Add(type);
-                        }
+                        Debug.LogWarning($"assembly:{dnAss.Name} TypeRef {type.FullName} has no DefinitionAssembly");
+                        continue;
+                    }
+                    if (!rootAssemblyNames.Contains(type.DefinitionAssembly.Name.ToString()))
+                    {
+                        typeRefs.Add(type);
                     }
                 }
-
-                assCollector.Dispose();
-                return typeRefs;
             }
+            return typeRefs;
         }
     }
 }

@@ -32,8 +32,7 @@ namespace HybridCLR.Editor.Commands
             StripAOTDllCommand.GenerateStripedAOTDlls(target);
 
             // 桥接函数生成依赖于AOT dll，必须保证已经build过，生成AOT dll
-            MethodBridgeGeneratorCommand.GenerateMethodBridge(target);
-            ReversePInvokeWrapperGeneratorCommand.GenerateReversePInvokeWrapper(target);
+            MethodBridgeGeneratorCommand.GenerateMethodBridgeAndReversePInvokeWrapper(target);
             AOTReferenceGeneratorCommand.GenerateAOTGenericReference(target);
         }
     }

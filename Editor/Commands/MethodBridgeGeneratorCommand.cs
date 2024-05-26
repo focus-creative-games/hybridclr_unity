@@ -2,6 +2,7 @@
 using HybridCLR.Editor.ABI;
 using HybridCLR.Editor.Meta;
 using HybridCLR.Editor.MethodBridge;
+using HybridCLR.Editor.ReversePInvokeWrap;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,30 +31,30 @@ namespace HybridCLR.Editor.Commands
             Directory.Delete(il2cppBuildCachePath, true);
         }
 
-        private static void GenerateMethodBridgeCppFile(Analyzer analyzer, string outputFile)
+        private static void GenerateMethodBridgeCppFile(IReadOnlyCollection<GenericMethod> genericMethods, List<RawReversePInvokeMethodInfo> reversePInvokeMethods,  string outputFile)
         {
             string templateCode = File.ReadAllText(outputFile, Encoding.UTF8);
             var g = new Generator(new Generator.Options()
             {
                 TemplateCode = templateCode,
                 OutputFile = outputFile,
-                GenericMethods = analyzer.GenericMethods,
+                GenericMethods = genericMethods,
+                ReversePInvokeMethods = reversePInvokeMethods,
                 Development = EditorUserBuildSettings.development,
             });
 
-            g.PrepareMethods();
             g.Generate();
             Debug.LogFormat("[MethodBridgeGeneratorCommand] output:{0}", outputFile);
         }
 
-        [MenuItem("HybridCLR/Generate/MethodBridge", priority = 101)]
-        public static void CompileAndGenerateMethodBridge()
+        [MenuItem("HybridCLR/Generate/MethodBridgeAndReversePInvokeWrapper", priority = 101)]
+        public static void GenerateMethodBridgeAndReversePInvokeWrapper()
         {
             BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
-            GenerateMethodBridge(target);
+            GenerateMethodBridgeAndReversePInvokeWrapper(target);
         }
 
-        public static void GenerateMethodBridge(BuildTarget target)
+        public static void GenerateMethodBridgeAndReversePInvokeWrapper(BuildTarget target)
         {
             string aotDllDir = SettingsUtil.GetAssembliesPostIl2CppStripDir(target);
             List<string> aotAssemblyNames = Directory.Exists(aotDllDir) ?
@@ -63,18 +64,25 @@ namespace HybridCLR.Editor.Commands
             {
                 throw new Exception($"no aot assembly found. please run `HybridCLR/Generate/All` or `HybridCLR/Generate/AotDlls` to generate aot dlls before runing `HybridCLR/Generate/MethodBridge`");
             }
-            using (AssemblyReferenceDeepCollector collector = new AssemblyReferenceDeepCollector(MetaUtil.CreateAOTAssemblyResolver(target), aotAssemblyNames))
-            {
-                var analyzer = new Analyzer(new Analyzer.Options
-                {
-                    MaxIterationCount = Math.Min(20, SettingsUtil.HybridCLRSettings.maxMethodBridgeGenericIteration),
-                    Collector = collector,
-                });
+            AssemblyReferenceDeepCollector collector = new AssemblyReferenceDeepCollector(MetaUtil.CreateAOTAssemblyResolver(target), aotAssemblyNames);
 
-                analyzer.Run();
-                string outputFile = $"{SettingsUtil.GeneratedCppDir}/MethodBridge.cpp";
-                GenerateMethodBridgeCppFile(analyzer, outputFile);
-            }
+            var methodBridgeAnalyzer = new Analyzer(new Analyzer.Options
+            {
+                MaxIterationCount = Math.Min(20, SettingsUtil.HybridCLRSettings.maxMethodBridgeGenericIteration),
+                Collector = collector,
+            });
+
+            methodBridgeAnalyzer.Run();
+
+            List<string> hotUpdateDlls = SettingsUtil.HotUpdateAssemblyNamesExcludePreserved;
+            var cache = new AssemblyCache(MetaUtil.CreateHotUpdateAndAOTAssemblyResolver(target, hotUpdateDlls));
+
+            var reversePInvokeAnalyzer = new ReversePInvokeWrap.Analyzer(cache, hotUpdateDlls);
+            reversePInvokeAnalyzer.Run();
+
+            string outputFile = $"{SettingsUtil.GeneratedCppDir}/MethodBridge.cpp";
+
+            GenerateMethodBridgeCppFile(methodBridgeAnalyzer.GenericMethods, reversePInvokeAnalyzer.ReversePInvokeMethods, outputFile);
 
             CleanIl2CppBuildCache();
         }

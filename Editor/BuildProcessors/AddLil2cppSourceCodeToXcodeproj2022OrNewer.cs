@@ -7,28 +7,19 @@ using UnityEditor.Build;
 using UnityEditor.Callbacks;
 using UnityEngine;
 
-#if UNITY_2022_2_OR_NEWER && (UNITY_IOS || UNITY_TVOS)
+#if UNITY_2022_2_OR_NEWER && (UNITY_IOS || UNITY_TVOS || UNITY_VISIONOS)
 
 namespace HybridCLR.Editor.BuildProcessors
 {
     public static class AddLil2cppSourceCodeToXcodeproj2022OrNewer
     {
-        //[MenuItem("HybridCLR/Modfiyxcode")]
-        //public static void Modify()
-        //{
-        //    OnPostProcessBuild(BuildTarget.iOS, $"{SettingsUtil.ProjectDir}/Build-iOS");
-        //}
 
         [PostProcessBuild]
         public static void OnPostProcessBuild(BuildTarget target, string pathToBuiltProject)
         {
             if (!HybridCLRSettings.Instance.enable)
                 return;
-#if TUANJIE_2022_3_OR_NEWER
-            string pbxprojFile = $"{pathToBuiltProject}/Tuanjie-iPhone.xcodeproj/project.pbxproj";
-#else
-            string pbxprojFile = $"{pathToBuiltProject}/Unity-iPhone.xcodeproj/project.pbxproj";
-#endif
+            string pbxprojFile = BuildProcessorUtil.GetXcodeProjectFile(pathToBuiltProject);
             RemoveExternalLibil2cppOption(pbxprojFile);
             CopyLibil2cppToXcodeProj(pathToBuiltProject);
         }

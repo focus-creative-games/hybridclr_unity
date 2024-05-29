@@ -17,18 +17,6 @@ namespace HybridCLR.Editor.BuildProcessors
 {
     public static class AddLil2cppSourceCodeToXcodeproj2019
     {
-        //[MenuItem("Test/GenProj")]
-        //public static void Modify()
-        //{
-        //    OnPostProcessBuild(BuildTarget.iOS, $"{SettingsUtil.ProjectDir}/Build-iOS");
-        //}
-
-        //[MenuItem("Test/CreateLumps")]
-        //public static void CreateLumpsCmd()
-        //{
-        //    CreateLumps($"{SettingsUtil.LocalIl2CppDir}/libil2cpp", $"{SettingsUtil.HybridCLRDataDir}/lumps");
-        //}
-
         [PostProcessBuild]
         public static void OnPostProcessBuild(BuildTarget target, string pathToBuiltProject)
         {
@@ -46,8 +34,8 @@ namespace HybridCLR.Editor.BuildProcessors
                 9. add external/xxHash
                 10. add "#include <stdio.h>" to Classes/Prefix.pch
              */
-
-            string pbxprojFile = $"{pathToBuiltProject}/Unity-iPhone.xcodeproj/project.pbxproj";
+             
+            string pbxprojFile = BuildProcessorUtil.GetXcodeProjectFile(pathToBuiltProject);
             string srcLibil2cppDir = $"{SettingsUtil.LocalIl2CppDir}/libil2cpp";
             string dstLibil2cppDir = $"{pathToBuiltProject}/Libraries/libil2cpp";
             string lumpDir = $"{pathToBuiltProject}/Libraries/lumps";

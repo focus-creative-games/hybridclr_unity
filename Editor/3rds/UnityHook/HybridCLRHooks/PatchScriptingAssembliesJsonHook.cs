@@ -12,7 +12,7 @@ using System.IO;
 
 namespace HybridCLR.MonoHook
 {
-#if (UNITY_2021_1_OR_NEWER && UNITY_WEBGL) || TUANJIE_2022_3_OR_NEWER
+#if UNITY_2021_1_OR_NEWER && (UNITY_WEBGL || UNITY_WEIXINMINIGAME)
     [InitializeOnLoad]
     public class PatchScriptingAssembliesJsonHook
     {
@@ -35,12 +35,10 @@ namespace HybridCLR.MonoHook
 
         private static string BuildMainWindowTitle()
         {
+#if UNITY_WEBGL
             string tempJsonPath = $"{Application.dataPath}/../Library/PlayerDataCache/WebGL/Data/ScriptingAssemblies.json";
-#if TUANJIE_2022_3_OR_NEWER
-            if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.WeixinMiniGame)
-            {
-                tempJsonPath = $"{Application.dataPath}/../Library/PlayerDataCache/WeixinMiniGame/Data/ScriptingAssemblies.json";
-            }
+#elif UNITY_WEIXINMINIGAME
+            string tempJsonPath = $"{Application.dataPath}/../Library/PlayerDataCache/WeixinMiniGame/Data/ScriptingAssemblies.json";
 #endif
             if (File.Exists(tempJsonPath))
             {

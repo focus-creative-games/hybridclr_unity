@@ -39,7 +39,7 @@ namespace HybridCLR.Editor.BuildProcessors
                     return $"{projectDir}/Library/Bee/artifacts/Android/ManagedStripped";
                 case BuildTarget.iOS:
                 case BuildTarget.tvOS:
-#if UNITY_2022_3_OR_NEWER
+#if UNITY_2022_3_OR_NEWER && !TUANJIE_2022_3_OR_NEWER && !UNITY_2023
                 case BuildTarget.VisionOS:
 #endif
                     return $"{projectDir}/Library/Bee/artifacts/iOS/ManagedStripped";

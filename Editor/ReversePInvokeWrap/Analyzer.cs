@@ -93,7 +93,7 @@ namespace HybridCLR.Editor.ReversePInvokeWrap
             TypeDef delegateTypeDef;
             if (delegateTypeSig is ClassSig classSig)
             {
-                delegateTypeDef = classSig.TypeDef;
+                delegateTypeDef = classSig.TypeDefOrRef.ResolveTypeDefThrow();
             }
             else if (delegateTypeSig is GenericInstSig genericInstSig)
             {
@@ -101,12 +101,12 @@ namespace HybridCLR.Editor.ReversePInvokeWrap
             }
             else
             {
-                throw new NotSupportedException($"Unsupported delegate type {delegateTypeSig.GetType()}");
+                delegateTypeDef = null;
             }
 
             if (delegateTypeDef == null)
             {
-                return CallingConvention.Winapi;
+                throw new NotSupportedException($"Unsupported delegate type {delegateTypeSig.GetType()}");
             }
             var attr = delegateTypeDef.CustomAttributes.FirstOrDefault(ca => ca.AttributeType.FullName == "System.Runtime.InteropServices.UnmanagedFunctionPointerAttribute");
             if (attr == null)

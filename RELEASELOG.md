@@ -1,5 +1,16 @@
 # 发布日志
 
+## 5.4.1
+
+发布日期 2024.5.30.
+
+### Editor
+
+- [new] 支持visionOS平台
+- [fix][**严重**] 修复计算 MonoPInvokeCallback的CallingConvention时，如果delegate在其他程序集中定义，会被错误当作Winapi，导致wrapper签名计算错误的bug
+- [fix] 修复tvOS平台使用了错误的Unity-iPhone.xcodeproj路径导致找不到project.pbxproj的bug
+
+
 ## 5.4.0
 
 发布日期 2024.5.20.

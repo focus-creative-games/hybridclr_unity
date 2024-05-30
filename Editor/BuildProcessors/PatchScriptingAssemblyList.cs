@@ -12,7 +12,7 @@ using UnityEditor.Build.Reporting;
 using UnityEditor.UnityLinker;
 using UnityEngine;
 using UnityFS;
-#if !UNITY_2021_1_OR_NEWER
+#if !UNITY_2023_1_OR_NEWER
 using UnityEditor.Il2Cpp;
 #endif
 
@@ -179,7 +179,7 @@ namespace HybridCLR.Editor.BuildProcessors
             return true;
         }
 
-#if UNITY_WEBGL
+#if UNITY_WEBGL && !UNITY_2022_3_OR_NEWER
         public void OnBeforeConvertRun(BuildReport report, Il2CppBuildPipelineData data)
         {
             PathScriptingAssembilesFile($"{SettingsUtil.ProjectDir}/Temp/StagingArea/Data");

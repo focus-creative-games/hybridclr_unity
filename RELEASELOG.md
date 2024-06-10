@@ -1,5 +1,29 @@
 # 发布日志
 
+## 6.0.0
+
+发布日期 2024.6.11.
+
+### Runtime
+
+- [new] 支持Unity 6000.x.y及Unity 2023.2.x版本
+- [refactor] 合并ReversePInvokeMethodStub到MethodBridge，同时将MetadataModule中ReversePInvoke相关代码移到InterpreterModule
+- [new] 支持MonoPInvokeCallback函数的参数或返回类型为struct类型
+
+### Editor
+
+- [new] 支持Unity 6000.x.y及Unity 2023.2.x版本
+- [new] 支持MonoPInvokeCallback函数的参数或返回类型为struct类型
+- [new] 新增GeneratedAOTGenericReferenceExcludeExistsAOTClassAndMethods，计算热更新引用的AOT泛型类型和函数时排除掉AOT中已经存在的泛型和函数，最终生成更精准的补充元数据程序集列表
+- [fix] 修复在某些不支持visionOS的Unity版本上CopyStrippedAOTAssemblies类有编译错误的bug
+- [fix] 修复计算 MonoPInvokeCallback的CallingConvention时，如果delegate在其他程序集中定义，会被错误当作Winapi，导致wrapper签名计算错误的bug
+- [fix] PatchScriptingAssemblyList.cs在Unity 2023+版本webgl平台的编译错误
+- [fix] 修复计算Native2Manager桥接函数未考虑到MonoPInvokeCallback函数，导致从lua或者其他语言调用c#热更新函数有时候会出现UnsupportedNative2ManagedMethod的bug
+- [refactor] 合并ReversePInvokeMethodStub到MethodBridge，同时将MetadataModule中ReversePInvoke相关代码移到InterpreterModule
+- [opt] 打包时检查生成桥接函数时的development选项与当前development选项一致。`Generate/All`之后切换development选项再打包，将会产生严重的崩溃
+- [opt] `Generate/All`在生成之前检查是否已经安装HybridCLR
+
+
 ## 5.4.1
 
 发布日期 2024.5.30.

@@ -38,11 +38,13 @@ namespace HybridCLR.Editor.BuildProcessors
                 case BuildTarget.Android:
                     return $"{projectDir}/Library/Bee/artifacts/Android/ManagedStripped";
                 case BuildTarget.iOS:
+#if UNITY_TVOS
                 case BuildTarget.tvOS:
-#if UNITY_2022_3_OR_NEWER && !TUANJIE_2022_3_OR_NEWER && !UNITY_2023
+#endif
+#if UNITY_VISIONOS
                 case BuildTarget.VisionOS:
 #endif
-                    return $"{projectDir}/Library/Bee/artifacts/iOS/ManagedStripped";
+                return $"{projectDir}/Library/Bee/artifacts/iOS/ManagedStripped";
                 case BuildTarget.WebGL:
                     return $"{projectDir}/Library/Bee/artifacts/WebGL/ManagedStripped";
                 case BuildTarget.StandaloneOSX:
@@ -51,9 +53,11 @@ namespace HybridCLR.Editor.BuildProcessors
                     return $"{projectDir}/Library/Bee/artifacts/PS4PlayerBuildProgram/ManagedStripped";
                 case BuildTarget.PS5:
                     return $"{projectDir}/Library/Bee/artifacts/PS5PlayerBuildProgram/ManagedStripped";
-#if TUANJIE_2022_3_OR_NEWER
+#if UNITY_WEIXINMINIGAME
                 case BuildTarget.WeixinMiniGame:
                     return $"{projectDir}/Library/Bee/artifacts/WeixinMiniGame/ManagedStripped";
+#endif
+#if UNITY_OPENHARMONY
                 case BuildTarget.OpenHarmony:
                     return $"{projectDir}/Library/Bee/artifacts/OpenHarmonyPlayerBuildProgram/ManagedStripped";
 #endif

@@ -7,7 +7,7 @@ using UnityEditor.Build;
 using UnityEditor.Callbacks;
 using UnityEngine;
 
-#if UNITY_2022_2_OR_NEWER && (UNITY_IOS || UNITY_TVOS || UNITY_VISIONOS)
+#if UNITY_2022 && (UNITY_IOS || UNITY_TVOS || UNITY_VISIONOS)
 
 namespace HybridCLR.Editor.BuildProcessors
 {

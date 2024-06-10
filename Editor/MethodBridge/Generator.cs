@@ -15,6 +15,7 @@ using UnityEditor;
 using UnityEngine;
 using TypeInfo = HybridCLR.Editor.ABI.TypeInfo;
 using CallingConvention = System.Runtime.InteropServices.CallingConvention;
+using System.Security.Cryptography;
 
 namespace HybridCLR.Editor.MethodBridge
 {
@@ -181,11 +182,22 @@ namespace HybridCLR.Editor.MethodBridge
             }
         }
 
-        private void PrepareGenericMethods()
+        private void PrepareMethodBridges()
         {
-            foreach(var method in _genericMethods)
+            foreach (var method in _genericMethods)
             {
                 ProcessMethod(method.Method, method.KlassInst, method.MethodInst);
+            }
+            foreach (var reversePInvokeMethod in _originalReversePInvokeMethods)
+            {
+                MethodDef method = reversePInvokeMethod.Method;
+                ICorLibTypes corLibTypes = method.Module.CorLibTypes;
+
+                var returnType = MetaUtil.ToShareTypeSig(corLibTypes, method.ReturnType);
+                var parameters = method.Parameters.Select(p => MetaUtil.ToShareTypeSig(corLibTypes, p.Type)).ToList();
+                var sharedMethod = CreateMethodDesc(method, true, returnType, parameters);
+                sharedMethod.Init();
+                AddNative2ManagedMethod(sharedMethod);
             }
         }
 
@@ -595,7 +607,7 @@ const ReversePInvokeMethodData hybridclr::interpreter::g_reversePInvokeMethodStu
 
         public void Generate()
         {
-            PrepareGenericMethods();
+            PrepareMethodBridges();
             CollectTypesAndMethods();
             OptimizationTypesAndMethods();
             GenerateCode();

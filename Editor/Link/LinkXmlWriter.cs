@@ -32,6 +32,12 @@ namespace HybridCLR.Editor.Link
                 assTypeNames.Sort(string.CompareOrdinal);
                 foreach(var typeName in assTypeNames)
                 {
+#if UNITY_2023_1_OR_NEWER
+                    if (typeName == "UnityEngine.Debug")
+                    {
+                        continue;
+                    }
+#endif
                     writer.WriteStartElement("type");
                     writer.WriteAttributeString("fullname", typeName);
                     writer.WriteAttributeString("preserve", "all");

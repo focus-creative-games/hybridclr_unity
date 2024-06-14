@@ -1,5 +1,20 @@
 # 发布日志
 
+## 6.1.0
+
+发布日期 2024.6.17.
+
+### Runtime
+
+- [merge] 合并2022.3.23f1-2022.3.33f1版本改动，修复对2022.3.33版本不兼容的问题
+- [new] 支持2022.3.33版本新增支持的函数返回值Attribute
+- [fix] 修复解释部分FieldInfo调用GetFieldMarshaledSizeForField时崩溃的bug
+
+### Editor
+
+- [fix] 升级dnlib版本，修复ModuleMD保存dll时将未加Assembly限定的mscorlib程序集中类型的程序集设置为当前程序集的严重bug
+- [fix] 修复`Generate/LinkXml`生成的link.xml中对UnityEngine.Debug preserve all导致在Unity 2023及更高版本的iOS、visionOS等平台上出现Undefined symbols for architecture arm64: "CheckApplicationIntegrity(IntegrityCheckLevel)" 编译错误的问题。此bug由Unity引起，我们通过在生成link.xml时忽略UnityEngine.Debug类来临时解决这个问题
+
 ## 6.0.0
 
 发布日期 2024.6.11.

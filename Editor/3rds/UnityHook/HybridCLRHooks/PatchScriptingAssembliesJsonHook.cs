@@ -35,10 +35,12 @@ namespace HybridCLR.MonoHook
 
         private static string BuildMainWindowTitle()
         {
-#if UNITY_WEBGL
-            string tempJsonPath = $"{Application.dataPath}/../Library/PlayerDataCache/WebGL/Data/ScriptingAssemblies.json";
-#elif UNITY_WEIXINMINIGAME
+#if UNITY_WEIXINMINIGAME
+            Debug.Assert(EditorUserBuildSettings.activeBuildTarget == BuildTarget.WeixinMiniGame);
             string tempJsonPath = $"{Application.dataPath}/../Library/PlayerDataCache/WeixinMiniGame/Data/ScriptingAssemblies.json";
+#else
+            Debug.Assert(EditorUserBuildSettings.activeBuildTarget == BuildTarget.WebGL);
+            string tempJsonPath = $"{Application.dataPath}/../Library/PlayerDataCache/WebGL/Data/ScriptingAssemblies.json";
 #endif
             if (File.Exists(tempJsonPath))
             {

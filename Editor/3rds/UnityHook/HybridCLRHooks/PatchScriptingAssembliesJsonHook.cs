@@ -35,18 +35,27 @@ namespace HybridCLR.MonoHook
 
         private static string BuildMainWindowTitle()
         {
-#if UNITY_WEIXINMINIGAME
-            Debug.Assert(EditorUserBuildSettings.activeBuildTarget == BuildTarget.WeixinMiniGame);
-            string tempJsonPath = $"{Application.dataPath}/../Library/PlayerDataCache/WeixinMiniGame/Data/ScriptingAssemblies.json";
-#else
-            Debug.Assert(EditorUserBuildSettings.activeBuildTarget == BuildTarget.WebGL);
-            string tempJsonPath = $"{Application.dataPath}/../Library/PlayerDataCache/WebGL/Data/ScriptingAssemblies.json";
-#endif
-            if (File.Exists(tempJsonPath))
+            foreach (var tempJsonPath in Directory.GetDirectories($"{Application.dataPath}/../Library/PlayerDataCache", "*", SearchOption.TopDirectoryOnly))
             {
+                string dirName = Path.GetFileName(tempJsonPath);
+#if UNITY_WEIXINMINIGAME
+                Debug.Assert(EditorUserBuildSettings.activeBuildTarget == BuildTarget.WeixinMiniGame);
+                if (!dirName.Contains("WeixinMiniGame"))
+                {
+                    continue;
+                }
+#else
+                Debug.Assert(EditorUserBuildSettings.activeBuildTarget == BuildTarget.WebGL);
+                if (!dirName.Contains("WebGL"))
+                {
+                    continue;
+                }
+#endif
+
                 var patcher = new PatchScriptingAssemblyList();
-                patcher.PathScriptingAssembilesFile(Path.GetDirectoryName(tempJsonPath));
+                patcher.PathScriptingAssembilesFile(tempJsonPath);
             }
+
             string newTitle = BuildMainWindowTitleProxy();
             return newTitle;
         }

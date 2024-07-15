@@ -1,5 +1,21 @@
 # 发布日志
 
+发布日期 2024.7.15.
+
+### Runtime
+
+- [opt] 大幅优化metadata元数据内存，内存占用相比6.2.0版本减少了15-40%
+- [fix] 修复Transform时未释放IRBasicBlock中insts内存的bug，此bug大约0.7-1.6倍dll大小内存泄露
+- [fix] 修复ClassFieldLayoutCalculator内存泄露的bug
+- [fix] 修复 MetadataAllocT 错误使用 HYBRIDCLR_MALLOC的bug，正确应该是 HYBRIDCLR_METADATA_MALLOC
+- [opt] 优化Interpreter::Execute占用的原生栈大小，避免嵌套过深时出现栈溢出的错误
+
+### Editor
+
+- [fix] 修复 Unity 2022导出的xcode工程包含多个ShellScript片段时错误地删除了非重复片断的bug
+- [fix] 修复微信小游戏平台当TextureCompression非默认值时临时目录名为WinxinMiniGame{xxx}，导致没有成功修改scriptingassemblies.json文件的bug
+- [fix] 修复团结引擎微信小游戏平台由于同时定义了UNITY_WEIXINMINIGAME和UNITY_WEBGL宏，导致从错误路径查找scriptingassemblies.json文件失败，运行时出现脚本missing的bug
+
 ## 6.2.0
 
 发布日期 2024.7.1.

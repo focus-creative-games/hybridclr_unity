@@ -35,25 +35,29 @@ namespace HybridCLR.MonoHook
 
         private static string BuildMainWindowTitle()
         {
-            foreach (var tempJsonPath in Directory.GetDirectories($"{Application.dataPath}/../Library/PlayerDataCache", "*", SearchOption.TopDirectoryOnly))
+        var cacheDir = $"{Application.dataPath}/../Library/PlayerDataCache";
+        if (Directory.Exists(cacheDir))
             {
-                string dirName = Path.GetFileName(tempJsonPath);
-#if UNITY_WEIXINMINIGAME
-                Debug.Assert(EditorUserBuildSettings.activeBuildTarget == BuildTarget.WeixinMiniGame);
-                if (!dirName.Contains("WeixinMiniGame"))
+                foreach (var tempJsonPath in Directory.GetDirectories(cacheDir, "*", SearchOption.TopDirectoryOnly))
                 {
-                    continue;
-                }
+                    string dirName = Path.GetFileName(tempJsonPath);
+ #if UNITY_WEIXINMINIGAME
+                    Debug.Assert(EditorUserBuildSettings.activeBuildTarget == BuildTarget.WeixinMiniGame);
+                    if (!dirName.Contains("WeixinMiniGame"))
+                    {
+                        continue;
+                    }
 #else
-                Debug.Assert(EditorUserBuildSettings.activeBuildTarget == BuildTarget.WebGL);
-                if (!dirName.Contains("WebGL"))
-                {
-                    continue;
-                }
+                    Debug.Assert(EditorUserBuildSettings.activeBuildTarget == BuildTarget.WebGL);
+                    if (!dirName.Contains("WebGL"))
+                    {
+                        continue;
+                    }
 #endif
 
-                var patcher = new PatchScriptingAssemblyList();
-                patcher.PathScriptingAssembilesFile(tempJsonPath);
+                    var patcher = new PatchScriptingAssemblyList();
+                    patcher.PathScriptingAssembilesFile(tempJsonPath);
+                }
             }
 
             string newTitle = BuildMainWindowTitleProxy();

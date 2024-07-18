@@ -16,6 +16,7 @@ using UnityEngine;
 using TypeInfo = HybridCLR.Editor.ABI.TypeInfo;
 using CallingConvention = System.Runtime.InteropServices.CallingConvention;
 using System.Security.Cryptography;
+using TypeAttributes = dnlib.DotNet.TypeAttributes;
 
 namespace HybridCLR.Editor.MethodBridge
 {
@@ -246,11 +247,20 @@ namespace HybridCLR.Editor.MethodBridge
                 _managed2NativeMethodList0.Count, _native2ManagedMethodList0.Count, _adjustThunkMethodList0.Count, _structTypes0.Count);
         }
 
+        private class AnalyzeFieldInfo
+        {
+            public FieldDef field;
+
+            public TypeInfo type;
+        }
+
         private class AnalyzeTypeInfo
         {
             public TypeInfo toSharedType;
-            public List<TypeInfo> fields;
+            public List<AnalyzeFieldInfo> fields;
             public string signature;
+            public ClassLayout classLayout;
+            public TypeAttributes layout;
         }
 
         private readonly Dictionary<TypeInfo, AnalyzeTypeInfo> _analyzeTypeInfos = new Dictionary<TypeInfo, AnalyzeTypeInfo>();
@@ -266,7 +276,11 @@ namespace HybridCLR.Editor.MethodBridge
             GenericArgumentContext ctx = klassInst != null ? new GenericArgumentContext(klassInst, null) : null;
 
             ClassLayout sa = typeDef.ClassLayout;
-            var analyzeTypeInfo = new AnalyzeTypeInfo();
+            var analyzeTypeInfo = new AnalyzeTypeInfo()
+            {
+                classLayout = sa,
+                layout = typeDef.Layout,
+            };
 
             // don't share type with explicit layout
             if (sa != null)
@@ -277,7 +291,7 @@ namespace HybridCLR.Editor.MethodBridge
                 return analyzeTypeInfo;
             }
 
-            var fields = analyzeTypeInfo.fields = new List<TypeInfo>();
+            var fields = analyzeTypeInfo.fields = new List<AnalyzeFieldInfo>();
 
             foreach (FieldDef field in typeDef.Fields)
             {
@@ -286,7 +300,7 @@ namespace HybridCLR.Editor.MethodBridge
                     continue;
                 }
                 TypeSig fieldType = ctx != null ? MetaUtil.Inflate(field.FieldType, ctx) : field.FieldType;
-                fields.Add(GetSharedTypeInfo(fieldType));
+                fields.Add(new AnalyzeFieldInfo { field = field, type = GetSharedTypeInfo(fieldType) });
             }
             return analyzeTypeInfo;
         }
@@ -312,9 +326,19 @@ namespace HybridCLR.Editor.MethodBridge
             }
             
             var sigBuf = new StringBuilder();
+            if (ati.classLayout != null)
+            {
+                sigBuf.Append($"[{ati.classLayout.ClassSize}|{ati.classLayout.PackingSize}|{ati.classLayout}]");
+            }
+            if (ati.layout != 0)
+            {
+                sigBuf.Append($"[{(int)ati.layout}]");
+            }
+            
             foreach (var field in ati.fields)
             {
-                sigBuf.Append("{" + GetOrCalculateTypeInfoSignature(ToIsomorphicType(field)) + "}");
+                string fieldOffset = field.field.FieldOffset != null ? field.field.FieldOffset.ToString() + "|" : "";
+                sigBuf.Append("{" + fieldOffset + GetOrCalculateTypeInfoSignature(ToIsomorphicType(field.type)) + "}");
             }
             return ati.signature = sigBuf.ToString();
         }

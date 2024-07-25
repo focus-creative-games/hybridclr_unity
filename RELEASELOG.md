@@ -1,5 +1,19 @@
 # 发布日志
 
+发布日期 2024.7.25.
+
+### Runtime
+
+- [new] 支持`Assembly.Load(byte[] assData, byte[] pdbData)`加载dll和pdb符号文件，在2021+版本打印函数堆栈时能显示正确的代码文件和行号
+- [fix] 修复团结引擎平台InterpreterImage::GetEventInfo和GetPropertyInfo时有可能未初始化method，导致getter之类的函数为空的bug
+- [opt] 优化StackTrace和UnityEngine.Debug打印的函数栈顺序，大多数情况下可以在正确的栈位置地显示解释器函数
+- [opt] 优化元数据内存
+
+### Editor
+
+- [fix][严重] 修复生成MethodBridge过程中计算等价类时未考虑到ClassLayout、Layout和FieldOffset因素的bug
+- [fix] 修复Library/PlayerDataCache目录不存在时，PatchScriptingAssembliesJsonHook运行异常的bug
+
 发布日期 2024.7.15.
 
 ### Runtime

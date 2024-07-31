@@ -1,5 +1,7 @@
 # 发布日志
 
+## 6.4.0
+
 发布日期 2024.7.25.
 
 ### Runtime
@@ -13,6 +15,8 @@
 
 - [fix][严重] 修复生成MethodBridge过程中计算等价类时未考虑到ClassLayout、Layout和FieldOffset因素的bug
 - [fix] 修复Library/PlayerDataCache目录不存在时，PatchScriptingAssembliesJsonHook运行异常的bug
+
+## 6.3.0
 
 发布日期 2024.7.15.
 

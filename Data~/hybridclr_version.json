@@ -2,27 +2,27 @@
     "versions": [
     {
         "unity_version":"2019",
-        "hybridclr" : { "branch":"v6.4.0"},
-        "il2cpp_plus": { "branch":"v2019-6.4.0"}
+        "hybridclr" : { "branch":"v6.5.0"},
+        "il2cpp_plus": { "branch":"v2019-6.5.0"}
     },
     {
         "unity_version":"2020",
-        "hybridclr" : { "branch":"v6.4.0"},
-        "il2cpp_plus": { "branch":"v2020-6.4.0"}
+        "hybridclr" : { "branch":"v6.5.0"},
+        "il2cpp_plus": { "branch":"v2020-6.5.0"}
     },
     {
         "unity_version":"2021",
-        "hybridclr" : { "branch":"v6.4.0"},
+        "hybridclr" : { "branch":"v6.5.0"},
         "il2cpp_plus": { "branch":"v2021-6.4.0"}
     },
     {
         "unity_version":"2022",
-        "hybridclr" : { "branch":"v6.4.0"},
+        "hybridclr" : { "branch":"v6.5.0"},
         "il2cpp_plus": { "branch":"v2022-6.4.0"}
     },
     {
         "unity_version":"2022-tuanjie",
-        "hybridclr" : { "branch":"v6.4.0"},
+        "hybridclr" : { "branch":"v6.5.0"},
         "il2cpp_plus": { "branch":"v2022-tuanjie-6.4.0"}
     },
     {
@@ -32,8 +32,8 @@
     },
     {
         "unity_version":"6000",
-        "hybridclr" : { "branch":"v6.4.0"},
-        "il2cpp_plus": { "branch":"v6000-6.4.0"}
+        "hybridclr" : { "branch":"v6.5.0"},
+        "il2cpp_plus": { "branch":"v6000-6.5.0"}
     }
     ]
 }

@@ -1,5 +1,19 @@
 # 发布日志
 
+## 6.6.0
+
+发布日期 2024.8.12.
+
+### Runtime
+
+- [fix] 修复CustomAttribute的构造或者namedArg包含typeof(T[])参数时崩溃的bug
+- [fix] 修复 T[index].CallMethod() 当CallMethod为泛型类型T的接口函数，并且array的element为T的子类时抛出ArrayTypeMismatchException的bug
+- [fix] 修复MethodBase.GetCurrentMethod未返回正确结果的bug。新增instinct指令MethodBaseGetCurrentMethod
+- [fix] 修复在WebGL之类的平台加载pdb后仍然无法显示堆栈代码行数的bug
+- [fix] 修复调用子解释器函数后返回，再打印日志时，由于frame->ip未重新设置为&ip，导致后续打印的代码行数永远为调用子函数的代码行数的bug
+- [fix] 修复调用子解释器函数时，由于frame->ip指向下一条指令，导致父函数的代码行数显示为下一条语句的行数的bug
+- [merge] 合并2021.3.42f1及2022.3.41f1的il2cpp的代码，修复2021.3.42f1及2022.3.40f1新增il2cpp_codegen_memcpy_with_write_barrier函数引发的编译错误
+
 ## 6.5.0
 
 发布日期 2024.8.5.

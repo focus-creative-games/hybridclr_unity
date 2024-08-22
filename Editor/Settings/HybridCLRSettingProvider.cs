@@ -25,6 +25,9 @@ namespace HybridCLR.Editor.Settings
         private SerializedProperty _outputAOTGenericReferenceFile;
         private SerializedProperty _maxGenericReferenceIteration;
         private SerializedProperty _maxMethodBridgeGenericIteration;
+        private SerializedProperty _enableProfilerInReleaseBuild;
+        private SerializedProperty enableStraceTraceInWebGLReleaseBuild;
+
         private GUIStyle buttonStyle;
         public HybridCLRSettingsProvider() : base("Project/HybridCLR Settings", SettingsScope.Project) { }
         public override void OnActivate(string searchContext, VisualElement rootElement)
@@ -52,6 +55,8 @@ namespace HybridCLR.Editor.Settings
             _outputAOTGenericReferenceFile = _serializedObject.FindProperty("outputAOTGenericReferenceFile");
             _maxGenericReferenceIteration = _serializedObject.FindProperty("maxGenericReferenceIteration");
             _maxMethodBridgeGenericIteration = _serializedObject.FindProperty("maxMethodBridgeGenericIteration");
+            _enableProfilerInReleaseBuild = _serializedObject.FindProperty("enableProfilerInReleaseBuild");
+            enableStraceTraceInWebGLReleaseBuild = _serializedObject.FindProperty("enableStraceTraceInWebGLReleaseBuild");
         }
         private void OnEditorFocused()
         {
@@ -140,6 +145,8 @@ namespace HybridCLR.Editor.Settings
                 EditorGUILayout.PropertyField(_outputAOTGenericReferenceFile);
                 EditorGUILayout.PropertyField(_maxGenericReferenceIteration);
                 EditorGUILayout.PropertyField(_maxMethodBridgeGenericIteration);
+                EditorGUILayout.PropertyField(_enableProfilerInReleaseBuild);
+                EditorGUILayout.PropertyField(enableStraceTraceInWebGLReleaseBuild);
                 if (EditorGUI.EndChangeCheck())
                 {
                     _serializedObject.ApplyModifiedProperties();

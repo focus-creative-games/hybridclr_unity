@@ -50,5 +50,11 @@ namespace HybridCLR.Editor.Settings
 
         [Header("MethodBridge泛型搜索迭代次数")]
         public int maxMethodBridgeGenericIteration = 10;
+
+        [Header("Release发布模式下也开启Profiler支持")]
+        public bool enableProfilerInReleaseBuild = false;
+
+        [Header("WebGL平台Release发布模式下也开启StraceTrace支持")]
+        public bool enableStraceTraceInWebGLReleaseBuild = false;
     }
 }

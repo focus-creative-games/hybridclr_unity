@@ -1,4 +1,5 @@
 ﻿using HybridCLR.Editor.Link;
+using HybridCLR.Editor.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,8 @@ namespace HybridCLR.Editor.Commands
                 HotUpdateAssemblies = SettingsUtil.HotUpdateAssemblyNamesIncludePreserved,
                 OutputFile = $"{SettingsUtil.LocalIl2CppDir}/libil2cpp/hybridclr/generated/UnityVersion.h",
                 OutputFile2 = $"{SettingsUtil.LocalIl2CppDir}/libil2cpp/hybridclr/generated/AssemblyManifest.cpp",
+                EnableProfilerInReleaseBuild = HybridCLRSettings.Instance.enableProfilerInReleaseBuild,
+                EnableStraceTraceInWebGLReleaseBuild = HybridCLRSettings.Instance.enableStraceTraceInWebGLReleaseBuild,
             };
 
             var g = new Il2CppDef.Il2CppDefGenerator(options);

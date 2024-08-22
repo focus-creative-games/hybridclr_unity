@@ -42,13 +42,11 @@ namespace HybridCLR.MonoHook
                 {
                     string dirName = Path.GetFileName(tempJsonPath);
  #if UNITY_WEIXINMINIGAME
-                    Debug.Assert(EditorUserBuildSettings.activeBuildTarget == BuildTarget.WeixinMiniGame);
                     if (!dirName.Contains("WeixinMiniGame"))
                     {
                         continue;
                     }
 #else
-                    Debug.Assert(EditorUserBuildSettings.activeBuildTarget == BuildTarget.WebGL);
                     if (!dirName.Contains("WebGL"))
                     {
                         continue;

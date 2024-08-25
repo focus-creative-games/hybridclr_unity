@@ -1,5 +1,21 @@
 # 发布日志
 
+## 6.7.0
+
+发布日期 2024.8.26.
+
+### Runtime
+
+- [opt] 在Release编译模式下不再开启PROFILER，此优化减少了10-15%函数调用的开销，整体大约提升了2-4%的性能。
+- [opt] 发布WebGL目标时在Release编译模式下不再维护StackTrace，整体大约提升了1-2%的性能
+- [fix] 修复Transform Enum::GetHashCode时，没有将栈上的变量类型由uintptr_t改为int32_t，导致后续参与数值计算时参数类型被扩展为64位而计算错误的bug
+- [fix] 修复解释器函数内大量调用delegate时触发stackoverflow的bug
+
+### Editor
+
+- [new] HybridCLRSettings新增enableProfilerInReleaseBuild和enableStraceTraceInWebGLReleaseBuild两个选项
+- [change] 修复从WebGL平台切换到其他平台时PatchScriptingAssembliesJsonHook出现断言失败的问题（无实质影响）
+
 ## 6.6.0
 
 发布日期 2024.8.12.

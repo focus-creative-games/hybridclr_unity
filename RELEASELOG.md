@@ -1,5 +1,15 @@
 # 发布日志
 
+## 6.8.0
+
+发布日期 2024.9.14.
+
+### Runtime
+
+- [fix] 修复异常的堆栈中未包含行号的bug
+- [fix] 修复Il2CppGenericContextCompare比较时简单比较class_inst和method_inst指针相等的bug，实际上并非所有GenericInst（如s_Il2CppMetadataRegistration->genericInsts）都来自GenericInstPool，因此相同的GenericInst并非指针相同
+- [merge] 合并6000.0.10-6000.0.19版本il2cpp代码改动
+
 ## 6.7.1
 
 发布日期 2024.8.26.

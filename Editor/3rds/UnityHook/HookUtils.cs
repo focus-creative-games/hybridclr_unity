@@ -117,7 +117,7 @@ namespace MonoHook
         static void SetupFlushICacheFunc()
         {
             string processorType = SystemInfo.processorType;
-            if (processorType.Contains("Intel") || processorType.Contains("AMD"))
+            if (processorType.Contains("Intel", StringComparison.InvariantCultureIgnoreCase) || processorType.Contains("AMD", StringComparison.InvariantCultureIgnoreCase))
                 return;
 
             if (IntPtr.Size == 4)

@@ -1,5 +1,14 @@
 # ReleaseLog
 
+## 6.10.1
+
+Release Date: 2024-10-24.
+
+### Editor
+
+- [fix] Fixs HookUtils compile errors in Unity 2019 and 2020
+- [change] remove README_zh.md.meta, add README_EN.md.meta
+
 ## 6.10.0
 
 Release Date: 2024-10-23.

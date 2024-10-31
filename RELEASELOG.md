@@ -1,5 +1,14 @@
 # ReleaseLog
 
+## 6.11.0
+
+Release Date: 2024-10-31.
+
+### Runtime
+
+- [merge] Merges changes from Tuanjie versions 1.3.0 to 1.3.1
+- [merge] Merges il2cpp code changes from version 2022.3.48f1 to 2022.3.51f1
+
 ## 6.10.1
 
 Release Date: 2024-10-24.

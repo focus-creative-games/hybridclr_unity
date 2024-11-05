@@ -39,7 +39,7 @@ namespace HybridCLR.Editor.AOT
             {
                 _typeSimpleNameMapping.Add(e.Key.FullName, e.Value);
             }
-            _systemTypePattern = new Regex(string.Join("|", _typeSimpleNameMapping.Keys.Select (k => $@"\b{k}\b")));
+            _systemTypePattern = new Regex(string.Join("|", _typeSimpleNameMapping.Keys.Select (k => $@"\b{Regex.Escape(k)}\b")));
         }
 
         public string PrettifyTypeSig(string typeSig)

@@ -61,31 +61,36 @@ namespace HybridCLR.Editor.HotUpdate
                 }
             }
 
-            foreach (IMethodDefOrRef methodRef in mod.GetMemberRefs())
+            foreach (IMethodDefOrRef memberRef in mod.GetMemberRefs())
             {
-                if (methodRef.DeclaringType.DefinitionAssembly == null)
+                if (memberRef.DeclaringType.DefinitionAssembly == null)
                 {
                     continue;
                 }
-                string defAssName = methodRef.DeclaringType.DefinitionAssembly.Name;
+                string defAssName = memberRef.DeclaringType.DefinitionAssembly.Name;
                 if (!_aotAssNames.Contains(defAssName))
                 {
                     continue;
                 }
-                if (methodRef.IsField)
+                if (memberRef.IsField)
                 {
-                    
+                    IField field = (IField)memberRef;
+                    if (field.ResolveFieldDef() == null)
+                    {
+                        UnityEngine.Debug.LogError($"Missing Field: {memberRef.FullName}");
+                        anyMissing = true;
+                    }
                 }
-                else if (methodRef.IsMethod)
+                else if (memberRef.IsMethod)
                 {
-                    TypeSig declaringTypeSig = methodRef.DeclaringType.ToTypeSig();
-                    if (methodRef.ResolveMethodDef() == null)
+                    TypeSig declaringTypeSig = memberRef.DeclaringType.ToTypeSig();
+                    if (memberRef.ResolveMethodDef() == null)
                     {
                         if (declaringTypeSig.ElementType == ElementType.Array || declaringTypeSig.ElementType == ElementType.SZArray)
                         {
                             continue;
                         }
-                        UnityEngine.Debug.LogError($"Missing Method: {methodRef.FullName}");
+                        UnityEngine.Debug.LogError($"Missing Method: {memberRef.FullName}");
                         anyMissing = true;
                     }
                 }

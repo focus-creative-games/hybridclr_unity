@@ -1,5 +1,20 @@
 # ReleaseLog
 
+## 7.0.0
+
+Release Date: 2024-11-15.
+
+### Runtime
+
+- [new] support method inlining
+- [refactor] refactor Transform codes
+
+### Editor
+
+- [new] add option RuntimeOptionId::MaxMethodBodyCacheSize and RuntimeOptionId::MaxMethodInlineDepth
+- [fix] fix the bug in GenericReferenceWriter where _systemTypePattern did not properly escape the '.' in type names. This caused issues when compiler-generated anonymous types and functions contained string sequences like 'System-Int', incorrectly matching them to 'System.Int', resulting in runtime exceptions.
+- [fix] fix the bug in `MissingMetadataChecker` where it did not check for missing fields.
+
 ## 6.11.0
 
 Release Date: 2024-10-31.

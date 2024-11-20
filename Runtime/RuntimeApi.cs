@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEditor;
 using UnityEngine.Scripting;
 
 namespace HybridCLR
@@ -27,6 +28,37 @@ namespace HybridCLR
 #else
         [MethodImpl(MethodImplOptions.InternalCall)]
         public static extern LoadImageErrorCode LoadMetadataForAOTAssembly(byte[] dllBytes, HomologousImageMode mode);
+#endif
+
+        /// <summary>
+        /// prejit method to avoid the jit cost of first time running
+        /// </summary>
+        /// <param name="method"></param>
+        /// <returns>return true if method is jited, return false if method can't be jited </returns>
+        /// 
+#if UNITY_EDITOR
+        public static bool PreJitMethod(MethodInfo method)
+        {
+            return false;
+        }
+#else
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        public static extern bool PreJitMethod(MethodInfo method);
+#endif
+
+        /// <summary>
+        /// prejit all methods of class to avoid the jit cost of first time running
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns>return true if class is jited, return false if class can't be jited </returns>
+#if UNITY_EDITOR
+        public static bool PreJitClass(Type type)
+        {
+            return false;
+        }
+#else
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        public static extern bool PreJitClass(Type type);
 #endif
 
         /// <summary>

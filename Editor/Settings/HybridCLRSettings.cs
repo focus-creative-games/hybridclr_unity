@@ -6,55 +6,55 @@ namespace HybridCLR.Editor.Settings
     [FilePath("ProjectSettings/HybridCLRSettings.asset")]
     public class HybridCLRSettings : ScriptableSingleton<HybridCLRSettings>
     {
-        [Header("开启HybridCLR插件")]
+        [Tooltip("enable HybridCLR")]
         public bool enable = true;
 
-        [Header("使用全局安装的il2cpp")]
+        [Tooltip("use il2cpp in unity editor installation location")]
         public bool useGlobalIl2cpp;
 
-        [Header("hybridclr 仓库 URL")]
+        [Tooltip("hybridclr repo URL")]
         public string hybridclrRepoURL = "https://gitee.com/focus-creative-games/hybridclr";
 
-        [Header("il2cpp_plus 仓库 URL")]
+        [Tooltip("il2cpp_plus repo URL")]
         public string il2cppPlusRepoURL = "https://gitee.com/focus-creative-games/il2cpp_plus";
 
-        [Header("热更新Assembly Definitions")]
+        [Tooltip("hot update assembly definitions(asd)")]
         public AssemblyDefinitionAsset[] hotUpdateAssemblyDefinitions;
 
-        [Header("热更新dlls")]
+        [Tooltip("hot update assembly names(without .dll suffix)")]
         public string[] hotUpdateAssemblies;
 
-        [Header("预留的热更新dlls")]
+        [Tooltip("preserved hot update assembly names(without .dll suffix)")]
         public string[] preserveHotUpdateAssemblies;
 
-        [Header("热更新dll编译输出根目录")]
+        [Tooltip("output directory of compiling hot update assemblies")]
         public string hotUpdateDllCompileOutputRootDir = "HybridCLRData/HotUpdateDlls";
 
-        [Header("外部热更新dll搜索路径")]
+        [Tooltip("searching paths of external hot update assemblies")]
         public string[] externalHotUpdateAssembliyDirs;
 
-        [Header("裁减后AOT dll输出根目录")]
+        [Tooltip("output directory of stripped AOT assemblies")]
         public string strippedAOTDllOutputRootDir = "HybridCLRData/AssembliesPostIl2CppStrip";
 
-        [Header("补充元数据AOT dlls")]
+        [Tooltip("supplementary metadata assembly names(without .dll suffix)")]
         public string[] patchAOTAssemblies;
 
-        [Header("生成的link.xml路径")]
+        [Tooltip("output file of automatic generated link.xml by scanning hot update assemblies")]
         public string outputLinkFile = "HybridCLRGenerate/link.xml";
 
-        [Header("自动扫描生成的AOTGenericReferences.cs路径")]
+        [Tooltip("output file of automatic generated AOTGenericReferences.cs")]
         public string outputAOTGenericReferenceFile = "HybridCLRGenerate/AOTGenericReferences.cs";
 
-        [Header("AOT泛型实例化搜索迭代次数")]
+        [Tooltip("max iteration count of searching generic methods in hot update assemblies")]
         public int maxGenericReferenceIteration = 10;
 
-        [Header("MethodBridge泛型搜索迭代次数")]
+        [Tooltip("max iteration count of searching method bridge generic methods in AOT assemblies")]
         public int maxMethodBridgeGenericIteration = 10;
 
-        [Header("Release发布模式下也开启Profiler支持")]
+        [Tooltip("enable profiler support when publishing in release mode")]
         public bool enableProfilerInReleaseBuild = false;
 
-        [Header("WebGL平台Release发布模式下也开启StraceTrace支持")]
+        [Tooltip("enable StraceTrace support when publishing to the WebGL platform in release mode")]
         public bool enableStraceTraceInWebGLReleaseBuild = false;
     }
 }

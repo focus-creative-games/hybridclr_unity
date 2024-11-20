@@ -123,7 +123,6 @@ namespace HybridCLR.Editor.Settings
         {
             using (CreateSettingsWindowGUIScope())
             {
-                //解决编辑器打包时出现的 _serializedObject.targetObject 意外销毁的情况
                 if (_serializedObject == null||!_serializedObject.targetObject)
                 {
                     InitGUI();

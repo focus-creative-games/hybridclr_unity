@@ -65,9 +65,6 @@ namespace HybridCLR.Editor
             public string name;
         }
 
-        /// <summary>
-        /// 热更新dll列表。不包含 preserveHotUpdateAssemblies。
-        /// </summary>
         public static List<string> HotUpdateAssemblyNamesExcludePreserved
         {
             get

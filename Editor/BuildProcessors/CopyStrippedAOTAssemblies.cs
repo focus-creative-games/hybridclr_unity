@@ -37,6 +37,10 @@ namespace HybridCLR.Editor.BuildProcessors
                     return $"{projectDir}/Library/Bee/artifacts/LinuxPlayerBuildProgram/ManagedStripped";
                 case BuildTarget.Android:
                     return $"{projectDir}/Library/Bee/artifacts/Android/ManagedStripped";
+#if TUANJIE_2022_3_OR_NEWER
+                case BuildTarget.HMIAndroid:
+                    return $"{projectDir}/Library/Bee/artifacts/HMIAndroid/ManagedStripped";
+#endif
                 case BuildTarget.iOS:
 #if UNITY_TVOS
                 case BuildTarget.tvOS:

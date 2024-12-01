@@ -35,6 +35,8 @@ namespace HybridCLR.Editor.BuildProcessors
                     return $"{projectDir}/Library/Bee/artifacts/WinPlayerBuildProgram/ManagedStripped";
                 case BuildTarget.StandaloneLinux64:
                     return $"{projectDir}/Library/Bee/artifacts/LinuxPlayerBuildProgram/ManagedStripped";
+                case BuildTarget.WSAPlayer:
+                    return $"{projectDir}/Library/Bee/artifacts/UWPPlayerBuildProgram/ManagedStripped";
                 case BuildTarget.Android:
                     return $"{projectDir}/Library/Bee/artifacts/Android/ManagedStripped";
 #if TUANJIE_2022_3_OR_NEWER
@@ -79,7 +81,6 @@ namespace HybridCLR.Editor.BuildProcessors
 
         public void OnBeforeConvertRun(BuildReport report, Il2CppBuildPipelineData data)
         {
-            // 此回调只在 2020中调用
             BuildTarget target = report.summary.platform;
             CopyStripDlls(GetStripAssembliesDir2020(target), target);
         }

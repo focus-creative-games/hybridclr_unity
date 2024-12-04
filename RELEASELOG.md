@@ -1,5 +1,30 @@
 # ReleaseLog
 
+## 7.1.0
+
+Release Date: 2024-12-4.
+
+### Runtime
+
+- [new] support prejit interpreter class and method
+- [new] add RuntimeOptionId::MaxInlineableMethodBodySize
+- [merge] merge il2cpp changes from tuanjie v1.3.1 to v1.3.4
+- [fix] fix memory leak of TransformContext::irbbs and ir2offsetMap
+- [opt] does not insert CheckThrowIfNull check when inlining constructors
+- [opt] remove unnecessary typeSize calculation from the NewValueTypeInterpVar instruction.
+- [change] change default maxInlineableMethodBodySize from 16 to 32
+- [change] remove the unnecessary Inflate operation on arg.type when initializing ArgVarInfo in TransformContext::TransformBodyImpl.
+- [change] remove unnecessary fields genericContext, klassContainer, methodContainer from the TransformContext
+
+### Editor
+
+- [new] support prejit interpreter class and method
+- [new] add RuntimeOptionId::MaxInlineableMethodBodySize
+- [fix] fix the bug that CopyStrippedAOTAssemblies didn't work on UWP platform of 6000.0.x
+- [fix] fix the issue that CopyStrippedAOTAssemblies didn't support HMIAndroid in tuanjie engine
+- [change] change the attributes on fields of HybridCLRSettings from `[Header]` to `[ToolTip]`
+- [refactor] refactor code comments and translate them to English
+
 ## 7.0.0
 
 Release Date: 2024-11-15.

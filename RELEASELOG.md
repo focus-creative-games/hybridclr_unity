@@ -1,5 +1,15 @@
 # ReleaseLog
 
+## 7.2.0
+
+Release Date: 2024-12-9.
+
+### Runtime
+
+- [fix] fix a critical bug in Image::ReadArrayType, where it incorrectly uses alloca to allocate Il2CppArray's sizes and lobounds data.
+- [merge] merge il2cpp changes from 2022.3.51f1 to 2022.3.54f1
+- [merge] merge il2cpp changes from 6000.0.21 to 6000.0.30
+
 ## 7.1.0
 
 Release Date: 2024-12-4.

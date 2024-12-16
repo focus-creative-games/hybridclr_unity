@@ -47,10 +47,15 @@ namespace HybridCLR.Editor.BuildProcessors
 #if UNITY_TVOS
                 case BuildTarget.tvOS:
 #endif
+                return $"{projectDir}/Library/Bee/artifacts/iOS/ManagedStripped";
 #if UNITY_VISIONOS
                 case BuildTarget.VisionOS:
+#if UNITY_6000_0_OR_NEWER
+                return $"{projectDir}/Library/Bee/artifacts/VisionOS/ManagedStripped";
+#else
+                return $"{projectDir}/Library/Bee/artifacts/iOS/ManagedStripped";
 #endif
-                    return $"{projectDir}/Library/Bee/artifacts/iOS/ManagedStripped";
+#endif
                 case BuildTarget.WebGL:
                     return $"{projectDir}/Library/Bee/artifacts/WebGL/ManagedStripped";
                 case BuildTarget.StandaloneOSX:

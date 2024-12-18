@@ -13,17 +13,19 @@ namespace HybridCLR.Editor.HotUpdate
     {
         private readonly HashSet<string> _aotAssNames;
 
+        private readonly HashSet<string> _hotUpdateAssNames;
+
         private readonly AssemblyCache _assCache;
 
-        public MissingMetadataChecker(string aotDllDir, IEnumerable<string> excludeDllNames)
+        public MissingMetadataChecker(string aotDllDir, IEnumerable<string> hotUpdateAssNames)
         {
 
-            var excludeDllNameSet = new HashSet<string>(excludeDllNames ?? new List<string>());
+            _hotUpdateAssNames = new HashSet<string>(hotUpdateAssNames ?? new List<string>());
             _aotAssNames = new HashSet<string>();
             foreach (var aotFile in Directory.GetFiles(aotDllDir, "*.dll"))
             {
                 string aotAssName = Path.GetFileNameWithoutExtension(aotFile);
-                if (excludeDllNameSet.Contains(aotAssName))
+                if (_hotUpdateAssNames.Contains(aotAssName))
                 {
                     continue;
                 }
@@ -34,6 +36,8 @@ namespace HybridCLR.Editor.HotUpdate
 
         public bool Check(string hotUpdateDllPath)
         {
+            bool anyMissing = false;
+
             ModuleDef mod = ModuleDefMD.Load(File.ReadAllBytes(hotUpdateDllPath), _assCache.ModCtx);
 
             foreach (var refass in mod.GetAssemblyRefs())
@@ -43,9 +47,13 @@ namespace HybridCLR.Editor.HotUpdate
                 {
                     _assCache.LoadModule(refass.Name, true);
                 }
+                else if (!_hotUpdateAssNames.Contains(refAssName))
+                {
+                    UnityEngine.Debug.LogError($"Missing AOT Assembly: {refAssName}");
+                    anyMissing = true;
+                }
             }
 
-            bool anyMissing = false;
 
             foreach (TypeRef typeRef in mod.GetTypeRefs())
             {

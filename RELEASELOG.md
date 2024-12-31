@@ -1,5 +1,24 @@
 # ReleaseLog
 
+## 7.3.0
+
+Release Date: 2024-12-31.
+
+### Runtime
+
+- [fix] fix bug that Image::ReadRuntimeHandleFromMemberRef didn't inflate parent type when read field of GenericType
+- [fix] fix an issue occurred in InterpreterImage::GenerateCustomAttributesCacheInternal where HYBRIDCLR_METADATA_MALLOC was incorrectly used to allocate the cache. When occasional contention occurs, releasing memory using HYBRIDCLR_FREE causes a crash.
+- [fix] fixed a potential deadlock issue in Unity 2019 and 2020 versions within InterpreterImage::GenerateCustomAttributesCacheInternal, where il2cpp::vm::g_MetadataLock was held before running ConstructCustomAttribute.
+- [fix] fixed a bug in Unity 2019 and 2020 within InterpreterImage::GenerateCustomAttributesCacheInternal, where cache memory leaks occurred under multithreading contention.
+- [fix] fix the bug that InterpreterImage::ConstructCustomAttribute doesn't set write barrier for field
+- [fix] fix the bug that `InterpreterImage::InitTypeDefs_2` runs after `InitClassLayouts`, causing the `packingSize` field to be incorrectly initialized.
+- [fix] fix the bug in ClassFieldLayoutCalculator::LayoutFields where the alignment calculation incorrectly considers naturalAlignment, resulting in field offsets that are inconsistent with the actual field offsets in AOT. This bug originates from IL2CPP itself and only occurs in Unity 2021 and earlier versions.
+
+### Editor
+
+- [fix] fix the issue in Unity 6000 where the modification of the trimmed AOT DLL output directory for the visionOS build target caused CopyStrippedAOTAssemblies::GetStripAssembliesDir2021 to fail in copying AOT DLLs.
+- [fix] fix the bug where MissingMetadataChecker can't detect references to newly added AOT assemblies.
+
 ## 7.2.0
 
 Release Date: 2024-12-9.

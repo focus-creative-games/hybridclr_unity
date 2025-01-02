@@ -18,17 +18,6 @@ namespace HybridCLR.Editor.ReversePInvokeWrap
         public CustomAttribute GenerationAttribute { get; set; }
     }
 
-    public class ABIReversePInvokeMethodInfo
-    {
-        public MethodDesc Method { get; set; }
-
-        public CallingConvention Callvention { get; set; }
-
-        public int Count { get; set; }
-
-        public string Signature { get; set; }
-    }
-
     public class Analyzer
     {
 

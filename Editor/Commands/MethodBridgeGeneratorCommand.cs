@@ -31,7 +31,7 @@ namespace HybridCLR.Editor.Commands
             Directory.Delete(il2cppBuildCachePath, true);
         }
 
-        private static void GenerateMethodBridgeCppFile(IReadOnlyCollection<GenericMethod> genericMethods, List<RawReversePInvokeMethodInfo> reversePInvokeMethods,  string outputFile)
+        private static void GenerateMethodBridgeCppFile(IReadOnlyCollection<GenericMethod> genericMethods, List<RawReversePInvokeMethodInfo> reversePInvokeMethods, IReadOnlyCollection<RawCalliMethodSignatureInfo> calliMethodSignatures,  string outputFile)
         {
             string templateCode = File.ReadAllText(outputFile, Encoding.UTF8);
             var g = new Generator(new Generator.Options()
@@ -40,6 +40,7 @@ namespace HybridCLR.Editor.Commands
                 OutputFile = outputFile,
                 GenericMethods = genericMethods,
                 ReversePInvokeMethods = reversePInvokeMethods,
+                CalliMethodSignatures = calliMethodSignatures,
                 Development = EditorUserBuildSettings.development,
             });
 
@@ -80,9 +81,12 @@ namespace HybridCLR.Editor.Commands
             var reversePInvokeAnalyzer = new ReversePInvokeWrap.Analyzer(cache, hotUpdateDlls);
             reversePInvokeAnalyzer.Run();
 
+            var calliAnalyzer = new CalliAnalyzer(cache, hotUpdateDlls);
+            calliAnalyzer.Run();
+
             string outputFile = $"{SettingsUtil.GeneratedCppDir}/MethodBridge.cpp";
 
-            GenerateMethodBridgeCppFile(methodBridgeAnalyzer.GenericMethods, reversePInvokeAnalyzer.ReversePInvokeMethods, outputFile);
+            GenerateMethodBridgeCppFile(methodBridgeAnalyzer.GenericMethods, reversePInvokeAnalyzer.ReversePInvokeMethods, calliAnalyzer.CalliMethodSignatures, outputFile);
 
             CleanIl2CppBuildCache();
         }

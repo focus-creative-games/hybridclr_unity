@@ -569,7 +569,7 @@ namespace HybridCLR.Editor.MethodBridge
                 sharedMethod.Init();
                 sharedMethod = ToIsomorphicMethod(sharedMethod);
 
-                CallingConvention callingConv = (CallingConvention)(method.MethodSig.CallingConvention);
+                CallingConvention callingConv = (CallingConvention)((int)method.MethodSig.CallingConvention + 1);
                 string signature = MakeCalliSignature(sharedMethod, callingConv);
 
                 if (!methodsBySig.TryGetValue(signature, out var arm))

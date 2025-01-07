@@ -31,8 +31,8 @@ namespace HybridCLR.Editor.AOT
             }
             var writer = new System.IO.MemoryStream();
             var options = new ModuleWriterOptions(mod);
-            options.MetadataOptions.Flags |= MetadataFlags.PreserveAll;
-            mod.Write(writer);
+            options.MetadataOptions.Flags |= MetadataFlags.PreserveRids;
+            mod.Write(writer, options);
             writer.Flush();
             return writer.ToArray();
         }

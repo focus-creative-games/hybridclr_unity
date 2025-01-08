@@ -39,6 +39,9 @@ namespace HybridCLR.Editor.Settings
         [Tooltip("supplementary metadata assembly names(without .dll suffix)")]
         public string[] patchAOTAssemblies;
 
+        [Tooltip("don't preserve UnityEngine core types in link.xml")]
+        public bool dontPreserveUnityEngineCoreTypesInLinkXml = false;
+
         [Tooltip("output file of automatic generated link.xml by scanning hot update assemblies")]
         public string outputLinkFile = "HybridCLRGenerate/link.xml";
 

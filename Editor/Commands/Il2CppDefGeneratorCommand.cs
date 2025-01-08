@@ -20,8 +20,10 @@ namespace HybridCLR.Editor.Commands
             {
                 UnityVersion = Application.unityVersion,
                 HotUpdateAssemblies = SettingsUtil.HotUpdateAssemblyNamesIncludePreserved,
-                OutputFile = $"{SettingsUtil.LocalIl2CppDir}/libil2cpp/hybridclr/generated/UnityVersion.h",
-                OutputFile2 = $"{SettingsUtil.LocalIl2CppDir}/libil2cpp/hybridclr/generated/AssemblyManifest.cpp",
+                UnityVersionTemplateFile = $"{SettingsUtil.TemplatePathInPackage}/UnityVersion.h.tpl",
+                UnityVersionOutputFile = $"{SettingsUtil.LocalIl2CppDir}/libil2cpp/hybridclr/generated/UnityVersion.h",
+                AssemblyManifestTemplateFile = $"{SettingsUtil.TemplatePathInPackage}/AssemblyManifest.cpp.tpl",
+                AssemblyManifestOutputFile = $"{SettingsUtil.LocalIl2CppDir}/libil2cpp/hybridclr/generated/AssemblyManifest.cpp",
                 EnableProfilerInReleaseBuild = HybridCLRSettings.Instance.enableProfilerInReleaseBuild,
                 EnableStraceTraceInWebGLReleaseBuild = HybridCLRSettings.Instance.enableStraceTraceInWebGLReleaseBuild,
             };

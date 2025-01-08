@@ -17,9 +17,13 @@ namespace HybridCLR.Editor.Il2CppDef
         {
             public List<string> HotUpdateAssemblies { get; set; }
 
-            public string OutputFile { get; set; }
+            public string UnityVersionTemplateFile { get; set; }
 
-            public string OutputFile2 { get; set; }
+            public string UnityVersionOutputFile { get; set; }
+
+            public string AssemblyManifestTemplateFile { get; set; }
+
+            public string AssemblyManifestOutputFile { get; set; }
 
             public string UnityVersion { get; set; }
 
@@ -45,7 +49,7 @@ namespace HybridCLR.Editor.Il2CppDef
 
         private void GenerateIl2CppConfig()
         {
-            var frr = new FileRegionReplace(File.ReadAllText(_options.OutputFile));
+            var frr = new FileRegionReplace(File.ReadAllText(_options.UnityVersionTemplateFile));
 
             List<string> lines = new List<string>();
 
@@ -93,13 +97,13 @@ namespace HybridCLR.Editor.Il2CppDef
 
             frr.Replace("UNITY_VERSION", string.Join("\n", lines));
 
-            frr.Commit(_options.OutputFile);
-            Debug.Log($"[HybridCLR.Editor.Il2CppDef.Generator] output:{_options.OutputFile}");
+            frr.Commit(_options.UnityVersionOutputFile);
+            Debug.Log($"[HybridCLR.Editor.Il2CppDef.Generator] output:{_options.UnityVersionOutputFile}");
         }
 
         private void GeneratePlaceHolderAssemblies()
         {
-            var frr = new FileRegionReplace(File.ReadAllText(_options.OutputFile2));
+            var frr = new FileRegionReplace(File.ReadAllText(_options.AssemblyManifestTemplateFile));
 
             List<string> lines = new List<string>();
 
@@ -110,8 +114,8 @@ namespace HybridCLR.Editor.Il2CppDef
 
             frr.Replace("PLACE_HOLDER", string.Join("\n", lines));
 
-            frr.Commit(_options.OutputFile2);
-            Debug.Log($"[HybridCLR.Editor.Il2CppDef.Generator] output:{_options.OutputFile2}");
+            frr.Commit(_options.AssemblyManifestOutputFile);
+            Debug.Log($"[HybridCLR.Editor.Il2CppDef.Generator] output:{_options.AssemblyManifestOutputFile}");
         }
     }
 }

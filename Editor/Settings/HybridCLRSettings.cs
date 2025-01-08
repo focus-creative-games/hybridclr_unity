@@ -40,7 +40,7 @@ namespace HybridCLR.Editor.Settings
         public string[] patchAOTAssemblies;
 
         [Tooltip("don't preserve UnityEngine core types in link.xml")]
-        public bool dontPreserveUnityEngineCoreTypesInLinkXml = false;
+        public bool dontPreserveUnityEngineCoreTypesInLinkXml;
 
         [Tooltip("output file of automatic generated link.xml by scanning hot update assemblies")]
         public string outputLinkFile = "HybridCLRGenerate/link.xml";
@@ -55,9 +55,9 @@ namespace HybridCLR.Editor.Settings
         public int maxMethodBridgeGenericIteration = 10;
 
         [Tooltip("enable profiler support when publishing in release mode")]
-        public bool enableProfilerInReleaseBuild = false;
+        public bool enableProfilerInReleaseBuild;
 
         [Tooltip("enable StraceTrace support when publishing to the WebGL platform in release mode")]
-        public bool enableStraceTraceInWebGLReleaseBuild = false;
+        public bool enableStraceTraceInWebGLReleaseBuild;
     }
 }

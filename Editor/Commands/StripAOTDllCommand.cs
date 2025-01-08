@@ -139,6 +139,9 @@ namespace HybridCLR.Editor.Commands
                     options = buildOptions,
                     target = target,
                     targetGroup = BuildPipeline.GetBuildTargetGroup(target),
+#if UNITY_2021_1_OR_NEWER
+                    subtarget = (int)EditorUserBuildSettings.standaloneBuildSubtarget,
+#endif
                 };
 
                 var report = BuildPipeline.BuildPlayer(buildPlayerOptions);

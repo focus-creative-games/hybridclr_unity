@@ -1,5 +1,22 @@
 # ReleaseLog
 
+## 7.4.0
+
+Release Date: 2025-01-17.
+
+### Runtime
+
+- [new] calli supports call both native function pointer and managed method
+
+### Editor
+
+- [new] add Managed2NativeFunctionPointer MethodBridge functions
+- [new] support preserve UnityEngine core types when GenerateLinkXml
+- [fix] fixed the bug in AOTAssemblyMetadataStripper::Strip where ModuleWriterOptions MetadataFlags.PreserveRids was not used.
+- [fix] fixed the bug where StripAOTDllCommand did not set BuildPlayerOptions.subtarget in Unity 2021+ versions, causing failure when publishing dedicated buildTarget.
+- [change] add UnityVersion.h.tpl and AssemblyManifest.cpp.tpl, Il2CppDefGenerator doesn't generates and override code file from same one
+- [change] add MethodBridge.cpp.tpl. MethodBridgeGeneratorCommand doesn't generate and override from same file
+
 ## 7.3.0
 
 Release Date: 2024-12-31.

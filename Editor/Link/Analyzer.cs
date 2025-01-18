@@ -43,6 +43,11 @@ namespace HybridCLR.Editor.Link
             var assCollector = new AssemblyCache(_resolver);
             foreach (string unityEngineDll in Directory.GetFiles(unityEngineDllPath, "UnityEngine.*.dll", SearchOption.AllDirectories))
             {
+                // because of bug of unity 2019.4.x, preserving types in this dll will cause crash in android build
+                if (unityEngineDll.EndsWith("UnityEngine.PerformanceReportingModule.dll", StringComparison.InvariantCulture))
+                {
+                    continue;
+                }
                 ModuleDefMD mod = assCollector.LoadModuleFromFileWithoutCache(unityEngineDll);
                 foreach (TypeDef type in mod.GetTypes())
                 {

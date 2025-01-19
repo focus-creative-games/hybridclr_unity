@@ -1,5 +1,13 @@
 # ReleaseLog
 
+## 7.4.1
+
+Release Date: 2025-01-19.
+
+### Editor
+
+[fix] fixe the bug that preserving UnityEngine.PerformanceReportingModule when generating link.xml would cause the Android app built with Unity 2019 to crash on startup.
+
 ## 7.4.0
 
 Release Date: 2025-01-17.

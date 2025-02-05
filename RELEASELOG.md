@@ -1,5 +1,13 @@
 # ReleaseLog
 
+## 7.5.0
+
+Release Date: 2025-02-05.
+
+### Editor
+
+- [revert] Revert 'support preserve UnityEngine core types when GenerateLinkXml'.
+
 ## 7.4.1
 
 Release Date: 2025-01-19.

@@ -11,7 +11,7 @@ namespace HybridCLR.Editor.Link
 {
     internal class LinkXmlWriter
     {
-        public void Write(string outputLinkXmlFile, HashSet<ITypeDefOrRef> refTypes)
+        public void Write(string outputLinkXmlFile, HashSet<TypeRef> refTypes)
         {
             string parentDir = Directory.GetParent(outputLinkXmlFile).FullName;
             Directory.CreateDirectory(parentDir);

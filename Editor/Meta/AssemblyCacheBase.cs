@@ -71,13 +71,6 @@ namespace HybridCLR.Editor.Meta
             return mod;
         }
 
-        public ModuleDefMD LoadModuleFromFileWithoutCache(string dllPath)
-        {
-            ModuleDefMD mod = ModuleDefMD.Load(File.ReadAllBytes(dllPath), _modCtx);
-            mod.EnableTypeDefFindCache = true;
-            return mod;
-        }
-
         private void LoadNetStandard()
         {
             string netstandardDllPath = _assemblyPathResolver.ResolveAssembly("netstandard", false);

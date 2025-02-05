@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -22,48 +21,12 @@ namespace HybridCLR.Editor.Link
             _resolver = resolver;
         }
 
-
-        public HashSet<ITypeDefOrRef> CollectRefs(List<string> rootAssemblies, bool includeUnityEngineCoreTypes)
-        {
-            var typeRefs = new HashSet<ITypeDefOrRef>(TypeEqualityComparer.Instance);
-            CollectHotUpdateRefs(rootAssemblies, typeRefs);
-
-            if (includeUnityEngineCoreTypes)
-            {
-                CollectUnityEngineCoreTypes(typeRefs);
-            }
-            return typeRefs;
-        }
-
-        private void CollectUnityEngineCoreTypes(HashSet<ITypeDefOrRef> preservedTypes)
-        {
-            Debug.Log("CollectUnityEngineCoreTypes");
-            string unityEngineDllPath = $"{EditorApplication.applicationContentsPath}/Managed/UnityEngine";
-
-            var assCollector = new AssemblyCache(_resolver);
-            foreach (string unityEngineDll in Directory.GetFiles(unityEngineDllPath, "UnityEngine.*.dll", SearchOption.AllDirectories))
-            {
-                // because of bug of unity 2019.4.x, preserving types in this dll will cause crash in android build
-                if (unityEngineDll.EndsWith("UnityEngine.PerformanceReportingModule.dll", StringComparison.InvariantCulture))
-                {
-                    continue;
-                }
-                ModuleDefMD mod = assCollector.LoadModuleFromFileWithoutCache(unityEngineDll);
-                foreach (TypeDef type in mod.GetTypes())
-                {
-                    if (type.Methods.Any(m => m.IsInternalCall || m.IsPinvokeImpl))
-                    {
-                        preservedTypes.Add(type);
-                    }
-                }
-            }
-        }
-
-        public void CollectHotUpdateRefs(List<string> rootAssemblies, HashSet<ITypeDefOrRef> preservedTypes)
+        public HashSet<TypeRef> CollectRefs(List<string> rootAssemblies)
         {
             var assCollector = new AssemblyCache(_resolver);
             var rootAssemblyNames = new HashSet<string>(rootAssemblies);
 
+            var typeRefs = new HashSet<TypeRef>(TypeEqualityComparer.Instance);
             foreach (var rootAss in rootAssemblies)
             {
                 var dnAss = assCollector.LoadModule(rootAss, false);
@@ -76,10 +39,11 @@ namespace HybridCLR.Editor.Link
                     }
                     if (!rootAssemblyNames.Contains(type.DefinitionAssembly.Name.ToString()))
                     {
-                        preservedTypes.Add(type);
+                        typeRefs.Add(type);
                     }
                 }
             }
+            return typeRefs;
         }
     }
 }

@@ -1,5 +1,21 @@
 # ReleaseLog
 
+## 7.6.0
+
+Release Date: 2025-03-01.
+
+### Runtime
+
+- [fix] fixed the bug in ClassFieldLayoutCalculator where it incorrectly handles [StructLayout] and blittable attribute when calculating the layout for structs.
+- [fix] fix bug of computing explicit struct layout caused by commit "199b1b1a789d760828bd33e7e1438261cd1f8d15"
+- [fix] fix the code `TokenGenericContextType key = { token, genericContext }` has compiler error in PS5
+- [merge] merge il2cpp changes from 2021.3.44f1 to 2021.3.49f1
+
+### Editor
+
+- [fix] fixed the bug in the MethodBridge generator where it incorrectly handles [StructLayout] and blittable attribute when generating code for struct classes.
+- [new] add AssemblySorter to sort assemblies by reference order
+
 ## 7.5.0
 
 Release Date: 2025-02-05.

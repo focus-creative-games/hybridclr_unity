@@ -25,10 +25,15 @@ namespace HybridCLR.Editor.Commands
 #if UNITY_2022
             UnityEditor.EditorUtility.ClearProgressBar();
 #endif
-            Debug.Log("compile finish!!!");
+            Debug.Log($"compile finish!!! buildDir:{buildDir} target:{target} development:{developmentBuild}");
         }
 
-        public static void CompileDll(BuildTarget target, bool developmentBuild = false)
+        public static void CompileDll(BuildTarget target)
+        {
+            CompileDll(EditorUserBuildSettings.activeBuildTarget, EditorUserBuildSettings.development);
+        }
+
+        public static void CompileDll(BuildTarget target, bool developmentBuild)
         {
             CompileDll(SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target), target, developmentBuild);
         }
@@ -36,10 +41,16 @@ namespace HybridCLR.Editor.Commands
         [MenuItem("HybridCLR/CompileDll/ActiveBuildTarget", priority = 100)]
         public static void CompileDllActiveBuildTarget()
         {
-            CompileDll(EditorUserBuildSettings.activeBuildTarget);
+            CompileDll(EditorUserBuildSettings.activeBuildTarget, EditorUserBuildSettings.development);
         }
 
-        [MenuItem("HybridCLR/CompileDll/ActiveBuildTarget_Development", priority = 101)]
+        [MenuItem("HybridCLR/CompileDll/ActiveBuildTarget_Release", priority = 102)]
+        public static void CompileDllActiveBuildTargetRelease()
+        {
+            CompileDll(EditorUserBuildSettings.activeBuildTarget, false);
+        }
+
+        [MenuItem("HybridCLR/CompileDll/ActiveBuildTarget_Development", priority = 104)]
         public static void CompileDllActiveBuildTargetDevelopment()
         {
             CompileDll(EditorUserBuildSettings.activeBuildTarget, true);

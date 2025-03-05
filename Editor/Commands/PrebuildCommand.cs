@@ -22,7 +22,7 @@ namespace HybridCLR.Editor.Commands
                 throw new BuildFailedException($"You have not initialized HybridCLR, please install it via menu 'HybridCLR/Installer'");
             }
             BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
-            CompileDllCommand.CompileDll(target);
+            CompileDllCommand.CompileDll(target, EditorUserBuildSettings.development);
             Il2CppDefGeneratorCommand.GenerateIl2CppDef();
 
             // 这几个生成依赖HotUpdateDlls

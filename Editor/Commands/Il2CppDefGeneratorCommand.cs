@@ -24,7 +24,6 @@ namespace HybridCLR.Editor.Commands
                 UnityVersionOutputFile = $"{SettingsUtil.LocalIl2CppDir}/libil2cpp/hybridclr/generated/UnityVersion.h",
                 AssemblyManifestTemplateFile = $"{SettingsUtil.TemplatePathInPackage}/AssemblyManifest.cpp.tpl",
                 AssemblyManifestOutputFile = $"{SettingsUtil.LocalIl2CppDir}/libil2cpp/hybridclr/generated/AssemblyManifest.cpp",
-                EnableProfilerInReleaseBuild = HybridCLRSettings.Instance.enableProfilerInReleaseBuild,
                 EnableStraceTraceInWebGLReleaseBuild = HybridCLRSettings.Instance.enableStraceTraceInWebGLReleaseBuild,
             };
 

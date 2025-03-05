@@ -27,8 +27,6 @@ namespace HybridCLR.Editor.Il2CppDef
 
             public string UnityVersion { get; set; }
 
-            public bool EnableProfilerInReleaseBuild { get; set; }
-
             public bool EnableStraceTraceInWebGLReleaseBuild { get; set; }
         }
 
@@ -84,11 +82,6 @@ namespace HybridCLR.Editor.Il2CppDef
 #elif TUANJIE_2022_3_OR_NEWER
             lines.Add($"#define HYBRIDCLR_TUANJIE_VERSION 10000");
 #endif
-
-            if (_options.EnableProfilerInReleaseBuild)
-            {
-                lines.Add("#define HYBRIDCLR_ENABLE_PROFILER_IN_RELEASE_BUILD 1");
-            }
 
             if (_options.EnableStraceTraceInWebGLReleaseBuild)
             {

@@ -26,8 +26,6 @@ namespace HybridCLR.Editor.Il2CppDef
             public string AssemblyManifestOutputFile { get; set; }
 
             public string UnityVersion { get; set; }
-
-            public bool EnableStraceTraceInWebGLReleaseBuild { get; set; }
         }
 
         private readonly Options _options;
@@ -82,11 +80,6 @@ namespace HybridCLR.Editor.Il2CppDef
 #elif TUANJIE_2022_3_OR_NEWER
             lines.Add($"#define HYBRIDCLR_TUANJIE_VERSION 10000");
 #endif
-
-            if (_options.EnableStraceTraceInWebGLReleaseBuild)
-            {
-                lines.Add("#define HYBRIDCLR_ENABLE_STRACE_TRACE_IN_WEBGL_RELEASE_BUILD 1");
-            }
 
             frr.Replace("UNITY_VERSION", string.Join("\n", lines));
 

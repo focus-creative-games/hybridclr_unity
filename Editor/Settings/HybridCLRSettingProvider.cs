@@ -25,7 +25,6 @@ namespace HybridCLR.Editor.Settings
         private SerializedProperty _outputAOTGenericReferenceFile;
         private SerializedProperty _maxGenericReferenceIteration;
         private SerializedProperty _maxMethodBridgeGenericIteration;
-        private SerializedProperty enableStraceTraceInWebGLReleaseBuild;
 
         private GUIStyle buttonStyle;
         public HybridCLRSettingsProvider() : base("Project/HybridCLR Settings", SettingsScope.Project) { }
@@ -54,7 +53,6 @@ namespace HybridCLR.Editor.Settings
             _outputAOTGenericReferenceFile = _serializedObject.FindProperty("outputAOTGenericReferenceFile");
             _maxGenericReferenceIteration = _serializedObject.FindProperty("maxGenericReferenceIteration");
             _maxMethodBridgeGenericIteration = _serializedObject.FindProperty("maxMethodBridgeGenericIteration");
-            enableStraceTraceInWebGLReleaseBuild = _serializedObject.FindProperty("enableStraceTraceInWebGLReleaseBuild");
         }
         private void OnEditorFocused()
         {
@@ -142,7 +140,6 @@ namespace HybridCLR.Editor.Settings
                 EditorGUILayout.PropertyField(_outputAOTGenericReferenceFile);
                 EditorGUILayout.PropertyField(_maxGenericReferenceIteration);
                 EditorGUILayout.PropertyField(_maxMethodBridgeGenericIteration);
-                EditorGUILayout.PropertyField(enableStraceTraceInWebGLReleaseBuild);
                 if (EditorGUI.EndChangeCheck())
                 {
                     _serializedObject.ApplyModifiedProperties();

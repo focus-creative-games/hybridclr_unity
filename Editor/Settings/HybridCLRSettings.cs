@@ -50,8 +50,5 @@ namespace HybridCLR.Editor.Settings
 
         [Tooltip("max iteration count of searching method bridge generic methods in AOT assemblies")]
         public int maxMethodBridgeGenericIteration = 10;
-
-        [Tooltip("enable StraceTrace support when publishing to the WebGL platform in release mode")]
-        public bool enableStraceTraceInWebGLReleaseBuild;
     }
 }

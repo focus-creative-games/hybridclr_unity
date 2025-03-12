@@ -1,5 +1,26 @@
 # ReleaseLog
 
+## 7.7.0
+
+Release Date: 2025-03-12.
+
+### Runtime
+
+- [change] fixed the issue that HYBRIDCLR_ENABLE_PROFILER was disabled in release build
+- [fix] fix a crash in PDBImage::SetMethodDebugInfo when GetMethodDataFromCache returns nullptr
+- [fix] fix assert bug of InterpreterDelegateInvoke when method->parameters_count - curMethod->parameters_count == 1
+- [fix] fix compiler error of initialize constructor code `{a, b}` for `std::tuple<void*,void*>` in PS5
+- [opt] removed unnecessary pdb lock in PDBImage
+- [change] fix some compiler warnings
+- [change] HYBRIDCLR_ENABLE_STRACKTRACE was enabled in both DEBUG and RELEASE build without considering HYBRIDCLR_ENABLE_STRACE_TRACE_IN_WEBGL_RELEASE_BUILD flag.
+
+### Editor
+
+- [fix] fixed hook failed in version below MacOS 11
+- [change] CompileDllActiveBuildTarget and GenerateAll use EditorUserBuildSettings.development to compile hot update dll.
+- [remove] remove option HybridCLRSettings.enableProfilerInReleaseBuild
+- [remove] remove option HybridCLRSettings.enableStraceTraceInWebGLReleaseBuild
+
 ## 7.6.0
 
 Release Date: 2025-03-01.

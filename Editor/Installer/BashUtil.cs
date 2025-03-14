@@ -83,7 +83,7 @@ namespace HybridCLR.Editor.Installer
                     {
                         RemoveDir(subDir);
                     }
-                    Directory.Delete(dir);
+                    Directory.Delete(dir, true);
                     break;
                 }
                 catch (Exception e)
@@ -111,12 +111,12 @@ namespace HybridCLR.Editor.Installer
 #endif
             if (srcFile.Length > maxPathLength)
             {
-                UnityEngine.Debug.LogError($"srcFile:{srcFile} path is too long. copy ignore!");
+                UnityEngine.Debug.LogError($"srcFile:{srcFile} path is too long. skip copy!");
                 return;
             }
             if (dstFile.Length > maxPathLength)
             {
-                UnityEngine.Debug.LogError($"dstFile:{dstFile} path is too long. copy ignore!");
+                UnityEngine.Debug.LogError($"dstFile:{dstFile} path is too long. skip copy!");
                 return;
             }
             File.Copy(srcFile, dstFile);

@@ -1,5 +1,20 @@
 # ReleaseLog
 
+## 7.8.0
+
+Release Date: 2025-03-24.
+
+### Runtime
+
+- [opt] fixed a **critical** bug where taking the address of the ip variable severely impacted compiler optimizations, leading to significant performance degradation.
+- [opt] add HiOpCodeEnum::None case to interpreter loop. avoid decrement *ip when compute jump table,  boosts about 5% performance.
+- [opt] opt InitLocals and InitInlineLocals in small size cases
+- [opt] reorder MethodInfo fields to reduce memory size
+
+### Editor
+
+- [fix] fixed the bug where BashUtil.RemoveDir failed to run under certain circumstances on macOS systems.
+
 ## 7.7.0
 
 Release Date: 2025-03-12.

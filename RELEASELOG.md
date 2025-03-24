@@ -1,5 +1,14 @@
 # ReleaseLog
 
+## 7.8.1
+
+Release Date: 2025-03-24.
+
+### Runtime
+
+- [fix] fix bug of CreateInitLocals when size <= 16
+- [change] remove unnecessary `frame->ip = (byte*)ip;` assignment in LOAD_PREV_FRAME()
+
 ## 7.8.0
 
 Release Date: 2025-03-24.

@@ -1,5 +1,13 @@
 # ReleaseLog
 
+## 7.9.0
+
+Release Date: 2025-03-31.
+
+### Runtime
+
+- [merge] merge il2cpp changes from 6000.0.30f1 to 6000.0.44f1
+
 ## 7.8.1
 
 Release Date: 2025-03-24.

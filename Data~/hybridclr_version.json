@@ -33,7 +33,7 @@
     {
         "unity_version":"6000",
         "hybridclr" : { "branch":"v7.8.1"},
-        "il2cpp_plus": { "branch":"v6000-7.8.0"}
+        "il2cpp_plus": { "branch":"v6000-7.9.0"}
     }
     ]
 }

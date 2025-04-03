@@ -13,7 +13,14 @@ namespace HybridCLR.Editor.AOT
     {
         public static byte[] Strip(byte[] assemblyBytes)
         {
-            var mod = ModuleDefMD.Load(assemblyBytes);
+            var context = ModuleDef.CreateModuleContext();
+            var readerOption = new ModuleCreationOptions(context)
+            {
+                Runtime = CLRRuntimeReaderKind.Mono
+            };
+            var mod = ModuleDefMD.Load(assemblyBytes, readerOption);
+            // remove all resources
+            mod.Resources.Clear();
             foreach (var type in mod.GetTypes())
             {
                 if (type.HasGenericParameters)

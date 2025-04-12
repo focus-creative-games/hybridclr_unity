@@ -30,7 +30,7 @@ namespace HybridCLR.Editor.Commands
 
         public static void CompileDll(BuildTarget target)
         {
-            CompileDll(EditorUserBuildSettings.activeBuildTarget, EditorUserBuildSettings.development);
+            CompileDll(target, EditorUserBuildSettings.development);
         }
 
         public static void CompileDll(BuildTarget target, bool developmentBuild)

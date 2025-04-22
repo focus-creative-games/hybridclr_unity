@@ -1,5 +1,20 @@
 # ReleaseLog
 
+## 7.10.0
+
+Release Date: 2025-04-22.
+
+### Runtime
+
+- [fix] fix the bug that doesn't lock g_MetadataLock in PDBImage::SetupStackFrameInfo.
+- [change] remove Il2CppTypeHash and Il2CppTypeEqualTo, replace with il2cpp::metadata::Il2CppTypeHash and il2cpp::metadata::Il2CppTypeEqualityComparer.
+- [merge] merge il2cpp changes from tuanjie 1.3.4 to 1.5.0, base unity from 2022.3.48 to 2022.3.55 .
+
+### Editor
+
+- [fix] fix bug of `CompileDll(BuildTarget target)` that use EditorUserBuildSettings.activeBuildTarget instead of target to call CompileDll.
+- [opt] AOTAssemblyMetadataStripper strips AOT assembly resources. (#54)
+
 ## 7.9.0
 
 Release Date: 2025-03-31.

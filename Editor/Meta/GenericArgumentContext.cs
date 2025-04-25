@@ -7,13 +7,11 @@ using System.Threading.Tasks;
 
 namespace HybridCLR.Editor.Meta
 {
-    /// <summary>
-    /// Replaces generic type/method var with its generic argument
-    /// </summary>
-    public sealed class GenericArgumentContext
+
+    public class GenericArgumentContext
     {
-        List<TypeSig> typeArgsStack = new List<TypeSig>();
-        List<TypeSig> methodArgsStack = new List<TypeSig>();
+        private readonly List<TypeSig> typeArgsStack;
+        private readonly List<TypeSig> methodArgsStack;
 
         public GenericArgumentContext(List<TypeSig> typeArgsStack, List<TypeSig> methodArgsStack)
         {
@@ -21,16 +19,6 @@ namespace HybridCLR.Editor.Meta
             this.methodArgsStack = methodArgsStack;
         }
 
-
-
-        /// <summary>
-        /// Replaces a generic type/method var with its generic argument (if any). If
-        /// <paramref name="typeSig"/> isn't a generic type/method var or if it can't
-        /// be resolved, it itself is returned. Else the resolved type is returned.
-        /// </summary>
-        /// <param name="typeSig">Type signature</param>
-        /// <returns>New <see cref="TypeSig"/> which is never <c>null</c> unless
-        /// <paramref name="typeSig"/> is <c>null</c></returns>
         public TypeSig Resolve(TypeSig typeSig)
         {
 			if (!typeSig.ContainsGenericParameter)

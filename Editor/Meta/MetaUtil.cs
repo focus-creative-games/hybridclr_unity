@@ -122,7 +122,7 @@ namespace HybridCLR.Editor.Meta
 						}
 						return new GenericInstSig(gia.GenericType, gia.GenericArguments.Select(ga => ToShareTypeSig(corTypes, ga)).ToList());
 				}
-				case ElementType.FnPtr: return corTypes.IntPtr;
+				case ElementType.FnPtr: return corTypes.UIntPtr;
 				case ElementType.ValueArray: return typeSig;
 				case ElementType.Module: return typeSig;
 				default:

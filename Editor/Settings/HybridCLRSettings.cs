@@ -1,10 +1,11 @@
+using System.IO;
 using UnityEditorInternal;
 using UnityEngine;
 
 namespace HybridCLR.Editor.Settings
 {
-    [FilePath("ProjectSettings/HybridCLRSettings.asset")]
-    public class HybridCLRSettings : ScriptableSingleton<HybridCLRSettings>
+
+    public class HybridCLRSettings : ScriptableObject
     {
         [Tooltip("enable HybridCLR")]
         public bool enable = true;
@@ -50,5 +51,48 @@ namespace HybridCLR.Editor.Settings
 
         [Tooltip("max iteration count of searching method bridge generic methods in AOT assemblies")]
         public int maxMethodBridgeGenericIteration = 10;
+
+
+
+        private static HybridCLRSettings s_Instance;
+
+        public static HybridCLRSettings Instance
+        {
+            get
+            {
+                if (!s_Instance)
+                {
+                    LoadOrCreate();
+                }
+                return s_Instance;
+            }
+        }
+
+        private static string GetFilePath()
+        {
+            return "ProjectSettings/HybridCLRSettings.asset";
+        }
+
+        public static HybridCLRSettings LoadOrCreate()
+        {
+            string filePath = GetFilePath();
+            Object[] objs = InternalEditorUtility.LoadSerializedFileAndForget(filePath);
+            s_Instance = objs.Length > 0 ? (HybridCLRSettings)objs[0] : (s_Instance ?? CreateInstance<HybridCLRSettings>());
+            return s_Instance;
+        }
+
+        public static void Save()
+        {
+            if (!s_Instance)
+            {
+                return;
+            }
+
+            string filePath = GetFilePath();
+            string directoryName = Path.GetDirectoryName(filePath);
+            Directory.CreateDirectory(directoryName);
+            var obj = new Object[1] { s_Instance };
+            InternalEditorUtility.SaveToSerializedFileAndForget(obj, filePath, true);
+        }
     }
 }

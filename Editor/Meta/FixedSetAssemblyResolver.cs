@@ -29,6 +29,12 @@ namespace HybridCLR.Editor.Meta
                     Debug.Log($"[FixedSetAssemblyResolver] resolve:{assemblyName} path:{assemblyPath}");
                     return true;
                 }
+                assemblyPath = $"{_rootDir}/{assemblyName}.dll.bytes";
+                if (File.Exists(assemblyPath))
+                {
+                    Debug.Log($"[FixedSetAssemblyResolver] resolve:{assemblyName} path:{assemblyPath}");
+                    return true;
+                }
             }
             assemblyPath = null;
             return false;

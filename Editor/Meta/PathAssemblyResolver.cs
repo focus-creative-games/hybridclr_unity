@@ -20,11 +20,16 @@ namespace HybridCLR.Editor.Meta
         {
             foreach(var path in _searchPaths)
             {
-                string assPath = Path.Combine(path, assemblyName + ".dll");
-                if (File.Exists(assPath))
+                assemblyPath = Path.Combine(path, $"{assemblyName}.dll");
+                if (File.Exists(assemblyPath))
                 {
-                    Debug.Log($"resolve {assemblyName} at {assPath}");
-                    assemblyPath = assPath;
+                    Debug.Log($"resolve {assemblyName} at {assemblyPath}");
+                    return true;
+                }
+                assemblyPath = Path.Combine(path, $"{assemblyName}.dll.bytes");
+                if (File.Exists(assemblyPath))
+                {
+                    Debug.Log($"resolve {assemblyName} at {assemblyPath}");
                     return true;
                 }
             }

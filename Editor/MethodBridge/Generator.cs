@@ -32,7 +32,7 @@ namespace HybridCLR.Editor.MethodBridge
 
             public List<RawReversePInvokeMethodInfo> ReversePInvokeMethods { get; set; }
 
-            public IReadOnlyCollection<RawCalliMethodSignatureInfo> CalliMethodSignatures { get; set; }
+            public IReadOnlyCollection<CallNativeMethodSignatureInfo> CalliMethodSignatures { get; set; }
 
             public bool Development { get; set; }
         }
@@ -61,7 +61,7 @@ namespace HybridCLR.Editor.MethodBridge
 
         private readonly List<RawReversePInvokeMethodInfo> _originalReversePInvokeMethods;
 
-        private readonly List<RawCalliMethodSignatureInfo> _originalCalliMethodSignatures;
+        private readonly List<CallNativeMethodSignatureInfo> _originalCalliMethodSignatures;
 
         private readonly string _templateCode;
 
@@ -624,7 +624,7 @@ namespace HybridCLR.Editor.MethodBridge
             return newMethods;
         }
 
-        private List<CalliMethodInfo> BuildCalliMethods(List<RawCalliMethodSignatureInfo> rawMethods)
+        private List<CalliMethodInfo> BuildCalliMethods(List<CallNativeMethodSignatureInfo> rawMethods)
         {
             var methodsBySig = new Dictionary<string, CalliMethodInfo>();
             foreach (var method in rawMethods)
@@ -1228,7 +1228,7 @@ static {method.ReturnInfo.Type.GetTypeName()} __N2M_{(adjustorThunk ? "AdjustorT
             string paramNameListStr = string.Join(", ", method.ParamInfos.Select(p => GetManaged2NativePassParam(p.Type, $"localVarBase+argVarIndexs[{p.Index}]")));
             string il2cppCallConventionName = GetIl2cppCallConventionName(methodInfo.Callvention);
             lines.Add($@"
-static void __M2NF_{methodInfo.Signature}(const void* methodPointer, uint16_t* argVarIndexs, StackObject* localVarBase, void* ret)
+static void __M2NF_{methodInfo.Signature}(Il2CppMethodPointer methodPointer, uint16_t* argVarIndexs, StackObject* localVarBase, void* ret)
 {{
     typedef {method.ReturnInfo.Type.GetTypeName()} ({il2cppCallConventionName} *NativeMethod)({paramListStr});
     {(!method.ReturnInfo.IsVoid ? $"*({method.ReturnInfo.Type.GetTypeName()}*)ret = " : "")}((NativeMethod)(methodPointer))({paramNameListStr});

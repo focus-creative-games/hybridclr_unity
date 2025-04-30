@@ -10,18 +10,13 @@ using UnityEngine;
 namespace HybridCLR.Editor.MethodBridge
 {
 
-    public class RawCalliMethodSignatureInfo
-    {
-        public MethodSig MethodSig { get; set; }
-    }
-
     public class CalliAnalyzer
     {
         private readonly List<ModuleDefMD> _rootModules = new List<ModuleDefMD>();
 
-        private readonly List<RawCalliMethodSignatureInfo> _calliMethodSignatures = new List<RawCalliMethodSignatureInfo>();
+        private readonly List<CallNativeMethodSignatureInfo> _calliMethodSignatures = new List<CallNativeMethodSignatureInfo>();
 
-        public List<RawCalliMethodSignatureInfo> CalliMethodSignatures => _calliMethodSignatures;
+        public List<CallNativeMethodSignatureInfo> CalliMethodSignatures => _calliMethodSignatures;
 
         public CalliAnalyzer(AssemblyCache cache, List<string> assemblyNames)
         {
@@ -51,7 +46,7 @@ namespace HybridCLR.Editor.MethodBridge
                         {
                             MethodSig methodSig = (MethodSig)il.Operand;
 
-                            _calliMethodSignatures.Add(new RawCalliMethodSignatureInfo()
+                            _calliMethodSignatures.Add(new CallNativeMethodSignatureInfo()
                             {
                                 MethodSig = methodSig,
                             });

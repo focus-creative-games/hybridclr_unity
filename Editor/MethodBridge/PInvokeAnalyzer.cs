@@ -26,30 +26,6 @@ namespace HybridCLR.Editor.MethodBridge
             }
         }
 
-        private static bool IsSupportedPInvokeTypeSig(TypeSig typeSig)
-        {
-            typeSig = typeSig.RemovePinnedAndModifiers();
-            if (typeSig.IsByRef)
-            {
-                return true;
-            }
-            switch (typeSig.ElementType)
-            {
-                case ElementType.SZArray:
-                case ElementType.Array:
-                //case ElementType.Class:
-                case ElementType.String:
-                //case ElementType.Object:
-                return false;
-                default: return true;
-            }
-        }
-
-        private static bool IsSupportedPInvokeMethodSignature(MethodSig methodSig)
-        {
-            return IsSupportedPInvokeTypeSig(methodSig.RetType) && methodSig.Params.All(p => IsSupportedPInvokeTypeSig(p));
-        }
-
         public void Run()
         {
             foreach (var mod in _rootModules)
@@ -60,7 +36,7 @@ namespace HybridCLR.Editor.MethodBridge
                     {
                         if (method.IsPinvokeImpl)
                         {
-                            if (!IsSupportedPInvokeMethodSignature(method.MethodSig))
+                            if (!MetaUtil.IsSupportedPInvokeMethodSignature(method.MethodSig))
                             {
                                 throw new Exception($"PInvoke method {method.FullName} has unsupported parameter or return type. Please check the method signature.");
                             }

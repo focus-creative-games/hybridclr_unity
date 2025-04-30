@@ -2,7 +2,6 @@
 using HybridCLR.Editor.ABI;
 using HybridCLR.Editor.Meta;
 using HybridCLR.Editor.MethodBridge;
-using HybridCLR.Editor.ReversePInvokeWrap;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,7 +30,7 @@ namespace HybridCLR.Editor.Commands
             Directory.Delete(il2cppBuildCachePath, true);
         }
 
-        private static void GenerateMethodBridgeCppFile(IReadOnlyCollection<GenericMethod> genericMethods, List<RawReversePInvokeMethodInfo> reversePInvokeMethods, IReadOnlyCollection<CallNativeMethodSignatureInfo> calliMethodSignatures, string tempFile, string outputFile)
+        private static void GenerateMethodBridgeCppFile(IReadOnlyCollection<GenericMethod> genericMethods, List<RawMonoPInvokeCallbackMethodInfo> reversePInvokeMethods, IReadOnlyCollection<CallNativeMethodSignatureInfo> calliMethodSignatures, string tempFile, string outputFile)
         {
             string templateCode = File.ReadAllText(tempFile, Encoding.UTF8);
             var g = new Generator(new Generator.Options()
@@ -78,7 +77,7 @@ namespace HybridCLR.Editor.Commands
             List<string> hotUpdateDlls = SettingsUtil.HotUpdateAssemblyNamesExcludePreserved;
             var cache = new AssemblyCache(MetaUtil.CreateHotUpdateAndAOTAssemblyResolver(target, hotUpdateDlls));
 
-            var reversePInvokeAnalyzer = new ReversePInvokeWrap.Analyzer(cache, hotUpdateDlls);
+            var reversePInvokeAnalyzer = new MonoPInvokeCallbackAnalyzer(cache, hotUpdateDlls);
             reversePInvokeAnalyzer.Run();
 
             var calliAnalyzer = new CalliAnalyzer(cache, hotUpdateDlls);

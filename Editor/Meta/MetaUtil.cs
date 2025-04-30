@@ -189,5 +189,29 @@ namespace HybridCLR.Editor.Meta
             }
             return methodGenericParams;
         }
+
+        public static bool IsSupportedPInvokeTypeSig(TypeSig typeSig)
+        {
+            typeSig = typeSig.RemovePinnedAndModifiers();
+            if (typeSig.IsByRef)
+            {
+                return true;
+            }
+            switch (typeSig.ElementType)
+            {
+                case ElementType.SZArray:
+                case ElementType.Array:
+                //case ElementType.Class:
+                case ElementType.String:
+                //case ElementType.Object:
+                return false;
+                default: return true;
+            }
+        }
+
+        public static bool IsSupportedPInvokeMethodSignature(MethodSig methodSig)
+        {
+            return IsSupportedPInvokeTypeSig(methodSig.RetType) && methodSig.Params.All(p => IsSupportedPInvokeTypeSig(p));
+        }
     }
 }

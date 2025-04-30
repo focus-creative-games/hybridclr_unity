@@ -1,7 +1,6 @@
 ﻿using dnlib.DotNet;
 using HybridCLR.Editor.ABI;
 using HybridCLR.Editor.Meta;
-using HybridCLR.Editor.ReversePInvokeWrap;
 using HybridCLR.Editor.Template;
 using System;
 using System.Collections.Generic;
@@ -30,7 +29,7 @@ namespace HybridCLR.Editor.MethodBridge
 
             public IReadOnlyCollection<GenericMethod> GenericMethods { get; set; }
 
-            public List<RawReversePInvokeMethodInfo> ReversePInvokeMethods { get; set; }
+            public List<RawMonoPInvokeCallbackMethodInfo> ReversePInvokeMethods { get; set; }
 
             public IReadOnlyCollection<CallNativeMethodSignatureInfo> CalliMethodSignatures { get; set; }
 
@@ -59,7 +58,7 @@ namespace HybridCLR.Editor.MethodBridge
 
         private readonly List<GenericMethod> _genericMethods;
 
-        private readonly List<RawReversePInvokeMethodInfo> _originalReversePInvokeMethods;
+        private readonly List<RawMonoPInvokeCallbackMethodInfo> _originalReversePInvokeMethods;
 
         private readonly List<CallNativeMethodSignatureInfo> _originalCalliMethodSignatures;
 
@@ -588,7 +587,7 @@ namespace HybridCLR.Editor.MethodBridge
             return (CallingConvention)conv;
         }
 
-        private List<ABIReversePInvokeMethodInfo> BuildABIMethods(List<RawReversePInvokeMethodInfo> rawMethods)
+        private List<ABIReversePInvokeMethodInfo> BuildABIMethods(List<RawMonoPInvokeCallbackMethodInfo> rawMethods)
         {
             var methodsBySig = new Dictionary<string, ABIReversePInvokeMethodInfo>();
             foreach (var method in rawMethods)

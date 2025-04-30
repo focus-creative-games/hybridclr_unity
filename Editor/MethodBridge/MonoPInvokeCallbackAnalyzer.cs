@@ -9,25 +9,25 @@ using System.Threading.Tasks;
 using CallingConvention = System.Runtime.InteropServices.CallingConvention;
 using UnityEngine;
 
-namespace HybridCLR.Editor.ReversePInvokeWrap
+namespace HybridCLR.Editor.MethodBridge
 {
-    public class RawReversePInvokeMethodInfo
+    public class RawMonoPInvokeCallbackMethodInfo
     {
         public MethodDef Method { get; set; }
 
         public CustomAttribute GenerationAttribute { get; set; }
     }
 
-    public class Analyzer
+    public class MonoPInvokeCallbackAnalyzer
     {
 
         private readonly List<ModuleDefMD> _rootModules = new List<ModuleDefMD>();
 
-        private readonly List<RawReversePInvokeMethodInfo> _reversePInvokeMethods = new List<RawReversePInvokeMethodInfo>();
+        private readonly List<RawMonoPInvokeCallbackMethodInfo> _reversePInvokeMethods = new List<RawMonoPInvokeCallbackMethodInfo>();
 
-        public List<RawReversePInvokeMethodInfo> ReversePInvokeMethods => _reversePInvokeMethods;
+        public List<RawMonoPInvokeCallbackMethodInfo> ReversePInvokeMethods => _reversePInvokeMethods;
 
-        public Analyzer(AssemblyCache cache, List<string> assemblyNames)
+        public MonoPInvokeCallbackAnalyzer(AssemblyCache cache, List<string> assemblyNames)
         {
             foreach (var assemblyName in assemblyNames)
             {
@@ -39,7 +39,7 @@ namespace HybridCLR.Editor.ReversePInvokeWrap
         {
             foreach (var mod in _rootModules)
             {
-                Debug.Log($"ass:{mod.FullName} methodcount:{mod.Metadata.TablesStream.MethodTable.Rows}");
+                Debug.Log($"ass:{mod.FullName} method count:{mod.Metadata.TablesStream.MethodTable.Rows}");
                 for (uint rid = 1, n = mod.Metadata.TablesStream.MethodTable.Rows; rid <= n; rid++)
                 {
                     var method = mod.ResolveMethod(rid);
@@ -53,11 +53,15 @@ namespace HybridCLR.Editor.ReversePInvokeWrap
                     {
                         continue;
                     }
+                    if (!MetaUtil.IsSupportedPInvokeMethodSignature(method.MethodSig))
+                    {
+                        throw new Exception($"MonoPInvokeCallback method {method.FullName} has unsupported parameter or return type. Please check the method signature.");
+                    }
                     //foreach (var ca in method.CustomAttributes)
                     //{
                     //    Debug.Log($"{ca.AttributeType.FullName} {ca.TypeFullName}");
                     //}
-                    _reversePInvokeMethods.Add(new RawReversePInvokeMethodInfo()
+                    _reversePInvokeMethods.Add(new RawMonoPInvokeCallbackMethodInfo()
                     {
                         Method = method,
                         GenerationAttribute = method.CustomAttributes.FirstOrDefault(ca => ca.AttributeType.FullName == "HybridCLR.ReversePInvokeWrapperGenerationAttribute"),

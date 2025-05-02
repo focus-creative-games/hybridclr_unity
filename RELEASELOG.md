@@ -1,5 +1,28 @@
 # ReleaseLog
 
+## 8.0.0
+
+Release Date: 2025-05-02.
+
+### Runtime
+
+- [new] support define PInvoke method in interpreter assembly
+- [new] InterpreterImage initialize ImplMap for PInvoke methods.
+- [new] RawImageBase support ModuleRef and ImplMap table.
+- [fix] fixed a compilation error on PS4 platform for the code `TokenGenericContextType key = { token, genericContext };` — the C++ compiler version on PS4 is too old to support this initialization syntax for std::tuple.
+
+### Editor
+
+- [fix] fix error of computing CallingConvention in MethodBridge/Generator::BuildCalliMethods
+- [new] generate Managed2NativeFunction for PInvoke method
+- [change] AssemblyResolver also resolves `*.dll.bytes` files besides `*.dll`.
+- [change] change type of the first argument `methodPointer` of Managed2NativeFunctionPointer from `const void*` to `Il2CppMethodPointer`
+- [change] the shared type of ElementType.FnPtr is changed from IntPtr to UIntPtr
+- [change] validate unsupported parameter type(.e.g string) in MonoPInvokeCallback signature when generate MethodBridge file
+- [opt] optimization unnecessary initialization of typeArgsStack and methodArgsStack of GenericArgumentContext
+- [refactor] refactor code of settings.
+- [refactor] move ReversePInvokeWrap/Analyzer.cs to MethodBridge/MonoPInvokeCallbackAnalyzer.cs
+
 ## 7.10.0
 
 Release Date: 2025-04-22.

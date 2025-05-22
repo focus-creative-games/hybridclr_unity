@@ -29,9 +29,9 @@ namespace HybridCLR.Editor.Meta
 			switch (typeSig.ElementType)
 			{
 				case ElementType.Ptr: return new PtrSig(Resolve(typeSig.Next));
-				case ElementType.ByRef: return new PtrSig(Resolve(typeSig.Next));
+				case ElementType.ByRef: return new ByRefSig(Resolve(typeSig.Next));
 
-                case ElementType.SZArray: return new PtrSig(Resolve(typeSig.Next));
+                case ElementType.SZArray: return new SZArraySig(Resolve(typeSig.Next));
 				case ElementType.Array:
                 {
                     var ara = (ArraySig)typeSig;
@@ -41,7 +41,7 @@ namespace HybridCLR.Editor.Meta
 				case ElementType.Var:
                 {
                     GenericVar genericVar = (GenericVar)typeSig;
-                    var newSig = Resolve(typeArgsStack, genericVar.Number, true);
+                    var newSig = Resolve(typeArgsStack, genericVar.Number);
                     if (newSig == null)
                     {
                         throw new Exception();
@@ -52,7 +52,7 @@ namespace HybridCLR.Editor.Meta
 				case ElementType.MVar:
                 {
                     GenericMVar genericVar = (GenericMVar)typeSig;
-                    var newSig = Resolve(methodArgsStack, genericVar.Number, true);
+                    var newSig = Resolve(methodArgsStack, genericVar.Number);
                     if (newSig == null)
                     {
                         throw new Exception();
@@ -101,13 +101,9 @@ namespace HybridCLR.Editor.Meta
 			}
         }
 
-        private TypeSig Resolve(List<TypeSig> args, uint number, bool isTypeVar)
+        private TypeSig Resolve(List<TypeSig> args, uint number)
         {
-            var typeSig = args[(int)number];
-            var gvar = typeSig as GenericSig;
-            if (gvar is null || gvar.IsTypeVar != isTypeVar)
-                return typeSig;
-            return gvar;
+            return args[(int)number];
         }
     }
 

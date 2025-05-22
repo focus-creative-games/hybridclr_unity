@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace HybridCLR.Editor.Link
 {
-    internal class LinkXmlWriter
+    public class LinkXmlWriter
     {
         public void Write(string outputLinkXmlFile, HashSet<TypeRef> refTypes)
         {

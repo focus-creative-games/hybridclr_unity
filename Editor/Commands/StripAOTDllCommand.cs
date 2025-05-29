@@ -72,9 +72,6 @@ namespace HybridCLR.Editor.Commands
             BashUtil.RemoveDir(outputPath);
 
             var buildOptions = GetBuildPlayerOptions(target);
-#if UNITY_2021_2_OR_NEWER
-            buildOptions |= BuildOptions.CleanBuildCache;
-#endif
 
             bool oldExportAndroidProj = EditorUserBuildSettings.exportAsGoogleAndroidProject;
 #if UNITY_EDITOR_OSX

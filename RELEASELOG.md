@@ -1,5 +1,17 @@
 # ReleaseLog
 
+## 8.1.0
+
+Release Date: 2025-05-29.
+
+### Runtime
+
+- [opt] **important**! use std::unordered_set for s_GenericInst to reduce the time cost of Assembly.Load to 33% of the original.
+
+### Editor
+
+- [fix] fix bug of GenericArgumentContext that inflate ByRef and SZArray to Ptr.
+
 ## 8.0.0
 
 Release Date: 2025-05-02.

@@ -55,7 +55,7 @@ namespace HybridCLR.Editor.MethodBridge
                     }
                     if (!MetaUtil.IsSupportedPInvokeMethodSignature(method.MethodSig))
                     {
-                        throw new Exception($"MonoPInvokeCallback method {method.FullName} has unsupported parameter or return type. Please check the method signature.");
+                        Debug.LogError($"MonoPInvokeCallback method {method.FullName} has unsupported parameter or return type. Please check the method signature.");
                     }
                     //foreach (var ca in method.CustomAttributes)
                     //{

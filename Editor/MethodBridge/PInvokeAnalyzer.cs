@@ -38,7 +38,7 @@ namespace HybridCLR.Editor.MethodBridge
                         {
                             if (!MetaUtil.IsSupportedPInvokeMethodSignature(method.MethodSig))
                             {
-                                throw new Exception($"PInvoke method {method.FullName} has unsupported parameter or return type. Please check the method signature.");
+                                Debug.LogError($"PInvoke method {method.FullName} has unsupported parameter or return type. Please check the method signature.");
                             }
                             _pinvokeMethodSignatures.Add(new CallNativeMethodSignatureInfo { MethodSig = method.MethodSig });
                         }

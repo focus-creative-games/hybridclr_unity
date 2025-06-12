@@ -1,5 +1,19 @@
 # ReleaseLog
 
+## 8.2.0
+
+Release Date: 2025-06-12.
+
+### Runtime
+
+- [fix] fix line number mistake in stacktrace
+- [fix] Fixed bug that PDBImage::SetupStackFrameInfo didn't set ilOffset and sourceCodeLineNumber of stackFrame when SequencePoint not found
+- [merge] merge il2cpp changes from 2022.3.54-2022.3.63
+
+### Editor
+
+- [change] changed from throw exception to logError when not supported pinvoke or reverse pinvoke method parameter type was found
+
 ## 8.1.0
 
 Release Date: 2025-05-29.

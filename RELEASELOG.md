@@ -1,5 +1,19 @@
 # ReleaseLog
 
+## 8.3.0
+
+Release Date: 2025-07-04.
+
+### Runtime
+
+- [fix] fix the bug where RuntimeInitClassCCtor was executed during InterpreterModule::GetInterpMethodInfo. This caused the type static constructor to be incorrectly executed prematurely during PrejitMethod.
+- [fix] fix bug that JitMethod jit method of generic class incorrectly.
+- [merge] merge il2cpp of tuanjie changes from 1.5.0-1.6.0
+
+### Editor
+
+- [fix] fix the bug that not collect struct in calli and extern method signature in generating MethodBridge.
+
 ## 8.2.0
 
 Release Date: 2025-06-12.

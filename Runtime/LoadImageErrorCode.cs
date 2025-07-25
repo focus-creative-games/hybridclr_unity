@@ -11,6 +11,9 @@ namespace HybridCLR
         HOMOLOGOUS_ASSEMBLY_HAS_LOADED, // can not load supplementary metadata assembly for the same assembly
         INVALID_HOMOLOGOUS_MODE, // invalid homologous image mode
         PDB_BAD_FILE, // invalid pdb file
+        UNKNOWN_IMAGE_FORMAT,
+        UNSUPPORT_FORMAT_VERSION,
+        UNMATCH_FORMAT_VARIANT,
     };
 }
 

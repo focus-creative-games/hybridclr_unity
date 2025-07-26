@@ -1,5 +1,20 @@
 # ReleaseLog
 
+## 8.4.0
+
+Release Date: 2025-07-26.
+
+### Runtime
+
+- **[new] IMPORTANT! support custom image format**
+- [change] the type of field `offset` of ldsfld, stfld, ldthreadlocalfld、stthreadlocalfld changed from uint16_t to uint32_t so that supports class with huge static fields.
+- [opt] optimize to use NewValueTypeVar_Ctor_0 for new zero-argument value type and System.Activator.CreateInstance&lt;T&gt;()
+- [opt] optimize new ValueType with zero arguments.
+
+### Editor
+
+- [fix] fix the issue that `Texture Compression` option in Build Settings was changed after running `HybridCLR/Generate/All` on Android platform
+
 ## 8.3.0
 
 Release Date: 2025-07-04.

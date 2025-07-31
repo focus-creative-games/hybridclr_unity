@@ -109,15 +109,8 @@ namespace HybridCLR.Editor.Installer
                 UnityEngine.Debug.Log($"[BashUtil] CopyDir {src} => {dst}");
             }
             RemoveDir(dst);
-            Directory.CreateDirectory(dst);
-            foreach(var file in Directory.GetFiles(src))
-            {
-                UnityEditor.FileUtil.CopyFileOrDirectory(file, $"{dst}/{Path.GetFileName(file)}");
-            }
-            foreach(var subDir in Directory.GetDirectories(src))
-            {
-                CopyDir(subDir, $"{dst}/{Path.GetFileName(subDir)}");
-            }
+
+            UnityEditor.FileUtil.CopyFileOrDirectory(src, dst);
         }
     }
 }

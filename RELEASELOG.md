@@ -1,5 +1,19 @@
 # ReleaseLog
 
+## 8.5.0
+
+Release Date: 2025-08-20.
+
+### Runtime
+
+- [new] AOTHomologousImage supports custom image format
+- [fix] Throw an exception when the number of function parameters exceeds 255, as the parameter count type in il2cpp is uint8_t.
+- [fix] fix  incorrect type conversions for MethodInfo.parameter_count and Il2CppMethodDefinition.parameterCount.
+
+### Editor
+
+- [change] BashUtil::CopyDir replaces CopyWithCheckLongFile with CopyUnityEditor.FileUtil.CopyFileOrDirectory
+
 ## 8.4.0
 
 Release Date: 2025-07-26.

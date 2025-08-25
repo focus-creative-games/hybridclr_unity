@@ -3,6 +3,7 @@ using HybridCLR.Editor.Meta;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -26,6 +27,19 @@ namespace HybridCLR.Editor.MethodBridge
             }
         }
 
+        private CallingConvention GetCallingConvention(MethodDef method)
+        {
+            switch (method.ImplMap.CallConv)
+            {
+                case PInvokeAttributes.CallConvWinapi: return CallingConvention.Default;
+                case PInvokeAttributes.CallConvCdecl: return CallingConvention.C;
+                case PInvokeAttributes.CallConvStdCall: return CallingConvention.StdCall;
+                case PInvokeAttributes.CallConvThiscall: return CallingConvention.ThisCall;
+                case PInvokeAttributes.CallConvFastcall: return CallingConvention.FastCall;
+                default: return CallingConvention.Default;
+            }
+        }
+
         public void Run()
         {
             foreach (var mod in _rootModules)
@@ -40,7 +54,11 @@ namespace HybridCLR.Editor.MethodBridge
                             {
                                 Debug.LogError($"PInvoke method {method.FullName} has unsupported parameter or return type. Please check the method signature.");
                             }
-                            _pinvokeMethodSignatures.Add(new CallNativeMethodSignatureInfo { MethodSig = method.MethodSig });
+                            _pinvokeMethodSignatures.Add(new CallNativeMethodSignatureInfo
+                            {
+                                MethodSig = method.MethodSig,
+                                Callvention = method.HasImplMap? GetCallingConvention(method) : (CallingConvention?)null,
+                            });
                         }
                     }
                 }

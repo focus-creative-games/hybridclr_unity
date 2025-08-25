@@ -1,5 +1,17 @@
 # ReleaseLog
 
+## 8.5.1
+
+Release Date: 2025-08-25.
+
+### Runtime
+
+- [fix] **CRITICAL!!!** fixed stack calculation bug in instinct transform for `System.Activator.CreateInstance<T>()` when T is value type.
+
+### Editor
+
+- [fix] fixed PInvokeAnalyzer bug in computing PInvoke function calling conventions.
+
 ## 8.5.0
 
 Release Date: 2025-08-20.

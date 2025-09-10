@@ -66,7 +66,7 @@ namespace HybridCLR.Editor.Commands
             }
         }
 
-        public static void GenerateStripedAOTDlls(BuildTarget target)
+        public static void GenerateStripedAOTDlls(BuildTarget target, string assetBundleManifestPath = null)
         {
             string outputPath = $"{SettingsUtil.HybridCLRDataDir}/StrippedAOTDllsTempProj/{target}";
             BashUtil.RemoveDir(outputPath);
@@ -140,6 +140,10 @@ namespace HybridCLR.Editor.Commands
                     subtarget = (int)StandaloneBuildSubtarget.Server,
 #endif
                 };
+                if (!string.IsNullOrEmpty(assetBundleManifestPath))
+                {
+                    buildPlayerOptions.assetBundleManifestPath = assetBundleManifestPath;
+                }
 
                 var report = BuildPipeline.BuildPlayer(buildPlayerOptions);
 

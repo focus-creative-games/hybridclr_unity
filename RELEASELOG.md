@@ -1,5 +1,19 @@
 # ReleaseLog
 
+## 8.7.0
+
+Release Date: 2025-11-03.
+
+### Runtime
+
+- [fix] fix a crash issue in IH_object_ctor caused by `ctx.GetCurbb()->insts` may be empty in obfuscated code
+- [merge] **Unity 6000***: merge il2cpp changes from 6000.0.44 to 6000.0.60
+- [merge] **TuanJie**: merge il2cpp changes from tuanjie 1.6.5 to 1.6.7
+
+### Editor
+
+- [fix] fix raising NullReferenceException in generating MethodBridge for MonoPInvokeCallbackAttribute while constructor arguments is empty.
+
 ## 8.6.0
 
 Release Date: 2025-09-27.

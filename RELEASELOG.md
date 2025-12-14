@@ -1,5 +1,21 @@
 # ReleaseLog
 
+## 8.8.0
+
+Release Date: 2025-12-14.
+
+### Runtime
+
+- [new] support 6000.3.x
+- [new] add instructions for ldfld and stfld while field offset >= 2^16
+- [fix] fix offset overflow issue for ldflda, ldfld, stfld while offset >= 2^16
+- [fix] fix bug of comparing array rank
+
+### Editor
+
+- [new] support 6000.3.x
+- [fix] fix deprecated warning of `PlayerSettings.GetScriptingBackend(BuildTargetGroup)` in Unity 6000
+
 ## 8.7.0
 
 Release Date: 2025-11-03.

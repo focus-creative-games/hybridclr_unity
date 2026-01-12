@@ -1,5 +1,17 @@
 # ReleaseLog
 
+## 8.9.0
+
+Release Date: 2026-01-12.
+
+### Runtime
+
+- [fix] **Unity 6.3.x**: fix bug that didn't handle interpreter type in GlobalMetadata::GetNestedTypes
+- [fix] **Unity 6.3.x**: fix crash on GlobalMetadata::GetMethodHandleFromMethodInfo because it maybe passed null as methodInfo in setup vtable.
+- [fix] **TUANJIE**: fix IL2CPP_ASSERT fail in Class::GetVirtualMethod when klass is generic class and not initialized, at this time klass->vtable_count == 0
+- [fix] **TUANJIE**: fix the bug that didn't initialize method->klass->rgctx_data after GenericMetadata::InflateRGCTXMethod
+- [change] **TUANJIE**: [merge] merge il2cpp changes from tuanjie 1.6.7 to 1.6.8
+
 ## 8.8.0
 
 Release Date: 2025-12-14.

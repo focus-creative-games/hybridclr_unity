@@ -25,6 +25,12 @@ Welcome to embrace modern native C# hot update technology!
 - [Quick Start](https://www.hybridclr.cn/en/docs/beginner/quickstart)
 - [Business Project Cases](https://www.hybridclr.cn/en/docs/other/businesscase)
 
+## LeanCLR Project
+
+HybridCLR is just an interpreter module. If you need a complete, compact, open-source CLR implementation suitable for mobile and mini-game platforms, [LeanCLR](https://github.com/focus-creative-games/leanclr) is currently the best solution.
+
+LeanCLR can be embedded independently into any app or game project and published to any platform. It can also **replace il2cpp as the runtime for Unity (Unity Engine) when publishing to webgl and mini-game platforms**, greatly reducing package size and memory usage.
+
 ## Features
 
 - Nearly complete implementation of the [ECMA-335 specification](https://www.ecma-international.org/publications-and-standards/standards/ecma-335/), with only a very small number of [unsupported features](https://www.hybridclr.cn/en/docs/basic/notsupportedfeatures).

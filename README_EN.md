@@ -24,12 +24,7 @@ Welcome to embrace modern native C# hot update technology!
 - [Official Documentation](https://www.hybridclr.cn/en/docs/intro)
 - [Quick Start](https://www.hybridclr.cn/en/docs/beginner/quickstart)
 - [Business Project Cases](https://www.hybridclr.cn/en/docs/other/businesscase)
-
-## LeanCLR Project
-
-HybridCLR is just an interpreter module. If you need a complete, compact, open-source CLR implementation suitable for mobile and mini-game platforms, [LeanCLR](https://github.com/focus-creative-games/leanclr) is currently the best solution.
-
-LeanCLR can be embedded independently into any app or game project and published to any platform. It can also **replace il2cpp as the runtime for Unity (Unity Engine) when publishing to webgl and mini-game platforms**, greatly reducing package size and memory usage.
+- [LeanCLR](https://github.com/focus-creative-games/leanclr)
 
 ## Features
 
@@ -82,6 +77,12 @@ You can view the [list of known top companies using HybridCLR and their launched
 - Discord channel https://discord.gg/BATfNfJnm2
 - Business cooperation email: business#code-philosophy.com
 - [Commercial Support](https://www.hybridclr.cn/en/docs/business/intro)
+
+## LeanCLR Project
+
+HybridCLR is just an interpreter module. If you need a complete, compact, open-source CLR implementation suitable for mobile and mini-game platforms, [LeanCLR](https://github.com/focus-creative-games/leanclr) is currently the best solution.
+
+LeanCLR can be embedded independently into any app or game project and published to any platform. It can also **replace il2cpp as the runtime for Unity (Unity Engine) when publishing to webgl and mini-game platforms**, greatly reducing package size and memory usage.
 
 ## About the Author
 

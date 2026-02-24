@@ -1,5 +1,23 @@
 # ReleaseLog
 
+## 8.10.0
+
+Release Date: 2026-02-24.
+
+### Runtime
+
+- fix: fix bug of computing interface vtable implement when re-implements interface in child class.
+- fix: for arrays whose element type is a value type, `ldelema` no longer performs type-matching checks.
+Although this does not strictly follow the ECMA-335 specification, it is consistent with the behavior of Mono and CoreCLR.
+- fix: fix bug that didn't handle RuntimeOptionId::MaxInlineableMethodBodySize in RuntimeConfig::GetRuntimeOption and RuntimeConfig::SetRuntimeOption.
+- fix: assign FindImageByAssembly result to image in PreJitClass
+- fix: use strict bounds in CheckMulOverflow for int32 and uint32
+- fix: fix arguments overflow when method argument count > 256 in InvokeDelegateBeginInvoke.
+
+### Editor
+
+- [new]: support BuildTarget GameCoreXboxOne and GameCoreXboxSeries.
+
 ## 8.9.0
 
 Release Date: 2026-01-12.

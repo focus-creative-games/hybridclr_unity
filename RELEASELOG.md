@@ -1,5 +1,16 @@
 # ReleaseLog
 
+## 8.11.0
+
+Release Date: 2026-02-28.
+
+### Runtime
+
+- [fix] fix methodPointer of Full Generic Sharing Method may not be initialized in some cases, which leads to methodPointerCallByInterp not initialized correctly.
+- [fix] handle intrinsic System.Array.UnsafeMov specially. It will raise unbox exception if runs this generic method at interpreter mod.
+- [fix] adjust data type at stack top after JitHelper::UnsafeCast and JitHelper::UnsafeEnumCastLong.
+- [fix] **6000.3.x**: fix bug of comparing MVAR in IsSameOverrideType
+
 ## 8.10.0
 
 Release Date: 2026-02-24.

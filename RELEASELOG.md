@@ -1,5 +1,20 @@
 # ReleaseLog
 
+## 8.15.0
+
+Release Data: 2026-09-29.
+
+### Runtime
+
+- fix: Reject not-fully-instantiated types during IL transform
+- fix: align explicit interface method override across runtimes
+- fix: fix regression bug comes from commit `SHA-1: b11fb5daa6ff2737619bd3b7ef6602d2b34dc3f8 * new: add test case for computing interface vtable implement when re-implements interface in child class.`, leading to interface methods were implicit override by not-public virtual methods.
+- refactor: change type of MethodInfo::initInterpCallMethodPointer/isInterpterImpl from bool:1 to uint8_t:1 so all flag fields can be packed in 1 byte.
+
+### Editor
+
+- refactor: InstallerController find max-lower-bound version as best match version
+
 ## 8.14.1
 
 Release Data: 2026-08-18.

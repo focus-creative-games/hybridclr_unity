@@ -1,17 +1,36 @@
-﻿using HybridCLR.Editor.AOT;
-using HybridCLR.Editor.Meta;
+// Copyright 2026 Code Philosophy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+﻿using HybridCLR.CodeGen.AOT;
+using HybridCLR.Meta;
+
+using HybridCLR.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
-namespace HybridCLR.Editor.Commands
+namespace HybridCLR.Commands
 {
-    using Analyzer = HybridCLR.Editor.AOT.Analyzer;
     public static class AOTReferenceGeneratorCommand
     {
 
@@ -24,7 +43,7 @@ namespace HybridCLR.Editor.Commands
         }
 
         /// <summary>
-        /// 计算热更代码中的泛型引用
+        /// Calculate generic references in hot update code
         /// </summary>
         /// <param name="target"></param>
         public static void GenerateAOTGenericReference(BuildTarget target)
@@ -33,7 +52,7 @@ namespace HybridCLR.Editor.Commands
             List<string> hotUpdateDllNames = SettingsUtil.HotUpdateAssemblyNamesExcludePreserved;
 
             AssemblyReferenceDeepCollector collector = new AssemblyReferenceDeepCollector(MetaUtil.CreateHotUpdateAndAOTAssemblyResolver(target, hotUpdateDllNames), hotUpdateDllNames);
-            var analyzer = new Analyzer(new Analyzer.Options
+            var analyzer = new AOTReferenceAnalyzer(new AOTReferenceAnalyzer.Options
             {
                 MaxIterationCount = Math.Min(20, gs.maxGenericReferenceIteration),
                 Collector = collector,
@@ -41,21 +60,13 @@ namespace HybridCLR.Editor.Commands
 
             analyzer.Run();
 
-            var writer = new GenericReferenceWriter();
+            var writer = new AOTGenericReferenceWriter();
             writer.Write(analyzer.AotGenericTypes.ToList(), analyzer.AotGenericMethods.ToList(), $"{Application.dataPath}/{gs.outputAOTGenericReferenceFile}");
             AssetDatabase.Refresh();
         }
 
-
-
-        //[MenuItem("HybridCLR/Generate/AOTGenericReference2", priority = 103)]
-        //public static void GeneratedAOTGenericReferenceExcludeExists()
-        //{
-        //    GeneratedAOTGenericReferenceExcludeExists(EditorUserBuildSettings.activeBuildTarget);
-        //}
-
         /// <summary>
-        /// 计算热更新代码中的泛型引用，但排除AOT已经存在的泛型引用
+        /// Calculate generic references in hot update code, but exclude existing generic references in AOT
         /// </summary>
         /// <param name="target"></param>
         /// 
@@ -66,7 +77,7 @@ namespace HybridCLR.Editor.Commands
             List<string> hotUpdateDllNames = SettingsUtil.HotUpdateAssemblyNamesExcludePreserved;
 
             AssemblyReferenceDeepCollector hotUpdateCollector = new AssemblyReferenceDeepCollector(MetaUtil.CreateHotUpdateAndAOTAssemblyResolver(target, hotUpdateDllNames), hotUpdateDllNames);
-            var hotUpdateAnalyzer = new Analyzer(new Analyzer.Options
+            var hotUpdateAnalyzer = new AOTReferenceAnalyzer(new AOTReferenceAnalyzer.Options
             {
                 MaxIterationCount = Math.Min(10, gs.maxGenericReferenceIteration),
                 Collector = hotUpdateCollector,
@@ -84,7 +95,7 @@ namespace HybridCLR.Editor.Commands
                 throw new Exception($"no aot assembly found. please run `HybridCLR/Generate/All` or `HybridCLR/Generate/AotDlls` to generate aot dlls before runing `HybridCLR/Generate/AOTGenericReference`");
             }
             AssemblyReferenceDeepCollector aotCollector = new AssemblyReferenceDeepCollector(MetaUtil.CreateAOTAssemblyResolver(target), aotAssemblyNames);
-            var aotAnalyzer = new Analyzer(new Analyzer.Options
+            var aotAnalyzer = new AOTReferenceAnalyzer(new AOTReferenceAnalyzer.Options
             {
                 MaxIterationCount = Math.Min(10, gs.maxGenericReferenceIteration),
                 Collector = aotCollector,
@@ -94,7 +105,7 @@ namespace HybridCLR.Editor.Commands
             aotAnalyzer.Run();
 
             var (resultTypes, resultMethods) = ExcludeExistAOTGenericTypeAndMethodss(hotUpdateAnalyzer.AotGenericTypes.ToList(), hotUpdateAnalyzer.AotGenericMethods.ToList(), aotAnalyzer.AotGenericTypes.ToList(), aotAnalyzer.AotGenericMethods.ToList());
-            var writer = new GenericReferenceWriter();
+            var writer = new AOTGenericReferenceWriter();
             writer.Write(resultTypes, resultMethods, $"{Application.dataPath}/{gs.outputAOTGenericReferenceFile}");
             AssetDatabase.Refresh();
         }

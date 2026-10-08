@@ -631,7 +631,7 @@ namespace DotNetDetour
 
                 code = (void*)((ulong)code + Length);
 
-            } while (Length>0);
+            } while (Length > 0);
 
             return Result;
         }
@@ -639,7 +639,7 @@ namespace DotNetDetour
         static bool? s_isArm;
         public static bool IsARM()
         {
-            if(s_isArm.HasValue)
+            if (s_isArm.HasValue)
                 return s_isArm.Value;
 
             var arch = RuntimeInformation.ProcessArchitecture;
@@ -661,7 +661,7 @@ namespace DotNetDetour
         static bool? s_isiOS;
         public static bool IsiOS()
         {
-            if(s_isiOS.HasValue)
+            if (s_isiOS.HasValue)
                 return s_isiOS.Value;
 
             s_isiOS = UnityEngine.SystemInfo.operatingSystem.ToLower().Contains("ios");
@@ -692,7 +692,7 @@ namespace DotNetDetour
 
         public static bool IsThumb(IntPtr code)
         {
-            return IsArm32() &&  ((long)code & 0x1) == 0x1;
+            return IsArm32() && ((long)code & 0x1) == 0x1;
         }
 
         /// <summary>
@@ -733,14 +733,14 @@ namespace DotNetDetour
             s = rexw = pr_66 = pr_67 = 0;
 
             /* dummy check */
-            if ((int)code==0)
+            if ((int)code == 0)
                 return 0;
 
             /* init output data */
             //memset(ld, 0, sizeof(ldasm_data));
 
             /* phase 1: parse prefixies */
-            while ((cflags(*p) & OP_PREFIX)!=0)
+            while ((cflags(*p) & OP_PREFIX) != 0)
             {
                 if (*p == 0x66)
                     pr_66 = 1;
@@ -783,19 +783,20 @@ namespace DotNetDetour
                 op = *p++; s++;
                 ld.opcd_size++;
                 f = cflags_ex(op);
-                if ((f & OP_INVALID)!=0)
+                if ((f & OP_INVALID) != 0)
                 {
                     ld.flags |= F_INVALID;
                     return s;
                 }
                 /* for SSE instructions */
-                if ((f & OP_EXTENDED)!=0)
+                if ((f & OP_EXTENDED) != 0)
                 {
                     op = *p++; s++;
                     ld.opcd_size++;
                 }
             }
-            else {
+            else
+            {
                 f = cflags(op);
                 /* pr_66 = pr_67 for opcodes A0-A3 */
                 if (op >= 0xA0 && op <= 0xA3)
@@ -803,7 +804,7 @@ namespace DotNetDetour
             }
 
             /* phase 3: parse ModR/M, SIB and DISP */
-            if ((f & OP_MODRM)!=0)
+            if ((f & OP_MODRM) != 0)
             {
                 byte mod = (byte)(*p >> 6);
                 byte ro = (byte)((*p & 0x38) >> 3);
@@ -819,7 +820,7 @@ namespace DotNetDetour
                     f |= OP_DATA_I16_I32_I64;
 
                 /* is SIB byte exist? */
-                if (mod != 3 && rm == 4 && !(!is64 && pr_67!=0))
+                if (mod != 3 && rm == 4 && !(!is64 && pr_67 != 0))
                 {
                     ld.sib = *p++; s++;
                     ld.flags |= F_SIB;
@@ -833,40 +834,41 @@ namespace DotNetDetour
 
                 switch (mod)
                 {
-                    case 0:
+                case 0:
+                if (is64)
+                {
+                    if (rm == 5)
+                    {
+                        ld.disp_size = 4;
                         if (is64)
-                        {
-                            if (rm == 5)
-                            {
-                                ld.disp_size = 4;
-                                if (is64)
-                                    ld.flags |= F_RELATIVE;
-                            }
-                        }
-                        else if (pr_67!=0)
-                        {
-                            if (rm == 6)
-                                ld.disp_size = 2;
-                        }
-                        else {
-                            if (rm == 5)
-                                ld.disp_size = 4;
-                        }
-                        break;
-                    case 1:
-                        ld.disp_size = 1;
-                        break;
-                    case 2:
-                        if (is64)
-                            ld.disp_size = 4;
-                        else if (pr_67!=0)
-                            ld.disp_size = 2;
-                        else
-                            ld.disp_size = 4;
-                        break;
+                            ld.flags |= F_RELATIVE;
+                    }
+                }
+                else if (pr_67 != 0)
+                {
+                    if (rm == 6)
+                        ld.disp_size = 2;
+                }
+                else
+                {
+                    if (rm == 5)
+                        ld.disp_size = 4;
+                }
+                break;
+                case 1:
+                ld.disp_size = 1;
+                break;
+                case 2:
+                if (is64)
+                    ld.disp_size = 4;
+                else if (pr_67 != 0)
+                    ld.disp_size = 2;
+                else
+                    ld.disp_size = 4;
+                break;
                 }
 
-                if (ld.disp_size>0)
+                if (ld.disp_size > 0)
                 {
                     ld.disp_offset = (byte)(p - (byte*)code);
                     p += ld.disp_size;
@@ -876,20 +878,20 @@ namespace DotNetDetour
             }
 
             /* phase 4: parse immediate data */
-            if (rexw!=0 && (f & OP_DATA_I16_I32_I64)!=0)
+            if (rexw != 0 && (f & OP_DATA_I16_I32_I64) != 0)
                 ld.imm_size = 8;
-            else if ((f & OP_DATA_I16_I32)!=0 || (f & OP_DATA_I16_I32_I64)!=0)
+            else if ((f & OP_DATA_I16_I32) != 0 || (f & OP_DATA_I16_I32_I64) != 0)
                 ld.imm_size = (byte)(4 - (pr_66 << 1));
 
             /* if exist, add OP_DATA_I16 and OP_DATA_I8 size */
             ld.imm_size += (byte)(f & 3);
 
-            if ((ld.imm_size)!=0)
+            if ((ld.imm_size) != 0)
             {
                 s += ld.imm_size;
                 ld.imm_offset = (byte)(p - (byte*)code);
                 ld.flags |= F_IMM;
-                if ((f & OP_RELATIVE)!=0)
+                if ((f & OP_RELATIVE) != 0)
                     ld.flags |= F_RELATIVE;
             }
 

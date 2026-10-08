@@ -1,9 +1,5 @@
 ﻿using DotNetDetour;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using System.Linq;
 
 namespace MonoHook
 {
@@ -11,16 +7,16 @@ namespace MonoHook
     {
         public bool isValid { get; protected set; }
 
-        protected void*     _pTarget, _pReplace, _pProxy;
-        protected int       _jmpCodeSize;
-        protected byte[]    _targetHeaderBackup;
+        protected void* _pTarget, _pReplace, _pProxy;
+        protected int _jmpCodeSize;
+        protected byte[] _targetHeaderBackup;
 
         public CodePatcher(IntPtr target, IntPtr replace, IntPtr proxy, int jmpCodeSize)
         {
-            _pTarget        = target.ToPointer();
-            _pReplace       = replace.ToPointer();
-            _pProxy         = proxy.ToPointer();
-            _jmpCodeSize    = jmpCodeSize;
+            _pTarget = target.ToPointer();
+            _pReplace = replace.ToPointer();
+            _pProxy = proxy.ToPointer();
+            _jmpCodeSize = jmpCodeSize;
         }
 
         public void ApplyPatch()
@@ -47,7 +43,7 @@ namespace MonoHook
             if (_targetHeaderBackup != null)
                 return;
 
-            uint requireSize    = LDasm.SizeofMinNumByte(_pTarget, _jmpCodeSize);
+            uint requireSize = LDasm.SizeofMinNumByte(_pTarget, _jmpCodeSize);
             _targetHeaderBackup = new byte[requireSize];
 
             fixed (void* ptr = _targetHeaderBackup)
@@ -76,8 +72,8 @@ namespace MonoHook
             HookUtils.MemCpy_Jit(_pProxy, _targetHeaderBackup);
 
             // jmp to target's new position
-            long jmpFrom    = (long)_pProxy + _targetHeaderBackup.Length;
-            long jmpTo      = (long)_pTarget + _targetHeaderBackup.Length;
+            long jmpFrom = (long)_pProxy + _targetHeaderBackup.Length;
+            long jmpTo = (long)_pTarget + _targetHeaderBackup.Length;
 
             byte[] buff = GenJmpCode((void*)jmpFrom, (void*)jmpTo);
             HookUtils.MemCpy_Jit((void*)jmpFrom, buff);
@@ -121,7 +117,7 @@ namespace MonoHook
             byte[] ret = new byte[s_jmpCode.Length];
             int val = (int)jmpTo - (int)jmpFrom - 5;
 
-            fixed(void * p = &ret[0])
+            fixed (void* p = &ret[0])
             {
                 byte* ptr = (byte*)p;
                 *ptr = 0xE9;

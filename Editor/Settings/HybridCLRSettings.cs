@@ -1,12 +1,35 @@
-using System.IO;
+// Copyright 2026 Code Philosophy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+using HybridCLR.CodeGen.Link;
+using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace HybridCLR.Editor.Settings
+namespace HybridCLR.Settings
 {
 
-    public class HybridCLRSettings : ScriptableObject
+    [FilePath("ProjectSettings/HybridCLRSettings.asset", FilePathAttribute.Location.ProjectFolder)]
+    public class HybridCLRSettings : ScriptableSingleton<HybridCLRSettings>
     {
+
         [Tooltip("enable HybridCLR")]
         public bool enable = true;
 
@@ -28,23 +51,17 @@ namespace HybridCLR.Editor.Settings
         [Tooltip("preserved hot update assembly names(without .dll suffix)")]
         public string[] preserveHotUpdateAssemblies;
 
-        [Tooltip("output directory of compiling hot update assemblies")]
-        public string hotUpdateDllCompileOutputRootDir = "HybridCLRData/HotUpdateDlls";
-
         [Tooltip("searching paths of external hot update assemblies")]
         public string[] externalHotUpdateAssembliyDirs;
 
-        [Tooltip("output directory of stripped AOT assemblies")]
-        public string strippedAOTDllOutputRootDir = "HybridCLRData/AssembliesPostIl2CppStrip";
-
-        [Tooltip("supplementary metadata assembly names(without .dll suffix)")]
-        public string[] patchAOTAssemblies;
+        [Tooltip("preserve level when generating link.xml. PreserveAllOfDeclaringType keeps whole referenced types (safer, larger). PreserveExactMember keeps only referenced fields/methods/properties/events (smaller).")]
+        public LinkPreserveLevel linkPreserveLevel = LinkPreserveLevel.PreserveAllOfDeclaringType;
 
         [Tooltip("output file of automatic generated link.xml by scanning hot update assemblies")]
-        public string outputLinkFile = "HybridCLRGenerate/link.xml";
+        public string outputLinkFile = "HybridCLR/Generate/link.xml";
 
         [Tooltip("output file of automatic generated AOTGenericReferences.cs")]
-        public string outputAOTGenericReferenceFile = "HybridCLRGenerate/AOTGenericReferences.cs";
+        public string outputAOTGenericReferenceFile = "HybridCLR/Generate/AOTGenericReferences.cs";
 
         [Tooltip("max iteration count of searching generic methods in hot update assemblies")]
         public int maxGenericReferenceIteration = 10;
@@ -52,47 +69,14 @@ namespace HybridCLR.Editor.Settings
         [Tooltip("max iteration count of searching method bridge generic methods in AOT assemblies")]
         public int maxMethodBridgeGenericIteration = 10;
 
-
-
-        private static HybridCLRSettings s_Instance;
-
-        public static HybridCLRSettings Instance
-        {
-            get
-            {
-                if (!s_Instance)
-                {
-                    LoadOrCreate();
-                }
-                return s_Instance;
-            }
-        }
-
-        private static string GetFilePath()
-        {
-            return "ProjectSettings/HybridCLRSettings.asset";
-        }
-
-        public static HybridCLRSettings LoadOrCreate()
-        {
-            string filePath = GetFilePath();
-            Object[] objs = InternalEditorUtility.LoadSerializedFileAndForget(filePath);
-            s_Instance = objs.Length > 0 ? (HybridCLRSettings)objs[0] : (s_Instance ?? CreateInstance<HybridCLRSettings>());
-            return s_Instance;
-        }
-
         public static void Save()
         {
-            if (!s_Instance)
+            if (!instance)
             {
                 return;
             }
 
-            string filePath = GetFilePath();
-            string directoryName = Path.GetDirectoryName(filePath);
-            Directory.CreateDirectory(directoryName);
-            var obj = new Object[1] { s_Instance };
-            InternalEditorUtility.SaveToSerializedFileAndForget(obj, filePath, true);
+            instance.Save(true);
         }
     }
 }

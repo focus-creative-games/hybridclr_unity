@@ -1,6 +1,6 @@
 {
     "name": "HybridCLR.Runtime",
-    "rootNamespace": "",
+    "rootNamespace": "HybridCLR",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

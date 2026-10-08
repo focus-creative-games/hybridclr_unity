@@ -1,87 +1,55 @@
-using System;
-using System.Reflection;
+// Copyright 2026 Code Philosophy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 using UnityEditor;
-using UnityEditor.Presets;
-using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace HybridCLR.Editor.Settings
+namespace HybridCLR.Settings
 {
     public class HybridCLRSettingsProvider : SettingsProvider
     {
-        private SerializedObject _serializedObject;
-        private SerializedProperty _enable;
-        private SerializedProperty _useGlobalIl2cpp;
-        private SerializedProperty _hybridclrRepoURL;
-        private SerializedProperty _il2cppPlusRepoURL;
-        private SerializedProperty _hotUpdateAssemblyDefinitions;
-        private SerializedProperty _hotUpdateAssemblies;
-        private SerializedProperty _preserveHotUpdateAssemblies;
-        private SerializedProperty _hotUpdateDllCompileOutputRootDir;
-        private SerializedProperty _externalHotUpdateAssemblyDirs;
-        private SerializedProperty _strippedAOTDllOutputRootDir;
-        private SerializedProperty _patchAOTAssemblies;
-        private SerializedProperty _outputLinkFile;
-        private SerializedProperty _outputAOTGenericReferenceFile;
-        private SerializedProperty _maxGenericReferenceIteration;
-        private SerializedProperty _maxMethodBridgeGenericIteration;
+        private static HybridCLRSettingsProvider s_provider;
 
-        public HybridCLRSettingsProvider() : base("Project/HybridCLR Settings", SettingsScope.Project) { }
+        [SettingsProvider]
+        public static SettingsProvider CreateMyCustomSettingsProvider()
+        {
+            if (s_provider == null)
+            {
+                s_provider = new HybridCLRSettingsProvider();
+            }
+
+            return s_provider;
+        }
+
+        private SerializedObject _serializedObject;
+
+        public HybridCLRSettingsProvider() : base("Project/HybridCLR Settings", SettingsScope.Project)
+        {
+        }
 
         public override void OnActivate(string searchContext, VisualElement rootElement)
         {
             InitGUI();
-        }
-
-        private void InitGUI()
-        {
-            var setting = HybridCLRSettings.LoadOrCreate();
-            _serializedObject?.Dispose();
-            _serializedObject = new SerializedObject(setting);
-            _enable = _serializedObject.FindProperty("enable");
-            _useGlobalIl2cpp = _serializedObject.FindProperty("useGlobalIl2cpp");
-            _hybridclrRepoURL = _serializedObject.FindProperty("hybridclrRepoURL");
-            _il2cppPlusRepoURL = _serializedObject.FindProperty("il2cppPlusRepoURL");
-            _hotUpdateAssemblyDefinitions = _serializedObject.FindProperty("hotUpdateAssemblyDefinitions");
-            _hotUpdateAssemblies = _serializedObject.FindProperty("hotUpdateAssemblies");
-            _preserveHotUpdateAssemblies = _serializedObject.FindProperty("preserveHotUpdateAssemblies");
-            _hotUpdateDllCompileOutputRootDir = _serializedObject.FindProperty("hotUpdateDllCompileOutputRootDir");
-            _externalHotUpdateAssemblyDirs = _serializedObject.FindProperty("externalHotUpdateAssembliyDirs");
-            _strippedAOTDllOutputRootDir = _serializedObject.FindProperty("strippedAOTDllOutputRootDir");
-            _patchAOTAssemblies = _serializedObject.FindProperty("patchAOTAssemblies");
-            _outputLinkFile = _serializedObject.FindProperty("outputLinkFile");
-            _outputAOTGenericReferenceFile = _serializedObject.FindProperty("outputAOTGenericReferenceFile");
-            _maxGenericReferenceIteration = _serializedObject.FindProperty("maxGenericReferenceIteration");
-            _maxMethodBridgeGenericIteration = _serializedObject.FindProperty("maxMethodBridgeGenericIteration");
-        }
-
-        public override void OnGUI(string searchContext)
-        {
-            if (_serializedObject == null || !_serializedObject.targetObject)
+            using (var so = new SerializedObject(HybridCLRSettings.instance))
             {
-                InitGUI();
-            }
-            _serializedObject.Update();
-            EditorGUI.BeginChangeCheck();
-            EditorGUILayout.PropertyField(_enable);
-            EditorGUILayout.PropertyField(_hybridclrRepoURL);
-            EditorGUILayout.PropertyField(_il2cppPlusRepoURL);
-            EditorGUILayout.PropertyField(_useGlobalIl2cpp);
-            EditorGUILayout.PropertyField(_hotUpdateAssemblyDefinitions);
-            EditorGUILayout.PropertyField(_hotUpdateAssemblies);
-            EditorGUILayout.PropertyField(_preserveHotUpdateAssemblies);
-            EditorGUILayout.PropertyField(_hotUpdateDllCompileOutputRootDir);
-            EditorGUILayout.PropertyField(_externalHotUpdateAssemblyDirs);
-            EditorGUILayout.PropertyField(_strippedAOTDllOutputRootDir);
-            EditorGUILayout.PropertyField(_patchAOTAssemblies);
-            EditorGUILayout.PropertyField(_outputLinkFile);
-            EditorGUILayout.PropertyField(_outputAOTGenericReferenceFile);
-            EditorGUILayout.PropertyField(_maxGenericReferenceIteration);
-            EditorGUILayout.PropertyField(_maxMethodBridgeGenericIteration);
-            if (EditorGUI.EndChangeCheck())
-            {
-                _serializedObject.ApplyModifiedProperties();
-                HybridCLRSettings.Save();
+                keywords = GetSearchKeywordsFromSerializedObject(so);
             }
         }
 
@@ -91,16 +59,45 @@ namespace HybridCLR.Editor.Settings
             HybridCLRSettings.Save();
         }
 
-        static HybridCLRSettingsProvider s_provider;
-
-        [SettingsProvider]
-        public static SettingsProvider CreateMyCustomSettingsProvider()
+        private void InitGUI()
         {
-            if (s_provider == null)
+            var setting = HybridCLRSettings.instance;
+            _serializedObject?.Dispose();
+            _serializedObject = new SerializedObject(setting);
+        }
+
+        public override void OnGUI(string searchContext)
+        {
+            if (_serializedObject == null || !_serializedObject.targetObject)
             {
-                s_provider = new HybridCLRSettingsProvider();
+                InitGUI();
             }
-            return s_provider;
+
+            _serializedObject.Update();
+            EditorGUI.BeginChangeCheck();
+
+            using (var prop = _serializedObject.GetIterator())
+            {
+                if (prop.NextVisible(true))
+                {
+                    do
+                    {
+                        if (prop.name == "m_Script")
+                        {
+                            continue;
+                        }
+
+                        EditorGUILayout.PropertyField(prop, true);
+                    }
+                    while (prop.NextVisible(false));
+                }
+            }
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                _serializedObject.ApplyModifiedProperties();
+                HybridCLRSettings.Save();
+            }
         }
     }
 }

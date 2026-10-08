@@ -1,11 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
-using UnityEngine;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.IO;
+using System.Reflection;
 #if UNITY_EDITOR
-using UnityEditor;
 #endif
 
 namespace MonoHook
@@ -60,7 +56,7 @@ namespace MonoHook
             var list = _hooks.Values.ToList();
             foreach (var hook in list)
             {
-                if(hook.tag == tag)
+                if (hook.tag == tag)
                     hook.Uninstall();
             }
         }

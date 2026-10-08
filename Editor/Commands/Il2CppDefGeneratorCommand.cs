@@ -1,13 +1,28 @@
-﻿using HybridCLR.Editor.Link;
-using HybridCLR.Editor.Settings;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+// Copyright 2026 Code Philosophy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+﻿using HybridCLR.CodeGen.Il2CppDef;
 using UnityEditor;
 using UnityEngine;
 
-namespace HybridCLR.Editor.Commands
+namespace HybridCLR.Commands
 {
 
     public static class Il2CppDefGeneratorCommand
@@ -16,17 +31,15 @@ namespace HybridCLR.Editor.Commands
         [MenuItem("HybridCLR/Generate/Il2CppDef", priority = 104)]
         public static void GenerateIl2CppDef()
         {
-            var options = new Il2CppDef.Il2CppDefGenerator.Options()
+            var options = new Il2CppDefGenerator.Options()
             {
                 UnityVersion = Application.unityVersion,
                 HotUpdateAssemblies = SettingsUtil.HotUpdateAssemblyNamesIncludePreserved,
-                UnityVersionTemplateFile = $"{SettingsUtil.TemplatePathInPackage}/UnityVersion.h.tpl",
-                UnityVersionOutputFile = $"{SettingsUtil.LocalIl2CppDir}/libil2cpp/hybridclr/generated/UnityVersion.h",
-                AssemblyManifestTemplateFile = $"{SettingsUtil.TemplatePathInPackage}/AssemblyManifest.cpp.tpl",
-                AssemblyManifestOutputFile = $"{SettingsUtil.LocalIl2CppDir}/libil2cpp/hybridclr/generated/AssemblyManifest.cpp",
+                UnityVersionOutputFile = $"{SettingsUtil.GeneratedCppDir}/UnityVersion.inc",
+                AssemblyManifestOutputFile = $"{SettingsUtil.GeneratedCppDir}/AssemblyManifest.inc",
             };
 
-            var g = new Il2CppDef.Il2CppDefGenerator(options);
+            var g = new Il2CppDefGenerator(options);
             g.Generate();
         }
     }

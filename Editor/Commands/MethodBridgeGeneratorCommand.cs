@@ -1,41 +1,42 @@
-﻿using HybridCLR.Editor;
-using HybridCLR.Editor.ABI;
-using HybridCLR.Editor.Meta;
-using HybridCLR.Editor.MethodBridge;
+// Copyright 2026 Code Philosophy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+﻿using HybridCLR.Meta;
+using HybridCLR.CodeGen.MethodBridge;
+using HybridCLR.Mod;
+using HybridCLR.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEditor;
-using UnityEditor.Build;
 using UnityEngine;
 
-namespace HybridCLR.Editor.Commands
+namespace HybridCLR.Commands
 {
-    using Analyzer = HybridCLR.Editor.MethodBridge.Analyzer;
     public class MethodBridgeGeneratorCommand
     {
-
-        public static void CleanIl2CppBuildCache()
+        public static void GenerateMethodBridgeCppFile(IReadOnlyCollection<GenericMethod> genericMethods, List<RawMonoPInvokeCallbackMethodInfo> reversePInvokeMethods, IReadOnlyCollection<CallNativeMethodSignatureInfo> calliMethodSignatures, string outputFile)
         {
-            string il2cppBuildCachePath = SettingsUtil.Il2CppBuildCacheDir;
-            if (!Directory.Exists(il2cppBuildCachePath))
-            {
-                return;
-            }
-            Debug.Log($"clean il2cpp build cache:{il2cppBuildCachePath}");
-            Directory.Delete(il2cppBuildCachePath, true);
-        }
-
-        private static void GenerateMethodBridgeCppFile(IReadOnlyCollection<GenericMethod> genericMethods, List<RawMonoPInvokeCallbackMethodInfo> reversePInvokeMethods, IReadOnlyCollection<CallNativeMethodSignatureInfo> calliMethodSignatures, string tempFile, string outputFile)
-        {
-            string templateCode = File.ReadAllText(tempFile, Encoding.UTF8);
             var g = new Generator(new Generator.Options()
             {
-                TemplateCode = templateCode,
                 OutputFile = outputFile,
                 GenericMethods = genericMethods,
                 ReversePInvokeMethods = reversePInvokeMethods,
@@ -66,7 +67,7 @@ namespace HybridCLR.Editor.Commands
             }
             AssemblyReferenceDeepCollector collector = new AssemblyReferenceDeepCollector(MetaUtil.CreateAOTAssemblyResolver(target), aotAssemblyNames);
 
-            var methodBridgeAnalyzer = new Analyzer(new Analyzer.Options
+            var methodBridgeAnalyzer = new MethodBridgeAnalyzer(new MethodBridgeAnalyzer.Options
             {
                 MaxIterationCount = Math.Min(20, SettingsUtil.HybridCLRSettings.maxMethodBridgeGenericIteration),
                 Collector = collector,
@@ -82,17 +83,11 @@ namespace HybridCLR.Editor.Commands
 
             var calliAnalyzer = new CalliAnalyzer(cache, hotUpdateDlls);
             calliAnalyzer.Run();
-            var pinvokeAnalyzer = new PInvokeAnalyzer(cache, hotUpdateDlls);
-            pinvokeAnalyzer.Run();
-            var callPInvokeMethodSignatures = pinvokeAnalyzer.PInvokeMethodSignatures;
 
-            string templateFile = $"{SettingsUtil.TemplatePathInPackage}/MethodBridge.cpp.tpl";
-            string outputFile = $"{SettingsUtil.GeneratedCppDir}/MethodBridge.cpp";
+            string outputFile = $"{SettingsUtil.GeneratedCppDir}/MethodBridge.inc";
 
-            var callNativeMethodSignatures = calliAnalyzer.CalliMethodSignatures.Concat(pinvokeAnalyzer.PInvokeMethodSignatures).ToList();
-            GenerateMethodBridgeCppFile(methodBridgeAnalyzer.GenericMethods, reversePInvokeAnalyzer.ReversePInvokeMethods, callNativeMethodSignatures, templateFile, outputFile);
-
-            CleanIl2CppBuildCache();
+            var callNativeMethodSignatures = calliAnalyzer.CalliMethodSignatures.ToList();
+            GenerateMethodBridgeCppFile(methodBridgeAnalyzer.GenericMethods, reversePInvokeAnalyzer.ReversePInvokeMethods, callNativeMethodSignatures, outputFile);
         }
     }
 }

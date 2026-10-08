@@ -15,7 +15,7 @@ namespace MonoHook
 
         static DelegateFlushICache flush_icache;
         private static readonly long _Pagesize;
-        
+
         static HookUtils()
         {
             PropertyInfo p_SystemPageSize = typeof(Environment).GetProperty("SystemPageSize");
@@ -73,9 +73,9 @@ namespace MonoHook
 
         public static KeyValuePair<long, long> GetPageAlignedAddr(long code, int size)
         {
-            long pagesize   = _Pagesize;
-            long startPage  = (code) & ~(pagesize - 1);
-            long endPage    = (code + size + pagesize - 1) & ~(pagesize - 1);
+            long pagesize = _Pagesize;
+            long startPage = (code) & ~(pagesize - 1);
+            long endPage = (code + size + pagesize - 1) & ~(pagesize - 1);
             return new KeyValuePair<long, long>(startPage, endPage);
         }
 
@@ -110,7 +110,7 @@ namespace MonoHook
                     count++;
                 }
             }
-        END:;
+            END:;
             return sb.ToString();
         }
 

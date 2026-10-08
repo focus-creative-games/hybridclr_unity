@@ -1,11 +1,29 @@
-using System;
+// Copyright 2026 Code Philosophy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 using System.IO;
-using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
 
-namespace HybridCLR.Editor.Installer
+namespace HybridCLR.Installer
 {
     public class InstallerWindow : EditorWindow
     {
@@ -51,39 +69,28 @@ namespace HybridCLR.Editor.Installer
 
             GUILayout.Space(10f);
 
-            InstallerController.CompatibleType compatibleType = _controller.GetCompatibleType();
-            if (compatibleType != InstallerController.CompatibleType.Incompatible)
+
+
+            EditorGUILayout.BeginHorizontal();
+            _installFromDir = EditorGUILayout.Toggle("Copy libil2cpp from local", _installFromDir, GUILayout.MinWidth(100));
+            EditorGUI.BeginDisabledGroup(!_installFromDir);
+            EditorGUILayout.TextField(_installLibil2cppWithHybridclrSourceDir, GUILayout.Width(400));
+            if (GUILayout.Button("Choose", GUILayout.Width(100)))
             {
-                if (compatibleType == InstallerController.CompatibleType.MaybeIncompatible)
-                {
-                    EditorGUILayout.HelpBox($"Maybe incompatible with current version, recommend minimum compatible version:{_controller.GetCurrentUnityVersionMinCompatibleVersionStr()}", MessageType.Warning);
-                }
-
-                EditorGUILayout.BeginHorizontal();
-                _installFromDir = EditorGUILayout.Toggle("Copy libil2cpp from local", _installFromDir, GUILayout.MinWidth(100));
-                EditorGUI.BeginDisabledGroup(!_installFromDir);
-                EditorGUILayout.TextField(_installLibil2cppWithHybridclrSourceDir, GUILayout.Width(400));
-                if (GUILayout.Button("Choose", GUILayout.Width(100)))
-                {
-                    _installLibil2cppWithHybridclrSourceDir = EditorUtility.OpenFolderPanel("Select libil2cpp", Application.dataPath, "libil2cpp");
-                }
-                EditorGUI.EndDisabledGroup();
-                EditorGUILayout.EndHorizontal();
-
-                GUILayout.Space(20f);
-
-                EditorGUILayout.BeginHorizontal();
-                if (GUILayout.Button("Install", GUILayout.Width(100)))
-                {
-                    InstallLocalHybridCLR();
-                    GUIUtility.ExitGUI();
-                }
-                EditorGUILayout.EndHorizontal();
+                _installLibil2cppWithHybridclrSourceDir = EditorUtility.OpenFolderPanel("Select libil2cpp", Application.dataPath, "libil2cpp");
             }
-            else
+            EditorGUI.EndDisabledGroup();
+            EditorGUILayout.EndHorizontal();
+
+            GUILayout.Space(20f);
+
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Install", GUILayout.Width(100)))
             {
-                EditorGUILayout.HelpBox($"Incompatible with current version, minimum compatible version:{_controller.GetCurrentUnityVersionMinCompatibleVersionStr()}", MessageType.Error);
+                InstallLocalHybridCLR();
+                GUIUtility.ExitGUI();
             }
+            EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.EndVertical();
         }

@@ -6,15 +6,11 @@
 
 using DotNetDetour;
 using System;
-using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using Unity.Collections.LowLevel.Unsafe;
 #if UNITY_EDITOR
-using UnityEditor;
 #endif
 using UnityEngine;
-using System.Runtime.CompilerServices;
 
 
 /*
@@ -110,9 +106,9 @@ namespace MonoHook
         /// <param name="proxyMethod">如果还需要调用原始目标方法，可以通过此参数的方法调用，如果不需要可以填 null</param>
         public MethodHook(MethodBase targetMethod, MethodBase replacementMethod, MethodBase proxyMethod, string data = "")
         {
-            this.targetMethod       = targetMethod;
-            this.replacementMethod  = replacementMethod;
-            this.proxyMethod        = proxyMethod;
+            this.targetMethod = targetMethod;
+            this.replacementMethod = replacementMethod;
+            this.proxyMethod = proxyMethod;
             this.tag = data;
 
             CheckMethod();
@@ -219,8 +215,8 @@ namespace MonoHook
         private void CreateCodePatcher()
         {
             long addrOffset = Math.Abs(_targetPtr.ToInt64() - _proxyPtr.ToInt64());
-            
-            if(_proxyPtr != IntPtr.Zero)
+
+            if (_proxyPtr != IntPtr.Zero)
                 addrOffset = Math.Max(addrOffset, Math.Abs(_targetPtr.ToInt64() - _proxyPtr.ToInt64()));
 
             if (LDasm.IsARM())
@@ -238,7 +234,7 @@ namespace MonoHook
             {
                 if (IntPtr.Size == 8)
                 {
-                    if(addrOffset < 0x7fffffff) // 2G
+                    if (addrOffset < 0x7fffffff) // 2G
                         _codePatcher = new CodePatcher_x64_near(_targetPtr, _replacementPtr, _proxyPtr);
                     else
                         _codePatcher = new CodePatcher_x64_far(_targetPtr, _replacementPtr, _proxyPtr);
@@ -263,7 +259,7 @@ namespace MonoHook
             if (proxyMethod != null && _proxyPtr == null)
                 return false;
 
-            if(_replacementPtr == _targetPtr)
+            if (_replacementPtr == _targetPtr)
             {
                 throw new Exception($"the addresses of target method {targetMethod.Name} and replacement method {replacementMethod.Name} can not be same");
             }

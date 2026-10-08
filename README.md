@@ -7,7 +7,7 @@
 <br/>
 <br/>
 
-**中文** | [English](./README_EN.md)
+[README 中文](./README.md) | [README English](./README_EN.md)
 
 [Github](https://github.com/focus-creative-games/hybridclr) | [Gitee](https://gitee.com/focus-creative-games/hybridclr)
 
@@ -25,8 +25,6 @@ HybridCLR扩充了il2cpp运行时代码，使它由纯[AOT](https://en.wikipedia
 - [快速上手](https://www.hybridclr.cn/docs/beginner/quickstart)
 - [商业项目案例](https://www.hybridclr.cn/docs/other/businesscase)
 - [LeanCLR](https://github.com/focus-creative-games/leanclr)
-- HybridCLR 原生集成脚本方案： Lua-[ZLua](https://github.com/focus-creative-games/zlua)/Typescript-[ZenTS](https://github.com/focus-creative-games/zen-ts)
-- 代码混淆工具 [Obfuz](https://github.com/focus-creative-games/obfuz)
 
 ## 特性
 
@@ -78,7 +76,7 @@ HybridCLR已经被广泛验证是非常高效、稳定的Unity热更新解决方
 - 新手1群（3000人）：428404198（满）
 - 新手2群（2000人）：680274677（满）
 - 新手3群（2000人）：**920714552（推荐）**
-- discord频道: <https://discord.gg/BATfNfJnm2>
+- discord频道 `https://discord.gg/BATfNfJnm2`
 - 商业合作邮箱: business#code-philosophy.com
 - [商业化支持](https://www.hybridclr.cn/docs/business/intro)
 

@@ -1,20 +1,35 @@
-﻿using HybridCLR.Editor.BuildProcessors;
-using HybridCLR.Editor.Installer;
+// Copyright 2026 Code Philosophy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+﻿using HybridCLR.BuildProcessors;
+using HybridCLR.Utils;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
-namespace HybridCLR.Editor.Commands
+namespace HybridCLR.Commands
 {
     public static class StripAOTDllCommand
     {
-        [MenuItem("HybridCLR/Generate/AOTDlls", priority = 105)]
+        [MenuItem("HybridCLR/Generate/StrippedAotDlls", priority = 105)]
         public static void GenerateStripedAOTDlls()
         {
             GenerateStripedAOTDlls(EditorUserBuildSettings.activeBuildTarget);
@@ -53,22 +68,22 @@ namespace HybridCLR.Editor.Commands
 
         private static string GetLocationPathName(string buildDir, BuildTarget target)
         {
-            switch(target)
+            switch (target)
             {
-                case BuildTarget.StandaloneWindows:
-                case BuildTarget.StandaloneWindows64: return $"{buildDir}/{PlayerSettings.productName}.exe";
-                case BuildTarget.StandaloneOSX: return buildDir;
-                case BuildTarget.iOS: return buildDir;
-                case BuildTarget.Android: return buildDir;
-                case BuildTarget.StandaloneLinux64: return $"{buildDir}/{PlayerSettings.productName}";
-                default: return buildDir;
+            case BuildTarget.StandaloneWindows:
+            case BuildTarget.StandaloneWindows64: return $"{buildDir}/{PlayerSettings.productName}.exe";
+            case BuildTarget.StandaloneOSX: return buildDir;
+            case BuildTarget.iOS: return buildDir;
+            case BuildTarget.Android: return buildDir;
+            case BuildTarget.StandaloneLinux64: return $"{buildDir}/{PlayerSettings.productName}";
+            default: return buildDir;
             }
         }
 
         public static void GenerateStripedAOTDlls(BuildTarget target)
         {
-            string outputPath = $"{SettingsUtil.HybridCLRDataDir}/StrippedAOTDllsTempProj/{target}";
-            BashUtil.RemoveDir(outputPath);
+            string outputPath = $"Temp/HybridCLR/StrippedAOTDllsTempProj/{target}";
+            DirectoryUtil.RemoveDir(outputPath);
 
             var buildOptions = GetBuildPlayerOptions(target);
 
@@ -94,36 +109,36 @@ namespace HybridCLR.Editor.Commands
 
                 switch (target)
                 {
-                    case BuildTarget.StandaloneWindows:
-                    case BuildTarget.StandaloneWindows64:
-                    {
-    #if UNITY_EDITOR_WIN
-                        UnityEditor.WindowsStandalone.UserBuildSettings.createSolution = true;
-    #endif
-                            break;
-                    }
-                    case BuildTarget.StandaloneOSX:
-                    {
-    #if UNITY_EDITOR_OSX
+                case BuildTarget.StandaloneWindows:
+                case BuildTarget.StandaloneWindows64:
+                {
+#if UNITY_EDITOR_WIN
+                    UnityEditor.WindowsStandalone.UserBuildSettings.createSolution = true;
+#endif
+                    break;
+                }
+                case BuildTarget.StandaloneOSX:
+                {
+#if UNITY_EDITOR_OSX
                         UnityEditor.OSXStandalone.UserBuildSettings.createXcodeProject = true;
-    #endif
-                        break;
-                    }
-    #if TUANJIE_2022_3_OR_NEWER
+#endif
+                    break;
+                }
+#if TUANJIE_2022_3_OR_NEWER
                     case BuildTarget.HMIAndroid:
-    #endif
-                    case BuildTarget.Android:
-                    {
-                        EditorUserBuildSettings.exportAsGoogleAndroidProject = true;
-                        break;
-                    }
-    #if TUANJIE_2022_3_OR_NEWER
+#endif
+                case BuildTarget.Android:
+                {
+                    EditorUserBuildSettings.exportAsGoogleAndroidProject = true;
+                    break;
+                }
+#if TUANJIE_2022_3_OR_NEWER
                     case BuildTarget.OpenHarmony:
                     {
                         EditorUserBuildSettings.exportAsOpenHarmonyProject = true;
                         break;
                     }
-    #endif
+#endif
                 }
 
                 Debug.Log($"GenerateStripedAOTDlls build option:{buildOptions}");
@@ -157,29 +172,29 @@ namespace HybridCLR.Editor.Commands
 
                 switch (target)
                 {
-                    case BuildTarget.StandaloneWindows:
-                    case BuildTarget.StandaloneWindows64:
-                    {
+                case BuildTarget.StandaloneWindows:
+                case BuildTarget.StandaloneWindows64:
+                {
 #if UNITY_EDITOR_WIN
-                        UnityEditor.WindowsStandalone.UserBuildSettings.createSolution = oldCreateSolution;
+                    UnityEditor.WindowsStandalone.UserBuildSettings.createSolution = oldCreateSolution;
 #endif
-                        break;
-                    }
-                    case BuildTarget.StandaloneOSX:
-                    {
+                    break;
+                }
+                case BuildTarget.StandaloneOSX:
+                {
 #if UNITY_EDITOR_OSX
                             UnityEditor.OSXStandalone.UserBuildSettings.createXcodeProject = oldCreateSolution;
 #endif
-                        break;
-                    }
+                    break;
+                }
 #if TUANJIE_2022_3_OR_NEWER
                     case BuildTarget.HMIAndroid:
 #endif
-                    case BuildTarget.Android:
-                    {
-                        EditorUserBuildSettings.exportAsGoogleAndroidProject = oldExportAndroidProj;
-                        break;
-                    }
+                case BuildTarget.Android:
+                {
+                    EditorUserBuildSettings.exportAsGoogleAndroidProject = oldExportAndroidProj;
+                    break;
+                }
 #if TUANJIE_2022_3_OR_NEWER
                     case BuildTarget.OpenHarmony:
                     {

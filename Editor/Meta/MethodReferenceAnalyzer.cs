@@ -1,13 +1,29 @@
+// Copyright 2026 Code Philosophy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 ﻿using dnlib.DotNet;
-using HybridCLR.Editor.ABI;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace HybridCLR.Editor.Meta
+namespace HybridCLR.Meta
 {
     public class MethodReferenceAnalyzer
     {
@@ -49,28 +65,28 @@ namespace HybridCLR.Editor.Meta
                 }
                 switch (inst.Operand)
                 {
-                    case IMethod met:
+                case IMethod met:
+                {
+                    if (!met.IsMethod)
                     {
-                        if (!met.IsMethod)
-                        {
-                            continue;
-                        }
-                        var resolveMet = GenericMethod.ResolveMethod(met, ctx)?.ToGenericShare();
-                        if (resolveMet == null)
-                        {
-                            continue;
-                        }
-                        effectInsts.Add(met);
-                        _onNewMethod(method, klassGenericInst, methodGenericInst, resolveMet);
-                        break;
+                        continue;
                     }
-                    case ITokenOperand token:
+                    var resolveMet = GenericMethod.ResolveMethod(met, ctx)?.ToGenericShare();
+                    if (resolveMet == null)
                     {
-                        //GenericParamContext paramContext = method.HasGenericParameters || method.DeclaringType.HasGenericParameters ?
-                        //            new GenericParamContext(method.DeclaringType, method) : default;
-                        //method.Module.ResolveToken(token.MDToken, paramContext);
-                        break;
+                        continue;
                     }
+                    effectInsts.Add(met);
+                    _onNewMethod(method, klassGenericInst, methodGenericInst, resolveMet);
+                    break;
+                }
+                case ITokenOperand token:
+                {
+                    //GenericParamContext paramContext = method.HasGenericParameters || method.DeclaringType.HasGenericParameters ?
+                    //            new GenericParamContext(method.DeclaringType, method) : default;
+                    //method.Module.ResolveToken(token.MDToken, paramContext);
+                    break;
+                }
                 }
             }
             _methodEffectInsts.TryAdd(method, effectInsts);

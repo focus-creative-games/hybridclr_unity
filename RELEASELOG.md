@@ -1,12 +1,21 @@
 # ReleaseLog
 
+## 9.0.1
+
+Release Data: 2026-10-09.
+
+### Runtime
+
+- fix: fix TransformContext incorrectly referencing the removed HYBRIDCLR_UNITY_2021_OR_NEW macro. When a function called by the call instruction is a full-generic-sharing function, it could be converted to a CallCommonXXX instruction while the method's methodPointerCallByInterp field is nullptr, causing a crash during CallCommonXXX execution.
+- fix: fix newMethod->has_full_generic_sharing_signature being erroneously set to hasFullGenericSharingSignature unconditionally. It should only be set for AOT functions; interpreter functions should always have this value set to false.
+
 ## 9.0.0
 
 Release Data: 2026-10-08.
 
 ### Runtime
 
-- remove: remove support for unity 2019/2022/2021
+- remove: remove support for unity 2019/2020/2021
 - remove: remove support for extern method in interpreter dll
 
 ### Editor

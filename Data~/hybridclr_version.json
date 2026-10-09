@@ -2,23 +2,23 @@
     "versions": [
     {
         "unity_version":"2022.3.x",
-        "hybridclr" : { "tag":"v9.0.0"},
-        "il2cpp_plus": { "tag":"v2022.3.x-9.0.0"}
+        "hybridclr" : { "tag":"v9.0.1"},
+        "il2cpp_plus": { "tag":"v2022.3.x-9.0.1"}
     },
     {
         "unity_version":"2022.3.x-tuanjie",
-        "hybridclr" : { "tag":"v9.0.0"},
-        "il2cpp_plus": { "tag":"v2022.3.x-tuanjie-9.0.0"}
+        "hybridclr" : { "tag":"v9.0.1"},
+        "il2cpp_plus": { "tag":"v2022.3.x-tuanjie-9.0.1"}
     },
     {
         "unity_version":"6000.0.x",
-        "hybridclr" : { "tag":"v9.0.0"},
-        "il2cpp_plus": { "tag":"v6000.0.x-9.0.0"}
+        "hybridclr" : { "tag":"v9.0.1"},
+        "il2cpp_plus": { "tag":"v6000.0.x-9.0.1"}
     },
     {
         "unity_version":"6000.3.x",
-        "hybridclr" : { "tag":"v6000.3.x-9.0.0"},
-        "il2cpp_plus": { "tag":"v6000.3.x-9.0.0"}
+        "hybridclr" : { "tag":"v6000.3.x-9.0.1"},
+        "il2cpp_plus": { "tag":"v6000.3.x-9.0.1"}
     }
     ]
 }

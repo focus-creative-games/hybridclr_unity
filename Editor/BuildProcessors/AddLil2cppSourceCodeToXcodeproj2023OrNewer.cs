@@ -20,6 +20,11 @@
 
 #if UNITY_2023_1_OR_NEWER && (UNITY_IOS || UNITY_TVOS || UNITY_VISIONOS)
 
+using HybridCLR.Settings;
+using System.IO;
+using UnityEditor;
+using UnityEditor.Callbacks;
+
 namespace HybridCLR.BuildProcessors
 {
     public static class AddLil2cppSourceCodeToXcodeproj2023OrNewer
@@ -28,7 +33,8 @@ namespace HybridCLR.BuildProcessors
         [PostProcessBuild]
         public static void OnPostProcessBuild(BuildTarget target, string pathToBuiltProject)
         {
-            if (!HybridCLRSettings.Instance.enable)
+            HybridCLRSettings globalSettings = SettingsUtil.HybridCLRSettings;
+            if (!globalSettings.enable)
                 return;
             CopyLibil2cppToXcodeProj(pathToBuiltProject);
         }
@@ -37,8 +43,8 @@ namespace HybridCLR.BuildProcessors
         {
             string srcLibil2cppDir = $"{SettingsUtil.LocalIl2CppDir}/libil2cpp";
             string destLibil2cppDir = $"{pathToBuiltProject}/Il2CppOutputProject/IL2CPP/libil2cpp";
-            BashUtil.RemoveDir(destLibil2cppDir);
-            BashUtil.CopyDir(srcLibil2cppDir, destLibil2cppDir, true);
+            Directory.Delete(destLibil2cppDir, true);
+            FileUtil.CopyFileOrDirectory(srcLibil2cppDir, destLibil2cppDir);
         }
     }
 }

@@ -28,7 +28,6 @@ using UnityEngine;
 
 namespace HybridCLR.BuildProcessors.Hooks
 {
-#if UNITY_2022 || UNITY_2023_1_OR_NEWER
     [InitializeOnLoad]
     public class GetIl2CppFolderHook
     {
@@ -68,5 +67,4 @@ namespace HybridCLR.BuildProcessors.Hooks
             return null;
         }
     }
-#endif
 }

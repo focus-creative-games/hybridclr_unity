@@ -35,7 +35,6 @@ namespace HybridCLR.BuildProcessors
 
         public int callbackOrder => 0;
 
-#if UNITY_2021_1_OR_NEWER
         public static string GetStripAssembliesDir2021(BuildTarget target)
         {
             string projectDir = SettingsUtil.ProjectDir;
@@ -89,21 +88,6 @@ namespace HybridCLR.BuildProcessors
             default: return "";
             }
         }
-#else
-        private string GetStripAssembliesDir2020(BuildTarget target)
-        {
-            string subPath = target == BuildTarget.Android ?
-                "assets/bin/Data/Managed" :
-                "Data/Managed/";
-            return $"{SettingsUtil.ProjectDir}/Temp/StagingArea/{subPath}";
-        }
-
-        public void OnBeforeConvertRun(BuildReport report, Il2CppBuildPipelineData data)
-        {
-            BuildTarget target = report.summary.platform;
-            CopyStripDlls(GetStripAssembliesDir2020(target), target);
-        }
-#endif
 
         public static void CopyStripDlls(string srcStripDllPath, BuildTarget target)
         {
@@ -128,14 +112,12 @@ namespace HybridCLR.BuildProcessors
 
         public void OnPostprocessBuild(BuildReport report)
         {
-#if UNITY_2021_1_OR_NEWER
             BuildTarget target = report.summary.platform;
             string srcStripDllPath = GetStripAssembliesDir2021(target);
             if (!string.IsNullOrEmpty(srcStripDllPath) && Directory.Exists(srcStripDllPath))
             {
                 CopyStripDlls(srcStripDllPath, target);
             }
-#endif
         }
 
         public void OnPreprocessBuild(BuildReport report)

@@ -55,6 +55,12 @@ namespace HybridCLR.Commands
             GenerateMethodBridgeAndReversePInvokeWrapper(target);
         }
 
+        public static void GenerateEmptyMethodBridgeAndReversePInvokeWrapper(BuildTarget target)
+        {
+            string outputFile = $"{SettingsUtil.GeneratedCppDir}/MethodBridge.inc";
+            GenerateMethodBridgeCppFile(new List<GenericMethod>(), new List<RawMonoPInvokeCallbackMethodInfo>(), new List<CallNativeMethodSignatureInfo>(), outputFile);
+        }
+
         public static void GenerateMethodBridgeAndReversePInvokeWrapper(BuildTarget target)
         {
             string aotDllDir = SettingsUtil.GetAssembliesPostIl2CppStripDir(target);

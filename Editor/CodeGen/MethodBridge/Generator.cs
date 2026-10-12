@@ -843,7 +843,7 @@ namespace HybridCLR.CodeGen.MethodBridge
 
         private void CollectStructDefs(List<MethodSig> methods, HashSet<TypeInfo> structTypes)
         {
-            ICorLibTypes corLibTypes = _genericMethods[0].Method.Module.CorLibTypes;
+            ICorLibTypes corLibTypes = _genericMethods.Count > 0 ? _genericMethods[0].Method.Module.CorLibTypes : null;
 
             foreach (var method in methods)
             {

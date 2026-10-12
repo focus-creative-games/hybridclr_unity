@@ -43,6 +43,11 @@ namespace HybridCLR.Commands
             // These generation depend on HotUpdateDlls
             LinkGeneratorCommand.GenerateLinkXml(target);
 
+            // Because some build targets will link the generated AOT dll before generating method bridge,
+            // so we need to generate an empty method bridge and reverse PInvoke wrapper first
+            // so that the generated AOT dll can be linked successfully
+            MethodBridgeGeneratorCommand.GenerateEmptyMethodBridgeAndReversePInvokeWrapper(target);
+
             // Generate stripped aot dll
             StripAOTDllCommand.GenerateStripedAOTDlls(target);
 

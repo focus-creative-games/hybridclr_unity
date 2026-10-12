@@ -18,9 +18,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using MonoHook;
+using System;
+using System.IO;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using UnityEditor;
+using UnityEngine;
+
 namespace HybridCLR.BuildProcessors.Hooks
 {
-#if UNITY_2021_1_OR_NEWER && (UNITY_WEBGL || UNITY_WEIXINMINIGAME)
     [InitializeOnLoad]
     public class PatchScriptingAssembliesJsonHook
     {
@@ -36,8 +43,10 @@ namespace HybridCLR.BuildProcessors.Hooks
                 MethodInfo miReplacement = new Func<string>(BuildMainWindowTitle).Method;
                 MethodInfo miProxy = new Func<string>(BuildMainWindowTitleProxy).Method;
 
+#if UNITY_2021_1_OR_NEWER && (UNITY_WEBGL || UNITY_WEIXINMINIGAME)
                 _hook = new MethodHook(miTarget, miReplacement, miProxy);
                 _hook.Install();
+#endif
             }
         }
 
@@ -78,5 +87,4 @@ namespace HybridCLR.BuildProcessors.Hooks
             return string.Empty;
         }
     }
-#endif
 }

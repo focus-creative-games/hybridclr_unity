@@ -20,17 +20,38 @@
 
 #if UNITY_2022 && (UNITY_IOS || UNITY_TVOS || UNITY_VISIONOS)
 
+using HybridCLR.Settings;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+using UnityEditor;
+using UnityEditor.Build;
+using UnityEditor.Callbacks;
+using UnityEngine;
+
 namespace HybridCLR.BuildProcessors
 {
     public static class AddLil2cppSourceCodeToXcodeproj2022OrNewer
     {
-
+        public static string GetXcodeProjectFile(string pathToBuiltProject)
+        {
+            foreach (string dir in Directory.GetDirectories(pathToBuiltProject, "*.xcodeproj", SearchOption.TopDirectoryOnly))
+            {
+                string pbxprojFile = $"{dir}/project.pbxproj";
+                if (File.Exists(pbxprojFile))
+                {
+                    return pbxprojFile;
+                }
+            }
+            throw new BuildFailedException($"can't find xxxx.xcodeproj/project.pbxproj in {pathToBuiltProject}");
+        }
         [PostProcessBuild]
         public static void OnPostProcessBuild(BuildTarget target, string pathToBuiltProject)
         {
-            if (!HybridCLRSettings.Instance.enable)
+            HybridCLRSettings globalSettings = SettingsUtil.HybridCLRSettings;
+            if (!globalSettings.enable)
                 return;
-            string pbxprojFile = BuildProcessorUtil.GetXcodeProjectFile(pathToBuiltProject);
+            string pbxprojFile = GetXcodeProjectFile(pathToBuiltProject);
             RemoveExternalLibil2cppOption(pbxprojFile);
             CopyLibil2cppToXcodeProj(pathToBuiltProject);
         }
@@ -84,8 +105,8 @@ namespace HybridCLR.BuildProcessors
         {
             string srcLibil2cppDir = $"{SettingsUtil.LocalIl2CppDir}/libil2cpp";
             string destLibil2cppDir = $"{pathToBuiltProject}/Il2CppOutputProject/IL2CPP/libil2cpp";
-            BashUtil.RemoveDir(destLibil2cppDir);
-            BashUtil.CopyDir(srcLibil2cppDir, destLibil2cppDir, true);
+            Directory.Delete(destLibil2cppDir, true);
+            FileUtil.CopyFileOrDirectory(srcLibil2cppDir, destLibil2cppDir);
         }
     }
 }

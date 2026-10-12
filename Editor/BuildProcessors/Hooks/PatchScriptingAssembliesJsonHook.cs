@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-﻿namespace HybridCLR.BuildProcessors.Hooks
+namespace HybridCLR.BuildProcessors.Hooks
 {
 #if UNITY_2021_1_OR_NEWER && (UNITY_WEBGL || UNITY_WEIXINMINIGAME)
     [InitializeOnLoad]

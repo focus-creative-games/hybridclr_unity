@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-﻿using HybridCLR.CodeGen.AOT;
+using HybridCLR.CodeGen.AOT;
 using HybridCLR.Meta;
 
 using HybridCLR.Utils;

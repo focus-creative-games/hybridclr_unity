@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-﻿using dnlib.DotNet;
+using dnlib.DotNet;
 using HybridCLR.Utils;
 using System.Collections.Generic;
 using System.IO;

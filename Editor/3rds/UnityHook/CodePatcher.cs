@@ -1,4 +1,4 @@
-﻿using DotNetDetour;
+using DotNetDetour;
 using System;
 
 namespace MonoHook

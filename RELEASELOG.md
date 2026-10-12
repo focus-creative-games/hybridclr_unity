@@ -1,5 +1,16 @@
 # ReleaseLog
 
+## 9.0.2
+
+Release Data: 2026-10-12.
+
+### Editor
+
+- fix: generate an empty method bridge and reverse PInvoke wrapper before generating aot dlls because some build targets will link the generated AOT dll
+- fix: fix compile error of PatchScriptingAssembliesJsonHook.cs on WebGL or WeixinMiniGame
+- fix: fix compile errors of AddLil2cppSourceCodeToXcodeproj2022OrNewer.cs and AddLil2cppSourceCodeToXcodeproj2023OrNewer.cs on iOS-like build target
+- fix: remove UTF-8 BOM from C# source files
+
 ## 9.0.1
 
 Release Data: 2026-10-09.

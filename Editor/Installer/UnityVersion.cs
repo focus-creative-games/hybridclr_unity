@@ -18,9 +18,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#if UNITY_6000_3_OR_NEWER && UNITY_EDITOR_OSX
-#define NEW_IL2CPP_PATH
-#endif
 using System.Text.RegularExpressions;
 
 namespace HybridCLR.Installer

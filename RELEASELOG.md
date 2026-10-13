@@ -1,5 +1,13 @@
 # ReleaseLog
 
+## 9.0.3
+
+Release Data: 2026-10-13.
+
+### Editor
+
+- fix: fix compile error on Unity 6000.3.x + macOS editor
+
 ## 9.0.2
 
 Release Data: 2026-10-12.

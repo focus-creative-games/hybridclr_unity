@@ -6,7 +6,7 @@ description: >-
 
 # Configure HybridCLR
 
-Docs: `D:/workspace/hybridclr-doc/docs/guide/setup/projectsettings.md` and `hybridclr-unity-package.md`. Fields follow `Editor/Settings/HybridCLRSettings.cs` in this repo. The asset is `ProjectSettings/HybridCLRSettings.asset`.
+Docs: `guide/setup/projectsettings.md` and `guide/setup/hybridclr-unity-package.md` in the HybridCLR documentation. Fields follow `Editor/Settings/HybridCLRSettings.cs` in this repo. The asset is `ProjectSettings/HybridCLRSettings.asset`.
 
 How to split assemblies and create asmdefs is `hybridclr-hotupdate-assembly`. Do not expand that here.
 

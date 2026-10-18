@@ -6,7 +6,7 @@ description: >-
 
 # Hot-update assemblies
 
-Docs: `D:/workspace/hybridclr-doc/docs/guide/setup/hotupdateassemblysetting.md`, `guide/build/compileassembly.md`, and `guide/build/runhotupdatecodes.md`. Settings fields are in `hybridclr-configure`.
+Docs: `guide/setup/hotupdateassemblysetting.md`, `guide/build/compileassembly.md`, and `guide/build/runhotupdatecodes.md` in the HybridCLR documentation. Settings fields are in `hybridclr-configure`.
 
 ## Split
 

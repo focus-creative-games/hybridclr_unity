@@ -6,7 +6,7 @@ description: >-
 
 # Hot-update MonoBehaviour
 
-Doc: `D:/workspace/hybridclr-doc/docs/guide/features/monobehaviour.md`. Registering the assembly is `hybridclr-hotupdate-assembly`.
+Doc: `guide/features/monobehaviour.md` in the HybridCLR documentation. Registering the assembly is `hybridclr-hotupdate-assembly`.
 
 `AddComponent<T>()` and `AddComponent(Type)` work after that dll has been `Assembly.Load`ed.
 

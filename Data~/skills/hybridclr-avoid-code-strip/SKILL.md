@@ -6,7 +6,7 @@ description: >-
 
 # Avoid code stripping
 
-Doc: `D:/workspace/hybridclr-doc/docs/guide/build/codestriping.md`.
+Doc: `guide/build/codestriping.md` in the HybridCLR documentation.
 
 If a stripped AOT type or method is called from hot-update code:
 

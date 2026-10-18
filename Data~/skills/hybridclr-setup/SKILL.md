@@ -6,7 +6,7 @@ description: >-
 
 # Install HybridCLR
 
-Docs: `D:/workspace/hybridclr-doc/docs/guide/setup/install.md` and `supported-platforms-and-unity-versions.md`. Package and il2cpp branches come from this repo's `Data~/hybridclr_version.json`. Do not change those branches from memory.
+Docs: `guide/setup/install.md` and `guide/setup/supported-platforms-and-unity-versions.md` in the HybridCLR documentation. Package and il2cpp branches come from this repo's `Data~/hybridclr_version.json`. Do not change those branches from memory.
 
 ## Versions
 

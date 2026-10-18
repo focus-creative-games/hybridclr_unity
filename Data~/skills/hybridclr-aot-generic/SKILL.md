@@ -6,7 +6,7 @@ description: >-
 
 # AOT generics
 
-Docs: `D:/workspace/hybridclr-doc/docs/guide/build/aotgeneric.md` and `start/generic.md`.
+Docs: `guide/build/aotgeneric.md` and `start/generic.md` in the HybridCLR documentation.
 
 Generic types and methods **defined in hot-update assemblies** have no AOT restriction. The restriction is hot-update code using a generic **defined in an AOT assembly** (`List<T>`, `Dictionary<TKey,TValue>`, async state machines, and similar) when that instantiation was not generated in AOT. Typical log:
 

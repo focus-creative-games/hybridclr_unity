@@ -6,7 +6,7 @@ description: >-
 
 # MonoPInvokeCallback
 
-Doc: `D:/workspace/hybridclr-doc/docs/guide/features/monopinvokecallback.md`. Choosing a Lua, JS, or Python stack is `hybridclr-script-language`.
+Doc: `guide/features/monopinvokecallback.md` in the HybridCLR documentation. Choosing a Lua, JS, or Python stack is `hybridclr-script-language`.
 
 A static method with `[MonoPInvokeCallback]` needs a C++ wrapper before `Marshal.GetFunctionPointerForDelegate` can return a pointer. Platforms that cannot JIT, including iOS, cannot create that wrapper at runtime. Generate it in the player build with `HybridCLR/Generate/ReversePInvokeWrapper` (`Generate/All` includes it).
 

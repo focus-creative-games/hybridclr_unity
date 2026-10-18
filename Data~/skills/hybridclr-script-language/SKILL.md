@@ -6,7 +6,7 @@ description: >-
 
 # Script languages
 
-Doc: `D:/workspace/hybridclr-doc/docs/guide/features/workwithscriptlanguage.md`. Wrapper reservation rules are in `hybridclr-monopinvokecallback`. Do not restate them here.
+Doc: `guide/features/workwithscriptlanguage.md` in the HybridCLR documentation. Wrapper reservation rules are in `hybridclr-monopinvokecallback`. Do not restate them here.
 
 HybridCLR is native C# hot update. It can sit beside an existing script stack while gameplay moves back to C#.
 

@@ -214,7 +214,7 @@ namespace MonoHook
 
         private void CreateCodePatcher()
         {
-            long addrOffset = Math.Abs(_targetPtr.ToInt64() - _proxyPtr.ToInt64());
+            long addrOffset = Math.Abs(_targetPtr.ToInt64() - _replacementPtr.ToInt64());
 
             if (_proxyPtr != IntPtr.Zero)
                 addrOffset = Math.Max(addrOffset, Math.Abs(_targetPtr.ToInt64() - _proxyPtr.ToInt64()));
@@ -222,7 +222,15 @@ namespace MonoHook
             if (LDasm.IsARM())
             {
                 if (IntPtr.Size == 8)
-                    _codePatcher = new CodePatcher_arm64_near(_targetPtr, _replacementPtr, _proxyPtr);
+                {
+                    if (addrOffset <= CodePatcher_arm64_near.MaxJmpOffset)
+                        _codePatcher = new CodePatcher_arm64_near(_targetPtr, _replacementPtr, _proxyPtr);
+                    else
+                    {
+                        UnityEngine.Debug.Log($"[MonoHook] {targetMethod.DeclaringType.Name}.{targetMethod.Name}: address offset {addrOffset / (1024 * 1024)}MB exceeds ±128MB, use arm64 far jump");
+                        _codePatcher = new CodePatcher_arm64_far(_targetPtr, _replacementPtr, _proxyPtr);
+                    }
+                }
                 else if (addrOffset < ((1 << 25) - 1))
                     _codePatcher = new CodePatcher_arm32_near(_targetPtr, _replacementPtr, _proxyPtr);
                 else if (addrOffset < ((1 << 27) - 1))

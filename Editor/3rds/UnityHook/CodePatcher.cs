@@ -255,10 +255,19 @@ namespace MonoHook
             0x00, 0x00, 0x00, 0x14,                         //  B $val   ; $val = (($dst - $src)/4) & 7FFFFFF
         };
 
+        /// <summary>
+        /// B 指令的 imm26 是有符号数，以 4 字节为单位，可达范围是 -128MB ~ +128MB-4
+        /// </summary>
+        public const long MaxJmpOffset = (1L << 27) - 4;
+
         public CodePatcher_arm64_near(IntPtr target, IntPtr replace, IntPtr proxy) : base(target, replace, proxy, s_jmpCode.Length)
         {
-            if (Math.Abs((long)target - (long)replace) >= ((1 << 26) - 1) * 4)
-                throw new ArgumentException("address offset of target and replace must less than (1 << 26) - 1) * 4");
+            if (Math.Abs((long)target - (long)replace) > MaxJmpOffset)
+                throw new ArgumentException("address offset of target and replace must not exceed ±128MB, please use CodePatcher_arm64_far instead");
+
+            // proxy 末尾要跳回 target，距离同样受 B 指令范围限制
+            if (proxy != IntPtr.Zero && Math.Abs((long)target - (long)proxy) > MaxJmpOffset)
+                throw new ArgumentException("address offset of target and proxy must not exceed ±128MB, please use CodePatcher_arm64_far instead");
 
 #if ENABLE_HOOK_DEBUG
             Debug.Log($"CodePatcher_arm64: {PrintAddrs()}");
@@ -288,29 +297,143 @@ namespace MonoHook
     }
 
     /// <summary>
-    /// arm64 远距离跳转
+    /// arm64 下距离超过 ±128MB 的跳转
+    /// 会覆盖 target 开头 4 条指令，并把它们原样搬到 proxy 执行，所以这 4 条指令里不能有 PC 相对寻址或跳转，否则拒绝 hook
     /// </summary>
     public unsafe class CodePatcher_arm64_far : CodePatcher
     {
-        private static readonly byte[] s_jmpCode = new byte[]    // 20 bytes(字节数过多，太危险了，不建议使用)
+        private static readonly byte[] s_jmpCode = new byte[]    // 16 bytes
         {
             /*
-             * ADR: https://developer.arm.com/documentation/ddi0596/2021-09/Base-Instructions/ADR--Form-PC-relative-address-
+             * LDR(literal): https://developer.arm.com/documentation/ddi0596/2021-09/Base-Instructions/LDR--literal---Load-Register--literal--
              * BR: https://developer.arm.com/documentation/ddi0596/2021-09/Base-Instructions/BR--Branch-to-Register-
+             * X16/X17(IP0/IP1) 是 AAPCS64 规定的过程间临时寄存器，函数入口处本就允许被 veneer 改写，用来中转是安全的
              */
-            0x6A, 0x00, 0x00, 0x10,                         // ADR X10, #C
-            0x4A, 0x01, 0x40, 0xF9,                         // LDR X10, [X10,#0]
-            0x40, 0x01, 0x1F, 0xD6,                         // BR X10
+            0x50, 0x00, 0x00, 0x58,                         // LDR X16, #8
+            0x00, 0x02, 0x1F, 0xD6,                         // BR X16
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00  // $dst
         };
 
-        public CodePatcher_arm64_far(IntPtr target, IntPtr replace, IntPtr proxy, int jmpCodeSize) : base(target, replace, proxy, jmpCodeSize)
+        private readonly int _scratchReg;
+
+        public CodePatcher_arm64_far(IntPtr target, IntPtr replace, IntPtr proxy) : base(target, replace, proxy, s_jmpCode.Length)
         {
+            int insCount = s_jmpCode.Length / 4;
+            uint* ins = (uint*)_pTarget;
+
+            // 没有 proxy：被覆盖的指令不会再执行，只要求函数不短于 16 字节；函数入口处 X16 可以随意改写
+            if (proxy == IntPtr.Zero)
+            {
+                for (int i = 0; i < insCount - 1; i++)
+                {
+                    if (IsFunctionEnd(ins[i]))
+                        throw new ArgumentException($"can not hook target 0x{(long)target:x}: instruction {i} (0x{ins[i]:X8}) ends the function, it is shorter than {s_jmpCode.Length} bytes");
+                }
+                _scratchReg = 16;
+#if ENABLE_HOOK_DEBUG
+                Debug.Log($"CodePatcher_arm64_far: {PrintAddrs()}, scratch: X{_scratchReg}");
+#endif
+                return;
+            }
+
+            for (int i = 0; i < insCount; i++)
+            {
+                if (IsPcRelativeOrBranch(ins[i]))
+                    throw new ArgumentException($"can not hook target 0x{(long)target:x}: instruction {i} (0x{ins[i]:X8}) is pc-relative or a branch, can not be relocated");
+            }
+
+            // proxy 执行完搬过去的指令后跳回 target 时会改写中转寄存器，X16/X17 里挑一个此时已经没用的
+            if (IsDeadAfter(ins, insCount, 16))
+                _scratchReg = 16;
+            else if (IsDeadAfter(ins, insCount, 17))
+                _scratchReg = 17;
+            else
+                throw new ArgumentException($"can not hook target 0x{(long)target:x}: X16 and X17 may both be live after the first {insCount} instructions " +
+                    $"({ins[0]:X8} {ins[1]:X8} {ins[2]:X8} {ins[3]:X8})");
+
+            // proxy 要写入 32 字节（搬过去的 4 条指令 + 跳回 target），前 7 条里就出现 RET 说明 proxy 太短，会写坏后面的函数
+            uint* proxyIns = (uint*)_pProxy;
+            for (int i = 0; i < s_jmpCode.Length * 2 / 4 - 1; i++)
+            {
+                if ((proxyIns[i] & 0xFFFFFC1F) == 0xD65F0000) // RET Xn
+                    throw new ArgumentException($"proxy method at 0x{(long)proxy:x} is too short for arm64 far jump (need {s_jmpCode.Length * 2} bytes), please fill some dummy code inside");
+            }
+
+#if ENABLE_HOOK_DEBUG
+            Debug.Log($"CodePatcher_arm64_far: {PrintAddrs()}, scratch: X{_scratchReg}");
+#endif
         }
 
         protected override unsafe byte[] GenJmpCode(void* jmpFrom, void* jmpTo)
         {
-            throw new NotImplementedException();
+            byte[] ret = new byte[s_jmpCode.Length];
+
+            fixed (void* p = &ret[0])
+            {
+                uint* ptr = (uint*)p;
+                *ptr++ = 0x58000040u | (uint)_scratchReg;           // LDR Xn, #8
+                *ptr++ = 0xD61F0000u | ((uint)_scratchReg << 5);    // BR Xn
+                *(long*)ptr = (long)jmpTo;
+            }
+            return ret;
+        }
+
+        private static bool IsPcRelativeOrBranch(uint ins)
+        {
+            return (ins & 0x1F000000) == 0x10000000     // ADR / ADRP
+                || (ins & 0x7C000000) == 0x14000000     // B / BL
+                || (ins & 0xFF000000) == 0x54000000     // B.cond
+                || (ins & 0x7E000000) == 0x34000000     // CBZ / CBNZ
+                || (ins & 0x7E000000) == 0x36000000     // TBZ / TBNZ
+                || (ins & 0x3B000000) == 0x18000000     // LDR / LDRSW / PRFM (literal)
+                || (ins & 0xFE000000) == 0xD6000000;    // BR / BLR / RET 等寄存器跳转
+        }
+
+        private static bool IsFunctionEnd(uint ins)
+        {
+            return (ins & 0xFFFFFC1F) == 0xD65F0000     // RET
+                || (ins & 0xFFFFFC1F) == 0xD61F0000     // BR
+                || (ins & 0xFC000000) == 0x14000000;    // B
+        }
+
+        /// <summary>
+        /// 粗略判断：凡是可能放寄存器号的字段等于 reg 就算用到，宁可多判
+        /// </summary>
+        private static bool MayUseReg(uint ins, int reg)
+        {
+            uint r = (uint)reg;
+            return (ins & 0x1F) == r || ((ins >> 5) & 0x1F) == r || ((ins >> 10) & 0x1F) == r || ((ins >> 16) & 0x1F) == r;
+        }
+
+        /// <summary>
+        /// 判断执行完前 count 条指令后 reg 是否已经没用：
+        /// 1. 这几条指令根本没碰它：函数入口处 X16/X17 本就没有有效值（AAPCS64 允许 veneer 随意改写）；
+        /// 2. 最后一次访问是 add/sub/mov 把它当源操作数读掉：mono 只把 IP0/IP1 当作单条 IR 内的临时寄存器，
+        ///    如大栈帧序言 movz x16, #size; sub x17, sp, x16; mov sp, x17。
+        /// 其它指令不区分读写，一律当作可能仍在用。
+        /// </summary>
+        private static bool IsDeadAfter(uint* ins, int count, int reg)
+        {
+            uint r = (uint)reg;
+            for (int i = count - 1; i >= 0; i--)
+            {
+                uint x = ins[i];
+                if (!MayUseReg(x, reg))
+                    continue;
+
+                bool addSubImm = (x & 0x1F000000) == 0x11000000;                // ADD/SUB (immediate)，含 mov sp, xN
+                bool addSubLogicReg = (x & 0x1F000000) == 0x0B000000             // ADD/SUB (shifted / extended register)
+                                   || (x & 0x1F000000) == 0x0A000000;            // AND/ORR/EOR (shifted register)，含 mov xd, xm
+                if (!addSubImm && !addSubLogicReg)
+                    return false;
+
+                if ((x & 0x1F) == r)                                            // Rd：被改写，值可能留到后面用
+                    return false;
+                if (((x >> 5) & 0x1F) == r || (addSubLogicReg && ((x >> 16) & 0x1F) == r))
+                    return true;                                                // Rn / Rm：作为源操作数读掉
+                // 只是立即数字段恰好等于 reg，不算访问，继续往前看
+            }
+            return true;
         }
     }
 }

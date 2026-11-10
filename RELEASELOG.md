@@ -1,5 +1,27 @@
 # ReleaseLog
 
+## 9.1.0
+
+Release Data: 2026-11-10.
+
+### Runtime
+
+- feat: support exported type
+- fix: fix sub.ovf.i4 overflow check and conv.ovf float trunc bounds
+- fix: initialize method table before pre-jitting a class
+- fix: validate DLL parser bounds before reading image data
+- fix: prevent out-of-bounds argument reads in closed static delegates
+- fix: preserve encoded width when decoding compressed signed integers
+- fix: keep interpreter exception flow objects visible to GC
+- fix: correct overflow checks for checked floating-point conversions
+- perf: reuse the argument buffer across multicast delegate listeners
+- perf: skip debug-only IL offset tracking in release builds
+
+### Editor
+
+- chore: add ai skills
+- fix(MonoHook): Fix hook failures and incorrect address jumps on arm64 when target and replacement/proxy exceed ±128MB distance (#71)
+
 ## 9.0.3
 
 Release Data: 2026-10-13.
